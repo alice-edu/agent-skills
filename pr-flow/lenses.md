@@ -62,11 +62,13 @@ Applies when the change affects the backend: its data model, queries, workflows,
 
 ## UI and UX
 
-Applies when the change affects what a user sees or does. Hold it to the `AGENTS.md` sections for what it touches (in Alicia: Components, Where state goes, Text and translations, Panel headers, Row menus, The tour), and cite them. Beyond those:
+Applies when the change affects what a user sees or does. Look before judging: the PR's screenshots, or the running app on this head. Judged from the diff alone, this lens is **not verified**.
 
+- **Usability first.** Judge it by the principles in the [`usability`](~/.agents/skills/usability/SKILL.md) skill, in their order (its "From review-loop"): self-evident first, then what's clickable, the hierarchy, conventions, and on to easy by default, powerful when you look. Keep only what a student would hit on the screens this change touches; a finding names the principle it breaks.
+- **The repo's rules.** Hold it to the `AGENTS.md` sections for what it touches (in Alicia: Components, Where state goes, Text and translations, Panel headers, Row menus, The tour), and cite them.
 - **Reuse.** For each new piece of markup, name the existing component that should draw it, or a suitable shadcn one, and say why it fits. A shadcn component the app hasn't added yet is a candidate, not a requirement.
 - **States.** Empty, loading, error, long text, dark mode, and a slow or failed action: is there feedback while it's pending, and a way to recover?
-- **Confusion.** Write it as what the user does and what then confuses them. Look for:
+- **Confusion.** Write it as what the user does and what then confuses them. The usual cases of the principles:
   - a label that doesn't say what will happen;
   - a click that seems to do nothing;
   - a destructive action that doesn't ask first;
@@ -75,7 +77,7 @@ Applies when the change affects what a user sees or does. Hold it to the `AGENTS
   - the same thing done differently from the screens beside it;
   - focus lost after an action, or a control the keyboard can't reach.
 
-  A finding that's a choice about what the user sees (a label's wording, a layout, a flow, what's shown when) is the user's call; one that breaks a written rule is fixed. A missing state is fixed with what the app's other screens already show for it; one with no precedent is the user's call.
+  A finding that's a choice about what the user sees (a label's wording, a layout, a flow, what's shown when, what moves behind "advanced") is the user's call, with a recommended answer; one that breaks a written rule is fixed. A missing state is fixed with what the app's other screens already show for it; one with no precedent is the user's call. On someone else's PR (`review-pr`), a usability finding is optional unless a student would hit it on the main path the change touches.
 
   When the change is a new flow, `student-test` can get takes from a panel of stand-in students.
 

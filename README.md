@@ -17,6 +17,7 @@ They're written for our repo (Alicia), our Slack and our Linear, and they're pub
 | "review this", "another look" | [`review-pr`](skills/review-pr/SKILL.md) | Reviews a teammate's PR with Claude and Codex, explains it in plain words, and posts the review on GitHub and in Slack. |
 | "review loop" | [`review-loop`](skills/review-loop/SKILL.md) | Claude and Codex review a change in rounds until they agree. The other skills run it. |
 | "council" | [`council`](skills/council/SKILL.md) | Four models review instead of two, for changes that deserve it. |
+| "usability", "fix it with usability" | [`usability`](skills/usability/SKILL.md) | Judges a screen like a senior product designer, by *Don't Make Me Think* first, and fixes what a student would trip on in one pass, with before and after screenshots. Its principles are also what reviews judge UI by. |
 | "student test" | [`student-test`](skills/student-test/SKILL.md) | A panel of agents, each playing a student, tries a screen, a flow or some wording. |
 | "babysit" | [`babysit-pr`](skills/babysit-pr/SKILL.md) | Watches a PR through CI and review bots, fixing what's real, until it's green. |
 | (automatic) | [`linear-track`](skills/linear-track/SKILL.md) | Keeps the thread's Linear issue in step with the work. |
@@ -41,7 +42,7 @@ flowchart LR
 
 ### See inside each skill
 
-The big picture is below. [Open all the diagrams in Excalidraw](https://link.excalidraw.com/l/9GDlHwpjNWo/6CBVjVY4H8K) to see inside every skill, the shared rules in `pr-flow/` and how they connect, and how diagrams are drawn in Excalidraw.
+The big picture is below. [Open all the diagrams in Excalidraw](https://link.excalidraw.com/l/9GDlHwpjNWo/6CBVjVY4H8K) to see inside every skill, in sections: the commands you say for the PR flow, the ones you use on their own, the skills only other skills run, and the shared rules in `pr-flow/`.
 
 <img src="docs/big-picture.png" alt="From a report to merged: build-it, send-for-review, the nudge, the overview, fix-comments, full-send" width="540">
 
@@ -51,9 +52,9 @@ When a skill changes how it works, change its diagram in the same commit. Each d
 
 ```sh
 export EXCALIDRAW_API_KEY=...   # an Excalidraw+ API key
-python3 docs/diagrams/excalidraw.py draw grill 5200 3259 HFr2KRpvyt   # redraws it in place (ids: get_diagram)
+python3 docs/diagrams/excalidraw.py draw grill 150 6350 <diagram id>   # redraws it in place (ids: get_diagram)
 python3 docs/diagrams/excalidraw.py fonts         # every text should be font 6 (Nunito)
-python3 docs/diagrams/excalidraw.py shot docs/big-picture.png 0 0 910 1910   # after a change to the big picture
+python3 docs/diagrams/excalidraw.py shot docs/big-picture.png 100 150 1050 1960   # after a change to the big picture
 ```
 
 With the Excalidraw MCP connected, an agent can do the same: ask it to redraw a skill's diagram from `skills.py`. Outside our workspace, draw them in a scene of your own and change `SCENE` in `excalidraw.py`.

@@ -13,6 +13,14 @@ Each finding names:
 
 Where two sources disagree, write the conflict down and never invent a requirement. Skip anything lint already enforces, but do review what lint can't establish, such as whether a cast's `SAFETY:` reason is true. Each finding also has its owner ([decision-card.md](decision-card.md), "Who decides"): one that's the user's call goes on the card whatever its severity. A technical preference with no source and no consequence is dropped.
 
+**The repo's docs.** Before any lens, list every doc in the repo that bears on the change:
+
+- the agent docs (`AGENTS.md`, `CLAUDE.md`) at the root and in each directory the change touches or sits under;
+- each doc those point to for what the change touches (in Alicia: `docs/backend-review.md` for the backend, `docs/testing-alice.md` and `convex/teaching-method.md` for how Alice behaves, `apps/web/docs/icons/README.md` for icons, `apps/web-e2e/README.md` for E2E tests);
+- the README of each package or folder the change edits.
+
+Read each one in full as it stands at the head, and cite it in findings. Every lens judges against these first. A lens whose docs weren't read is `not verified`, never clear.
+
 What the repo's docs call blocking stays blocking however rare the case. A P0 there (in Alicia, `docs/backend-review.md`'s, for whatever doesn't scale) is a P1 here, and is never downgraded for being "a big course only".
 
 ## Spec
@@ -34,7 +42,7 @@ The bug hunt. Look for:
 
 ## Standards
 
-Does it follow the repo's own rules? Read the `AGENTS.md` sections for what it touches and the docs they point to, and cite the rule: those docs are the standard, so read them every time rather than going from memory. Each smell is named (a mysterious name, duplicated code, duplicated state, speculative generality, a middle man, shotgun surgery, a workaround flag) and comes with its fix.
+Does it follow the repo's own rules? The repo's docs (above) for what it touches, with the rule cited: those docs are the standard, so read them every time rather than going from memory. Each smell is named (a mysterious name, duplicated code, duplicated state, speculative generality, a middle man, shotgun surgery, a workaround flag) and comes with its fix.
 
 **The right way.** A change leaves the code it touches in the shape it should have, the way a careful teammate would build it from scratch: the right fix, never the quick way around. Old debt never justifies new debt: code nearby already doing it badly is a reason to fix that code too, not to copy it. So:
 

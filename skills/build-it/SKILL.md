@@ -79,9 +79,15 @@ Write the change the repo's way, and the right way ([lenses.md](~/.agents/pr-flo
 
 Hold it to [ready.md](~/.agents/pr-flow/ready.md): the checks CI runs, the base merged in, the change seen in the running app when a student can see it, edge cases written down. Record each result against the head. When the user asked for a student test (the `student-test` skill), run it here, once the change works in the app.
 
-## 8. Review it
+## 8. Review until it would pass
 
-`review-loop` in **author** mode on the head. Its fixes get proven like the rest.
+The bar: a reviewer who knows the repo's docs would approve it as it stands. Loop until it's met:
+
+1. `review-loop` in **author** mode on the head. Its intent includes what the likely reviewer asks for: whoever reviewed these files last (`gh pr list --state merged --search <path>`), from their review comments on the repo's recent PRs.
+2. Prove its fixes again on the new head (step 7).
+3. Code changed since the loop last looked, or a lens came back `not verified`: go again.
+
+Done when, on one final head: the loop agrees with no open P1; each P2 is fixed, or skipped as optional in one line; every lens is clear or N/A, none `not verified`; both reviewers' DOCS cover the repo's docs for this change ([lenses.md](~/.agents/pr-flow/lenses.md), "The repo's docs"); and ready.md's checks pass on that head. A P1 still open when the budget is spent is Stuck: it goes on the card, and the PR opens as a draft until it's settled.
 
 ## 9. Open the PR
 

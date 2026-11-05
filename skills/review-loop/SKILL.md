@@ -66,12 +66,14 @@ Repo: <abs path>  Base: <sha>  Head: <sha>
 Intent: <intent> (source: <issue/PR/words>)  Out of scope: <scope>  Checks: <results>
 Diff: git diff <base>..<head> (plus `git status --short` for uncommitted files)
 Read the surrounding code and callers. Review through these lenses: <lenses>, as
-~/.agents/pr-flow/lenses.md describes (read it, and the repo docs it names).
+~/.agents/pr-flow/lenses.md describes (read it, then the repo's docs as its "The repo's docs"
+says: every one that bears on the change, in full).
 P1 = intended case wrong / bug callers hit / security / data loss / broken deploy / what the
 repo calls blocking, each with evidence (code path, repro, failing test, doc). P2 = everything
 else, optional.
 Reply:
 VERDICT: APPROVE or CHANGES
+DOCS: <each repo doc read, by path>
 LENSES: <lens>: clear | findings <ids> | N/A | not verified: <why>, one per lens
 <id> [P1|P2] [agents|user] [<lens>] <file>:<line> <claim>. Source: <...>. Evidence: <...>. Fix: <...>
 ```
@@ -82,11 +84,11 @@ From round 2, add the ledger (`fixed in <sha>` / `disagree: <evidence>` / `decli
 
 While the other reviewer runs, review the same diff yourself, before reading its reply, so the two stay independent. Read the changed code's callers, and apply each chosen lens as lenses.md says, with the repo docs it names and the current docs of each technology it uses (lenses.md, "The technology's way"). In author mode, edit nothing until its reply is in: it is reviewing this head.
 
-Done when every changed file has been read in full with its callers.
+Done when every changed file has been read in full with its callers, and every doc in the repo's docs for this change (lenses.md) has been read.
 
 ### 4. Merge
 
-Put both reviews in the ledger: one row a finding, duplicates merged, each with id, severity (re-graded), owner (decision-card.md, "Who decides"), lens, file:line, claim, source, evidence, and who raised it. Check each against the code yourself; a finding you can't confirm is marked unconfirmed, not dropped.
+Put both reviews in the ledger: one row a finding, duplicates merged, each with id, severity (re-graded), owner (decision-card.md, "Who decides"), lens, file:line, claim, source, evidence, and who raised it. Check each against the code yourself; a finding you can't confirm is marked unconfirmed, not dropped. Compare each reviewer's DOCS with your own list: a doc it missed makes the lenses that doc bears on `not verified` for it, and the next round's brief names the doc.
 
 ### 5. Act
 

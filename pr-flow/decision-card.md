@@ -1,0 +1,26 @@
+# Decision card
+
+the user runs many threads at once, by voice. Each voice command asks them at most once: one **decision card** holding every choice that's theirs ("Who decides"), each with a default, so "go" accepts the lot. The card belongs to the command, across every skill it chains (`fix-comments` into `send-for-review`, `full-send` into `babysit-pr`): a skill run by another asks only what the card didn't settle, and only when it truly blocks; anything that can wait goes in the report.
+
+## Who decides
+
+Every choice and every finding has an **owner**, apart from its severity:
+
+- **The user's call**: the product. What a student sees or does (a screen, a flow, wording, what's shown when), scope (what's in or out, a fix that grew), a report's triage verdict (`build-it`: bug or not, which item of a bundle), and anything said for the user in public (a reply that disagrees with a human reviewer or declines what they asked, quoted in full). On the card always, even when every reviewer agrees: the agreed answer is the default.
+- **Agents' call**: the purely technical. How it's built, an API's shape, which of two working approaches. The docs decide: the repo's (`AGENTS.md` and what it points to), then the technology's own, looked up each time ([lenses.md](lenses.md), "The technology's way"). Decided without asking and listed under **Decided** in the report.
+- **Simplify?**: a technical choice gone hairy, where a simpler shape exists only if a requirement gives. The cleanest design the agents can find still needs something heavy (a data migration, a new table, service or package, a flag, a second path doing what one path does), and dropping or changing one named requirement would remove it. The user's call, as one question: the simpler shape, the requirement it drops, what a student loses, and what it saves. Choosing between documented approaches is the agents'.
+- **Stuck**: reviewers still disagreeing on a technical point after the docs and a check that could decide it (a test, a repro, a measurement). One question: both sides in a line each, and which the agents lean to.
+
+A step outside what the skill grants (deleting data, touching production, closing a PR) goes on the card too.
+
+## How to ask
+
+1. Do all the work that doesn't depend on the answers first, so the card comes with everything else ready. After a review, the card follows its overview ([overview.md](overview.md)), and each question names its row's number.
+2. Ask with the harness's question tool (`AskUserQuestion` in Claude Code; in Codex, the user-input tool its current mode offers), so the thread shows it is waiting. One call. Each question is a **tldr** the user can answer cold in ten seconds:
+   - one plain line on what's being decided, in what a student sees or does (for Simplify?, what the code does), never in code names;
+   - options that each say what happens if picked, the recommended one first and marked;
+   - text to be posted, quoted in full;
+   - the Links line last ([links.md](~/.agents/pr-flow/links.md)).
+3. Apply the answers and carry on to the end of the skill. A new choice for the user that turns up later (a full review after the card): ask one more card only when the next step depends on it; otherwise it goes at the top of the report.
+
+With no question tool, or no answer: post nothing that depends on the card, finish the rest, and start the report with the card.

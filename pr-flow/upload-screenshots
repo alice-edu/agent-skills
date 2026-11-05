@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# upload-screenshots <slug> <file.png>...
+#
+# Puts screenshots on the orphan branch assets/<slug> under <slug>/ (the repo's
+# convention), keeping what is already there, and prints one raw URL per file
+# for the PR body. Run from inside the repo's checkout. Touches no working tree.
+set -euo pipefail
+[ $# -ge 2 ] || { echo "usage: upload-screenshots <slug> <file>..." >&2; exit 2; }
+slug=$1; shift
+branch="assets/$slug"
+repo=$(gh repo view --json nameWithOwner --jq .nameWithOwner)
+
+parent=""
+if git ls-remote --exit-code origin "refs/heads/$branch" >/dev/null 2>&1; then
+  git fetch -q origin "refs/heads/$branch"
+  parent=$(git rev-parse FETCH_HEAD)
+fi
+
+entries=$(mktemp)
+trap 'rm -f "$entries"' EXIT
+if [ -n "$parent" ]; then
+  git ls-tree "$parent:$slug" 2>/dev/null > "$entries" || true
+fi
+for f in "$@"; do
+  name=$(basename "$f")
+  blob=$(git hash-object -w "$f")
+  grep -v "	$name\$" "$entries" > "$entries.new" || true
+  printf '100644 blob %s\t%s\n' "$blob" "$name" >> "$entries.new"
+  mv "$entries.new" "$entries"
+done
+inner=$(git mktree < "$entries")
+outer=$(printf '040000 tree %s\t%s\n' "$inner" "$slug" | git mktree)
+commit=$(git commit-tree "$outer" ${parent:+-p "$parent"} -m "Screenshots for $slug")
+git push -q origin "$commit:refs/heads/$branch"
+
+for f in "$@"; do
+  echo "https://github.com/$repo/blob/$branch/$slug/$(basename "$f")?raw=true"
+done

@@ -1,0 +1,38 @@
+---
+name: send-for-review
+description: 'Post the user''s PR in #pr-review-channel for review, or tell the reviewer in its thread that it''s ready for another round. Use when the user says "send for review" or "send it", and at the end of fix-comments.'
+---
+
+# Send for review
+
+The one place the user's PRs are announced for review: the first post in `#pr-review-channel`, and each "ready for another round" in its thread after. It checks the PR is still ready before saying so.
+
+Shared files: [slack.md](~/.agents/pr-flow/slack.md), [ready.md](~/.agents/pr-flow/ready.md), [github.md](~/.agents/pr-flow/github.md), [decision-card.md](~/.agents/pr-flow/decision-card.md).
+
+## 1. Resolve it
+
+The PR (from the link, or the current branch's), its head, `additions`, `deletions`, title and URL (`gh pr view --json`), its Linear issue, and its thread in `#pr-review-channel` (slack.md). No thread: **first round**. A thread: **another round**, and its reviewer is whoever reviewed on GitHub or in the thread.
+
+## 2. Check it's still ready
+
+Against [ready.md](~/.agents/pr-flow/ready.md) on the current head: the checklist's results are for this head, the base is merged in with nothing new on it that touches this PR's files, CI is green or running on this head, and a visible change has its screenshots. Fix what's missing (rerun a stale check, merge the base, take a screenshot) and push.
+
+What can't be made ready (a red check that isn't ours, a test that needs something we don't have) goes on the decision card: send it saying so, or wait.
+
+Done when every checklist item is true for the head being announced.
+
+## 3. Post
+
+**First round**: the **Up for review** post (slack.md), top-level in `#pr-review-channel`. When the user named a reviewer, also request them on GitHub (github.md).
+
+**Another round**: the **Ready for another round** reply in the thread, @mentioning the reviewer, built from the fixes and replies on the PR since their last review. Re-request them on GitHub.
+
+Either way, add the T3 link in the thread ([links.md](~/.agents/pr-flow/links.md), "The T3 link in Slack"): on the first round, a reply under the post. Then set the Linear issue to **In Review**, and set up the nudge ([nudge.md](~/.agents/pr-flow/nudge.md), "Setting it up").
+
+Done when the message is in Slack once, exactly one `Nudge PR #<n>` task is scheduled with its own id in its prompt (in T3 Code), the thread has a `T3 thread:` reply linking this thread (in T3 Code), the reviewer is requested on GitHub where there is one, and Linear reads In Review.
+
+## 4. Report
+
+One or two lines on what was posted, then the Links line ([links.md](~/.agents/pr-flow/links.md)).
+
+Then put the thread where [waiting.md](~/.agents/pr-flow/waiting.md) says.

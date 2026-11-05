@@ -38,6 +38,16 @@ flowchart LR
 
 `review-loop` runs inside `build-it`, `fix-comments`, `full-send` and `review-pr`. `babysit-pr` runs inside `full-send`.
 
+### See inside each skill
+
+[Open the diagrams in Excalidraw](https://link.excalidraw.com/l/9GDlHwpjNWo/6CBVjVY4H8K) to zoom in. There are eight: the big picture, then one for each of `build-it`, `fix-comments`, `review-loop`, `send-for-review` with the nudge, `full-send`, `review-pr` and `catch-up`.
+
+<img src="docs/all-skills.png" alt="All eight diagrams side by side" width="800">
+
+The big picture:
+
+<img src="docs/big-picture.png" alt="From a report to merged: build-it, send-for-review, the nudge, the overview, fix-comments, full-send" width="540">
+
 ## The ideas behind them
 
 The shared rules live in [`pr-flow/`](pr-flow), and every skill points at them rather than repeating them.

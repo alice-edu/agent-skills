@@ -41,11 +41,7 @@ flowchart LR
 
 ### See inside each skill
 
-[Open the diagrams in Excalidraw](https://link.excalidraw.com/l/9GDlHwpjNWo/6CBVjVY4H8K) to zoom in. There are nine: the big picture, then one for each of `build-it`, `fix-comments`, `review-loop`, `send-for-review` with the nudge, `full-send`, `review-pr`, `catch-up` and `grilling`.
-
-<img src="docs/all-skills.png" alt="All nine diagrams side by side" width="800">
-
-The big picture:
+The big picture is below. [Open all the diagrams in Excalidraw](https://link.excalidraw.com/l/9GDlHwpjNWo/6CBVjVY4H8K) to see inside each of `build-it`, `fix-comments`, `review-loop`, `send-for-review` with the nudge, `full-send`, `review-pr`, `catch-up` and `grilling`.
 
 <img src="docs/big-picture.png" alt="From a report to merged: build-it, send-for-review, the nudge, the overview, fix-comments, full-send" width="540">
 
@@ -57,7 +53,7 @@ When a skill changes how it works, change its diagram in the same commit. Each d
 export EXCALIDRAW_API_KEY=...   # an Excalidraw+ API key
 python3 docs/diagrams/excalidraw.py draw grill    # redraws it in its place
 python3 docs/diagrams/excalidraw.py fonts         # every text should be font 6 (Nunito)
-python3 docs/diagrams/excalidraw.py shot docs/all-skills.png
+python3 docs/diagrams/excalidraw.py shot docs/big-picture.png 0 0 910 1910   # after a change to the big picture
 ```
 
 With the Excalidraw MCP connected, an agent can do the same: ask it to redraw a skill's diagram from `skills.py`. Outside our workspace, draw them in a scene of your own and change `SCENE` in `excalidraw.py`.

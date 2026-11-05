@@ -196,7 +196,112 @@ D["grill"] = dict(title="9. Inside grilling (\"grill me\")", nodes=[
     E("q", "g2", "no: next round", "warning"), E("q", "g5", "yes", "success"),
 ])
 
+D["babysit"] = dict(title="10. Inside babysit-pr (from full-send, or \"babysit\")", nodes=[
+    N("w", "Watch the PR\nT3 wakes the thread on news;\nelsewhere pr-wait", "queue"),
+    N("q", "What\nhappened?", "decision"),
+    N("ci", "A check failed\nours: fix, prove, push\na flake: rerun once", "warning"),
+    N("bot", "A bot commented\nreal: fix it\nwrong: answer why"),
+    N("hum", "A person reviewed\nhand it to fix-comments", "client"),
+    N("beh", "Behind or conflicting\nmerge the base in, rerun checks"),
+    N("done", "Ready\nrequired checks green, every finding\nanswered, up to date, mergeable", "terminal"),
+], edges=[
+    E("w", "q"), E("q", "done", "all clear", "success"),
+    E("q", "ci"), E("q", "bot"), E("q", "beh"), E("q", "hum"),
+    E("ci", "w", "watch again"), E("bot", "w"), E("beh", "w"),
+])
+
+D["council"] = dict(title="11. Inside council (\"council\")", nodes=[
+    N("a", "With another skill\n\"build it, council\""),
+    N("b", "On its own\n\"council this\""),
+    N("r", "review-loop as a council\nfour seats instead of two", "service"),
+    N("s", "Codex Sol + Astra,\nClaude Opus + Fable\neach reviews on its own", "external"),
+    N("o1", "Author mode: findings fixed\nreviewer mode: into the review", "terminal"),
+    N("o2", "Report the ledger,\nchange nothing", "terminal"),
+], edges=[
+    E("a", "r"), E("b", "r"), E("r", "s"), E("s", "r", "one ledger"),
+    E("r", "o1", "with a skill"), E("r", "o2", "on its own"),
+])
+
+D["student"] = dict(title="12. Inside student-test (\"student test\")", nodes=[
+    N("t", "What they test\nwording, a screen, a flow"),
+    N("g", "What a student would see\nscreenshots, the text in each language,\na goal in a student's own words"),
+    N("p", "Four stand-in students\ncheap models from both providers,\neach with a persona", "external"),
+    N("i", "Each: skim, take the first thing\nthat looks right, say what confuses"),
+    N("r", "Report\nwhat several hit, then what one hit,\neach with a fix", "client"),
+    N("q", "Run from?", "decision"),
+    N("b", "build-it: fix what's real", "service"),
+    N("v", "A review: findings under UI and UX"),
+    N("o", "On its own: report only", "terminal"),
+], edges=[
+    E("t", "g"), E("g", "p"), E("p", "i"), E("i", "r"), E("r", "q"),
+    E("q", "b"), E("q", "v"), E("q", "o"),
+])
+
+D["ltrack"] = dict(title="13. Inside linear-track (every PR has one issue)", nodes=[
+    N("f", "1. Find the issue\nALI-123 in the prompt or branch,\na search, or a new one"),
+    N("q", "Someone\nelse has it?", "decision"),
+    N("ask", "Stop and tell you\nwho has it, its PR", "client"),
+    N("s", "2. In Progress\nassigned to you if unassigned"),
+    N("l", "3. PR body ends \"Fixes ALI-123\"\nthe integration moves the status"),
+    N("st", "In Progress, then In Review (send-for-review),\nImplemented on merge, Done is yours", "note"),
+    N("d", "4. Dropped: back to its old status,\none sentence why", "warning"),
+], edges=[
+    E("f", "q"), E("q", "ask", "yes"), E("q", "s", "no", "success"),
+    E("s", "l"), E("l", "st"), E("s", "d", "work dropped", "warning"),
+])
+
+D["lsweep"] = dict(title="14. Inside linear-sweep (\"sync Linear\")", nodes=[
+    N("g", "1. Gather\nopen issues, their PRs,\nyour PRs from 30 days"),
+    N("c", "2. Classify\nbehind or ahead of its PR, stale,\nunowned, untracked PR, waiting on you"),
+    N("r", "3. Report\none table, yours first", "client"),
+    N("q", "You\napprove?", "decision"),
+    N("a", "4. Apply the approved rows\nsomeone else's only by name", "service"),
+    N("v", "Read each back from Linear", "terminal"),
+], edges=[
+    E("g", "c"), E("c", "r"), E("r", "q"), E("q", "a", "yes, or by row", "success"), E("a", "v"),
+])
+
+D["rules"] = dict(direction="RIGHT", title="15. The shared rules every skill leans on (pr-flow/)", nodes=[
+    N("dc", "decision-card\none question a command,\nwho decides what", "client", "ask"),
+    N("ov", "overview\nyour table, then ours,\nwith confidence", "client", "ask"),
+    N("le", "lenses\nSpec, Correctness, Standards,\nBackend, UI and UX, the repo's docs", "service", "rev"),
+    N("re", "ready\nproof on the current head,\nthe checklist", "service", "prv"),
+    N("sc", "screenshots\nbefore and after, uploaded", "service", "prv"),
+    N("dg", "diagrams\nExcalidraw, public link", "external", "show"),
+    N("pb", "pr-body\nwhat, why, proof", "default", "show"),
+    N("li", "links\nthe Links line every report ends on", "default", "show"),
+    N("sl", "slack, slack-report, github\nhow we post and reply", "default", "talk"),
+    N("wa", "waiting\nsnooze or settle the thread", "queue", "wait"),
+    N("nu", "nudge\nthe 09:30 check", "queue", "wait"),
+], groups=[{"id": "ask", "label": "Asking you"}, {"id": "rev", "label": "Reviewing"},
+           {"id": "prv", "label": "Proving"}, {"id": "show", "label": "Showing the work"},
+           {"id": "talk", "label": "Talking to people"}, {"id": "wait", "label": "Waiting"}],
+edges=[
+    E("le", "ov", "findings"), E("ov", "dc", "your rows"),
+    E("re", "sc"), E("re", "pb", "the checklist"), E("sc", "pb"), E("dg", "pb"), E("dg", "li"),
+    E("pb", "li"), E("li", "sl"), E("sl", "wa"), E("wa", "nu"), E("nu", "ov", "a review landed"),
+])
+
+D["excalidraw"] = dict(title="16. Inside diagrams (Excalidraw), used by build-it, review-pr, the overview", nodes=[
+    N("q", "Hard to follow\nin prose?", "decision"),
+    N("no", "Skip it\nUI-only, one file, a rename", "terminal"),
+    N("t", "Tools there?", "decision"),
+    N("m", "Mermaid instead,\nsay which step failed", "warning"),
+    N("c", "Scene in the default collection\nreused on a re-review"),
+    N("d", "create_diagram, clean style\nreal names, before and after"),
+    N("f", "Every text Nunito?\nnever the hand-drawn font"),
+    N("s", "Screenshot and look\nfix overlaps, arrows, labels"),
+    N("sh", "share_scene, view-only\npublic link"),
+    N("p", "Put it where people read\nLinks line, PR body or review,\nits screenshot when it reads", "terminal"),
+], edges=[
+    E("q", "no", "no"), E("q", "t", "yes"), E("t", "m", "no", "warning"), E("t", "c", "yes", "success"),
+    E("c", "d"), E("d", "f"), E("f", "s"), E("s", "f", "fixed something"), E("s", "sh", "reads cleanly", "success"), E("sh", "p"),
+])
+
 # Where each one sits in the scene (x, y), so a redraw lands in the same place.
 AT = {"overview": (0, 0), "build": (1100, 0), "fix": (1796, 0),
       "loop": (0, 3259), "send": (1262, 3259), "full": (3018, 3259),
-      "review": (3715, 3259), "catch": (4391, 3259), "grill": (5200, 3259)}
+      "review": (3715, 3259), "catch": (4391, 3259), "grill": (5200, 3259),
+      "babysit": (0, 5100), "council": (1617, 5100), "student": (2676, 5100),
+      "ltrack": (3627, 5100), "lsweep": (4424, 5100), "excalidraw": (5110, 5100),
+      "rules": (0, 7100)}

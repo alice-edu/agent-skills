@@ -41,17 +41,17 @@ flowchart LR
 
 ### See inside each skill
 
-The big picture is below. [Open all the diagrams in Excalidraw](https://link.excalidraw.com/l/9GDlHwpjNWo/6CBVjVY4H8K) to see inside each of `build-it`, `fix-comments`, `review-loop`, `send-for-review` with the nudge, `full-send`, `review-pr`, `catch-up` and `grilling`.
+The big picture is below. [Open all the diagrams in Excalidraw](https://link.excalidraw.com/l/9GDlHwpjNWo/6CBVjVY4H8K) to see inside every skill, the shared rules in `pr-flow/` and how they connect, and how diagrams are drawn in Excalidraw.
 
 <img src="docs/big-picture.png" alt="From a report to merged: build-it, send-for-review, the nudge, the overview, fix-comments, full-send" width="540">
 
 #### Keeping them up to date
 
-When a skill changes how it works, change its diagram in the same commit. Each diagram's boxes and arrows are in [`docs/diagrams/skills.py`](docs/diagrams/skills.py), and [`excalidraw.py`](docs/diagrams/excalidraw.py) draws them in the shared scene ([edit it here](https://app.excalidraw.com/s/9GDlHwpjNWo/6CBVjVY4H8K), if you're in our Excalidraw workspace). Delete the old diagram in the scene, then:
+When a skill changes how it works, change its diagram in the same commit. Each diagram's boxes and arrows are in [`docs/diagrams/skills.py`](docs/diagrams/skills.py), and [`excalidraw.py`](docs/diagrams/excalidraw.py) draws them in the shared scene ([edit it here](https://app.excalidraw.com/s/9GDlHwpjNWo/6CBVjVY4H8K), if you're in our Excalidraw workspace). Then:
 
 ```sh
 export EXCALIDRAW_API_KEY=...   # an Excalidraw+ API key
-python3 docs/diagrams/excalidraw.py draw grill    # redraws it in its place
+python3 docs/diagrams/excalidraw.py draw grill 5200 3259 HFr2KRpvyt   # redraws it in place (ids: get_diagram)
 python3 docs/diagrams/excalidraw.py fonts         # every text should be font 6 (Nunito)
 python3 docs/diagrams/excalidraw.py shot docs/big-picture.png 0 0 910 1910   # after a change to the big picture
 ```

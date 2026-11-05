@@ -1,11 +1,11 @@
 """Draw and check the skill diagrams in the shared Excalidraw scene, over Excalidraw's MCP.
 
-  python3 excalidraw.py draw <name> [x y]      add a diagram from skills.py, at its place in AT unless given
+  python3 excalidraw.py draw <name> [x y [id]] add a diagram from skills.py, at its place in AT unless given;
+                                               with a diagram id (get_diagram lists them), replace that one
   python3 excalidraw.py shot <out.png> [x y w h]  screenshot the scene, or the shapes inside a box
   python3 excalidraw.py fonts                  list the text fonts in the scene (all should be 6, Nunito)
 
-The key comes from EXCALIDRAW_API_KEY. To redraw a diagram, delete it in Excalidraw first (or pass
-replaceDiagramId by hand), then draw it at the same x, y.
+The key comes from EXCALIDRAW_API_KEY. To redraw a diagram in place, pass its id (from get_diagram) after x and y.
 """
 import base64, json, os, sys, tempfile, urllib.request
 
@@ -53,11 +53,13 @@ if cmd == "draw":
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     from skills import AT, D
     d = D[sys.argv[2]]
-    x, y = map(float, sys.argv[3:5]) if len(sys.argv) == 5 else AT[sys.argv[2]]
-    args = {"sceneId": SCENE, "title": d["title"], "direction": "DOWN", "style": "clean",
+    x, y = map(float, sys.argv[3:5]) if len(sys.argv) >= 5 else AT[sys.argv[2]]
+    args = {"sceneId": SCENE, "title": d["title"], "direction": d.get("direction", "DOWN"), "style": "clean",
             "nodes": d["nodes"], "edges": d["edges"], "x": x, "y": y}
     if "groups" in d:
         args["groups"] = d["groups"]
+    if len(sys.argv) == 6:  # replace an existing diagram in place
+        args["replaceDiagramId"] = sys.argv[5]
     print(json.dumps(tool("create_diagram", args).get("structuredContent"))[:400])
 elif cmd == "shot":
     args = {"sceneId": SCENE, "maxWidth": 1400}

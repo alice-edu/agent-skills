@@ -16,7 +16,7 @@ Where two sources disagree, write the conflict down and never invent a requireme
 **The repo's docs.** Before any lens, list every doc in the repo that bears on the change:
 
 - the agent docs (`AGENTS.md`, `CLAUDE.md`) at the root and in each directory the change touches or sits under;
-- each doc those point to for what the change touches (in Alicia: `docs/backend-review.md` for the backend, `docs/testing-alice.md` and `convex/teaching-method.md` for how Alice behaves, `apps/web/docs/icons/README.md` for icons, `apps/web-e2e/README.md` for E2E tests);
+- each doc those point to for what the change touches (in Alicia: `docs/backend-review.md` for the backend, `docs/testing-alice.md` and `packages/backend/convex/teaching-method.md` for how Alice behaves, `apps/web/docs/icons/README.md` for icons, `apps/web-e2e/README.md` for E2E tests);
 - the README of each package or folder the change edits.
 
 Read each one in full as it stands at the head, and cite it in findings. Every lens judges against these first. A lens whose docs weren't read is `not verified`, never clear.

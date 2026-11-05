@@ -21,6 +21,7 @@ They're written for our repo (Alicia), our Slack and our Linear, and they're pub
 | "babysit" | [`babysit-pr`](skills/babysit-pr/SKILL.md) | Watches a PR through CI and review bots, fixing what's real, until it's green. |
 | (automatic) | [`linear-track`](skills/linear-track/SKILL.md) | Keeps the thread's Linear issue in step with the work. |
 | "sync Linear" | [`linear-sweep`](skills/linear-sweep/SKILL.md) | Audits your Linear board against GitHub and fixes what drifted. |
+| "grill me" | [`grill-me`](skills/grill-me/SKILL.md), [`grilling`](skills/grilling/SKILL.md) | Interviews you about a plan or design in rounds, each question with a recommended answer, until nothing is left assumed. |
 
 ## How they fit together
 
@@ -40,13 +41,26 @@ flowchart LR
 
 ### See inside each skill
 
-[Open the diagrams in Excalidraw](https://link.excalidraw.com/l/9GDlHwpjNWo/6CBVjVY4H8K) to zoom in. There are eight: the big picture, then one for each of `build-it`, `fix-comments`, `review-loop`, `send-for-review` with the nudge, `full-send`, `review-pr` and `catch-up`.
+[Open the diagrams in Excalidraw](https://link.excalidraw.com/l/9GDlHwpjNWo/6CBVjVY4H8K) to zoom in. There are nine: the big picture, then one for each of `build-it`, `fix-comments`, `review-loop`, `send-for-review` with the nudge, `full-send`, `review-pr`, `catch-up` and `grilling`.
 
-<img src="docs/all-skills.png" alt="All eight diagrams side by side" width="800">
+<img src="docs/all-skills.png" alt="All nine diagrams side by side" width="800">
 
 The big picture:
 
 <img src="docs/big-picture.png" alt="From a report to merged: build-it, send-for-review, the nudge, the overview, fix-comments, full-send" width="540">
+
+#### Keeping them up to date
+
+When a skill changes how it works, change its diagram in the same commit. Each diagram's boxes and arrows are in [`docs/diagrams/skills.py`](docs/diagrams/skills.py), and [`excalidraw.py`](docs/diagrams/excalidraw.py) draws them in the shared scene ([edit it here](https://app.excalidraw.com/s/9GDlHwpjNWo/6CBVjVY4H8K), if you're in our Excalidraw workspace). Delete the old diagram in the scene, then:
+
+```sh
+export EXCALIDRAW_API_KEY=...   # an Excalidraw+ API key
+python3 docs/diagrams/excalidraw.py draw grill    # redraws it in its place
+python3 docs/diagrams/excalidraw.py fonts         # every text should be font 6 (Nunito)
+python3 docs/diagrams/excalidraw.py shot docs/all-skills.png
+```
+
+With the Excalidraw MCP connected, an agent can do the same: ask it to redraw a skill's diagram from `skills.py`. Outside our workspace, draw them in a scene of your own and change `SCENE` in `excalidraw.py`.
 
 ## The ideas behind them
 
@@ -88,5 +102,7 @@ What's specific to us, and where to change it:
 - **Models**: `review-loop` and `council` name the Claude and Codex models we use.
 
 ## Credits
+
+[`grilling`](skills/grilling/SKILL.md) and [`grill-me`](skills/grill-me/SKILL.md) are by Matt Pocock, from [mattpocock/skills](https://github.com/mattpocock/skills), MIT ([license](skills/grilling/LICENSE)). Our `grilling` leaves "with a fresh context window" out of its subagent line.
 
 [`pr-wait`](skills/babysit-pr/scripts/pr-wait) is by Theo Browne, MIT ([license](skills/babysit-pr/scripts/LICENSE-pr-wait)).

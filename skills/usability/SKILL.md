@@ -52,18 +52,20 @@ Done when every principle and basic has a finding or a "clear".
 
 Fix the findings, most important first, with the app's own parts: the repo's components and theme, as its `AGENTS.md` says. When nothing in the app fits, a shadcn component is the next choice; a new component comes last. A finding with two reasonable fixes takes the one that's closer to what the app already does.
 
-Some findings are a real product choice rather than a fix: removing a feature from the main path, changing what a flow asks for, renaming something students already know. Make the recommended choice anyway, and list it in the report so the user can undo it.
+Some findings are a real product choice rather than a fix: removing a feature from the main path, changing what a flow asks for, renaming something students already know. Those are the user's ([decision card](~/.agents/pr-flow/decision-card.md)): fix everything else first, then ask them all on one card, each with the recommended choice first, and apply the answers. With no answer, leave those changes unmade and start the report with the card.
 
 Prove it per the repo's checks for what you touched, then take the after screenshots in the same states as before.
 
-Done when every finding is fixed or listed as left, with a reason, and each fixed one has its after screenshot.
+Done when every finding is fixed or listed as left, with a reason, each product choice is answered and applied or waiting on the card, and each fixed one has its after screenshot.
 
 ### 4. Report
 
 - Before and after, side by side, per state.
 - What changed and why, one line each, with the principle it serves.
-- **Your call**: the product choices made for the user, numbered, so "undo 2" works.
+- **Your call**: product choices still waiting on the card, numbered with the recommended answer, so "2: yes" applies one.
 - What's left, with why.
+
+Done when the report is sent with every part above, or "none" for a part with nothing in it.
 
 Change nothing outside what was asked. Committing, a PR and a review are for `build-it`, `fix-comments` or the user.
 

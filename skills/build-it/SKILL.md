@@ -67,11 +67,25 @@ Done when the verdict has its evidence: a red test, numbers, a repro, the place 
 
 ## 5. Ask the user, once
 
-One decision card holding what's open: which Linear issue, when step 2 found several; the verdict when it's anything but a **Bug** or a **Build**; a fix whose scope grew; each choice that's the user's by [decision-card.md](~/.agents/pr-flow/decision-card.md), "Who decides" (a UX or product choice, a Simplify? question), the recommended one first; a council review (the `council` skill) when the user hasn't asked for one and the change reaches the data model, a workflow, auth or a migration; a student test (`student-test`) when they haven't asked for one and the change adds or reworks a flow a student goes through; for a parked report, the reply to post; the other problems of a bundled report. Nothing open: no card. Everything else is decided and listed under **Decided**.
+One decision card holding what's open:
+
+- which Linear issue, when step 2 found several;
+- the verdict, when it's anything but a **Bug** or a **Build**;
+- a fix whose scope grew;
+- each choice that's the user's by [decision-card.md](~/.agents/pr-flow/decision-card.md), "Who decides" (a UX or product choice, a Simplify? question), the recommended one first;
+- a council review (the `council` skill), when the user hasn't asked for one and the change reaches the data model, a workflow, auth or a migration;
+- a student test (`student-test`), when they haven't asked for one and the change adds or reworks a flow a student goes through;
+- a sketch first (`sketch-it`), when they haven't asked for one and the change adds or reworks something a student sees: recommended for a new screen, panel or flow, not for a small change to one;
+- for a parked report, the reply to post;
+- the other problems of a bundled report.
+
+Nothing open: no card. Everything else is decided and listed under **Decided**.
 
 **Parked**: return the Linear issue to where it was, saying why (`linear-track` step 4), or for a big feature leave it in the backlog with the recommended next step. From Slack, post the reply (slack-report.md, "Parked"). Then go to the report.
 
 ## 6. Do it
+
+When the card picked a sketch, run `sketch-it` first: the build follows its Final row and spec.
 
 Write the change the repo's way, and the right way ([lenses.md](~/.agents/pr-flow/lenses.md), "The right way"): what it adds is clean, and the debt it leans on is fixed in this PR rather than worked around. A fix: the change that removes the whole cause, its red test now green. A build: what the design says, with the tests `AGENTS.md` asks for. A file this change grows past easy reading gets the split considered.
 

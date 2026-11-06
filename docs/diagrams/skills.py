@@ -93,7 +93,7 @@ D["fix"] = dict(title="3. Inside fix-comments", nodes=[
     E("f4b", "f5", "clean", "success"), E("f5", "f6"), E("f6", "f7"),
 ])
 
-D["loop"] = dict(title="12. Inside review-loop (used by every skill that reviews)", nodes=[
+D["loop"] = dict(title="14. Inside review-loop (used by every skill that reviews)", nodes=[
     N("r1", "Scope\nbase, head, what was asked, checks"),
     N("cx", "Codex reviews\nevery lens, every repo doc", "external", "rv"),
     N("cl", "Claude reviews\nevery lens, every repo doc", "service", "rv"),
@@ -196,7 +196,7 @@ D["grill"] = dict(title="8. Inside grilling (\"grill me\")", nodes=[
     E("q", "g2", "no: next round", "warning"), E("q", "g5", "yes", "success"),
 ])
 
-D["babysit"] = dict(title="13. Inside babysit-pr (from full-send, or \"babysit\")", nodes=[
+D["babysit"] = dict(title="15. Inside babysit-pr (from full-send, or \"babysit\")", nodes=[
     N("w", "Watch the PR\nT3 wakes the thread on news;\nelsewhere pr-wait", "queue"),
     N("q", "What\nhappened?", "decision"),
     N("ci", "A check failed\nours: fix, prove, push\na flake: rerun once", "warning"),
@@ -237,7 +237,7 @@ D["student"] = dict(title="10. Inside student-test (\"student test\")", nodes=[
     E("q", "b"), E("q", "v"), E("q", "o"),
 ])
 
-D["ltrack"] = dict(title="14. Inside linear-track (every PR has one issue)", nodes=[
+D["ltrack"] = dict(title="16. Inside linear-track (every PR has one issue)", nodes=[
     N("f", "1. Find the issue\nALI-123 in the prompt or branch,\na search, or a new one"),
     N("q", "Someone\nelse has it?", "decision"),
     N("ask", "Stop and tell you\nwho has it, its PR", "client"),
@@ -250,7 +250,7 @@ D["ltrack"] = dict(title="14. Inside linear-track (every PR has one issue)", nod
     E("s", "l"), E("l", "st"), E("s", "d", "work dropped", "warning"),
 ])
 
-D["rules"] = dict(direction="RIGHT", title="15. The shared rules every skill leans on (pr-flow/)", nodes=[
+D["rules"] = dict(direction="RIGHT", title="17. The shared rules every skill leans on (pr-flow/)", nodes=[
     N("dc", "decision-card\none question a command,\nwho decides what", "client", "ask"),
     N("ov", "overview\nyour table, then ours,\nwith confidence", "client", "ask"),
     N("le", "lenses\nSpec, Correctness, Standards,\nBackend, UI and UX, the repo's docs", "service", "rev"),
@@ -271,7 +271,7 @@ edges=[
     E("pb", "li"), E("li", "sl"), E("sl", "wa"), E("wa", "nu"), E("nu", "ov", "a review landed"),
 ])
 
-D["excalidraw"] = dict(title="16. Inside diagrams (Excalidraw), used by build-it, review-pr, the overview", nodes=[
+D["excalidraw"] = dict(title="18. Inside diagrams (Excalidraw), used by build-it, review-pr, the overview", nodes=[
     N("q", "Hard to follow\nin prose?", "decision"),
     N("no", "Skip it\nUI-only, one file, a rename", "terminal"),
     N("t", "Tools there?", "decision"),
@@ -295,11 +295,40 @@ D["usability"] = dict(title="9. Inside usability (\"usability this\")", nodes=[
     N("j", "2. Judge\nwhere a student trips,\nwhich principle it breaks"),
     N("q", "Run from?", "decision"),
     N("led", "Into the ledger\nproduct choices go to you", "client"),
-    N("f", "3. Fix\nwith the app's own components,\nproduct choices made and listed", "service"),
+    N("f", "3. Fix\nwith the app's own components;\nproduct choices on one card", "service"),
     N("r", "4. Report\nbefore and after,\n\"undo 2\" works", "terminal"),
 ], edges=[
     E("in1", "l"), E("in2", "l"), dict(E("p", "j"), endArrowhead="none"), E("l", "j"), E("j", "q"),
     E("q", "f", "on its own", "success"), E("q", "led", "a review"), E("f", "r"),
+])
+
+D["sketch"] = dict(title="12. Inside sketch-it (\"sketch it\", or a sketch on build-it's card)", nodes=[
+    N("s0", "You: \"sketch it\"\nor build-it's card picks a sketch;\none sentence on what's wrong", "terminal"),
+    N("sq", "Parts page\ncurrent?", "decision"),
+    N("sy", "sync-paper\nthe parts from Storybook", "external"),
+    N("s2", "Set up the page\nin the team's Paper file,\ntoday's screen as \"Now\""),
+    N("s3", "A round\n2-3 variants from the real parts,\njudged by usability; you pick\n\"1B, 2A\", or edit in Paper", "client"),
+    N("q", "Anything\nleft open?", "decision"),
+    N("s5", "Final row, every state,\nand a spec on the issue;\nthen build-it builds it", "terminal"),
+], edges=[
+    E("s0", "sq"), E("sq", "sy", "behind"), E("sy", "s2"), E("sq", "s2", "yes", "success"),
+    E("s2", "s3"), E("s3", "q"), E("q", "s3", "yes: next round", "warning"),
+    E("q", "s5", "no, and you agree", "success"),
+])
+
+D["psync"] = dict(title="13. Inside sync-paper (\"sync Paper\")", nodes=[
+    N("p0", "You: \"sync Paper\"\nor sketch-it, when the parts are behind", "terminal"),
+    N("p1", "1. Get it running\nPaper, Storybook from main,\nthe team's file, its Parts page"),
+    N("p2", "2. Capture every story\nto-paper.mjs: measure in a browser,\nrebuild as editable layers", "service"),
+    N("fp", "Fingerprint\nchanged?", "decision"),
+    N("pw", "Rewrite its artboard\nin place; new ones at\nthe end of their row"),
+    N("pk", "Keep it", "note"),
+    N("p3", "3. Tokens\nthe theme's colours and radius", "service"),
+    N("p4", "4. Check three\nagainst Storybook", "client"),
+    N("p5", "5. Report\nthe stamp names the commit\nwhen nothing failed", "terminal"),
+], edges=[
+    E("p0", "p1"), E("p1", "p2"), E("p2", "fp"), E("fp", "pw", "yes"), E("fp", "pk", "no"),
+    E("pw", "p3"), E("pk", "p3"), E("p3", "p4"), E("p4", "p5"),
 ])
 
 # Where each one sits (x, y), so a redraw lands in the same place. The scene is in five sections,
@@ -314,7 +343,7 @@ AT = {
     "catch": (4310, 2700), "review": (5194, 2700),
     # Commands you say: on their own
     "grill": (150, 6350), "usability": (994, 6350), "student": (1868, 6350),
-    "council": (2820, 6350),
+    "council": (2820, 6350), "sketch": (3880, 6350), "psync": (4850, 6350),
     # Run by other skills
     "loop": (150, 8550), "babysit": (1076, 8550), "ltrack": (2693, 8550),
     # Shared rules

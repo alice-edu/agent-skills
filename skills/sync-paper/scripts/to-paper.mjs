@@ -4,6 +4,7 @@
 //
 //   node to-paper.mjs storybook --base http://localhost:6006 --page <pageId> [--only <title, folder or story id>,...]
 //        [--globals theme:dark] [--suffix " · dark"] [--commit <sha>] [--prune] [--force]
+//        [--changed <storybook project dir>] [--jobs 4]
 //   node to-paper.mjs page --url <url> --name <artboard name> --page <pageId> [--selector <css>]
 //        [--viewport 1440x900] [--color-scheme dark] [--storage-state <file>] [--replace]
 //
@@ -13,7 +14,13 @@
 // Storybook mode renders every story and rewrites only the artboards whose render changed:
 // each story's fingerprint (a hash of what was captured) is kept on the page's stamp
 // artboard, `Synced` (plus the suffix), with the commit when a full run captured every story.
-// --force rewrites them all.
+// --force rewrites them all. Stories render --jobs at a time; Paper is written in order.
+//
+// --changed renders only the stories a change can reach, as Chromatic's TurboSnap does: the
+// files changed since the stamp's commit (committed or not), traced through the dependency
+// graph `storybook build --stats-json` writes (built here, in that dir) up to the story files
+// that import them. A change it can't trace that could touch every story (the Storybook
+// config, public/, a lockfile, package.json), or a stamp with no commit, renders them all.
 //
 // Paper takes HTML with inline styles, flex for layout, and no margins, grid, tables or
 // inline elements. So each element is measured in the browser and rebuilt: a flex
@@ -24,11 +31,11 @@
 // off the page, no wrapper stretched to the window. Not copied: ::before/::after content,
 // animations.
 
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir, tmpdir } from "node:os";
-import { join } from "node:path";
+import { basename, join, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "playwright";
 
@@ -36,7 +43,7 @@ import { chromium } from "playwright";
 
 const FLAGS = { storybook: ["prune", "force", "dry-run"], page: ["replace", "dry-run"] };
 const VALUES = {
-  storybook: ["base", "only", "globals", "suffix", "commit", "top"],
+  storybook: ["base", "only", "globals", "suffix", "commit", "top", "changed", "jobs"],
   page: ["url", "name", "selector", "viewport", "color-scheme", "storage-state"],
 };
 const COMMON = ["file", "page", "out"];
@@ -62,6 +69,8 @@ if (mode === "page" && !opt.url) usage("--url is required");
 if (opt.viewport && !/^\d+x\d+$/.test(opt.viewport)) usage("--viewport is <width>x<height>");
 if (opt["color-scheme"] && !["light", "dark"].includes(opt["color-scheme"])) usage("--color-scheme is light or dark");
 if (opt.top && !Number.isFinite(Number(opt.top))) usage("--top is a number");
+if (opt.jobs && !(Number.isInteger(Number(opt.jobs)) && Number(opt.jobs) > 0)) usage("--jobs is a whole number above 0");
+if (opt.changed && !existsSync(join(opt.changed, ".storybook"))) usage(`--changed: no .storybook folder in ${opt.changed}`);
 for (const k of ["url", "base"]) {
   if (!opt[k]) continue;
   try {
@@ -601,19 +610,19 @@ function capture({ selector, fit, pad }) {
 
 // Waits, a bounded while, for what the page is still loading: images, fonts, and anything
 // marked busy. A Storybook story also has to have rendered, and its error is thrown.
-async function settle(storybook) {
+async function settle(pg, storybook, what) {
   if (storybook) {
-    await page.waitForSelector("body.sb-show-main, body.sb-show-errordisplay, body.sb-show-nopreview", { timeout: 15000 });
-    const err = await page.evaluate(() =>
+    await pg.waitForSelector("body.sb-show-main, body.sb-show-errordisplay, body.sb-show-nopreview", { timeout: 15000 });
+    const err = await pg.evaluate(() =>
       document.body.classList.contains("sb-show-main") ? null : document.querySelector("#error-message, .sb-errordisplay")?.textContent?.trim() || "no story to show",
     );
     if (err) throw new Error(err);
   }
-  await page.evaluate(() => document.fonts.ready);
-  await page
+  await pg.evaluate(() => document.fonts.ready);
+  await pg
     .waitForFunction(() => [...document.images].every((i) => i.complete) && !document.querySelector('[aria-busy="true"]'), null, { timeout: 5000 })
-    .catch(() => console.warn("  still loading after 5s; captured as it was"));
-  await page.waitForTimeout(150);
+    .catch(() => console.warn(`  ${what}: still loading after 5s; captured as it was`));
+  await pg.waitForTimeout(150);
 }
 
 // ---------- Running it ----------
@@ -657,11 +666,11 @@ if (paper) {
 }
 
 const counts = { made: 0, replaced: 0, same: 0, removed: 0, failed: 0, incomplete: 0 };
-let shots;
+let shotCount = 0;
 
 // Downloads the page's images for Paper, as local files it can read. Their bytes go into
 // the fingerprint, so a new image at the same URL counts as a change.
-async function fetchImages(shot, key) {
+async function fetchImages(pg, shot, key) {
   let html = shot.html;
   const hashes = [];
   let failed = 0;
@@ -673,8 +682,8 @@ async function fetchImages(shot, key) {
       if (src.startsWith("file:")) body = readFileSync(fileURLToPath(src));
       // The page's own files through the browser, which trusts a local proxy's certificate
       // (portless's https://<name>.localhost) where Node doesn't; others, past CORS, from Node.
-      else if (src.startsWith("data:") || src.startsWith("blob:") || new URL(src).origin === new URL(page.url()).origin) {
-        const url = await page.evaluate(async (u) => {
+      else if (src.startsWith("data:") || src.startsWith("blob:") || new URL(src).origin === new URL(pg.url()).origin) {
+        const url = await pg.evaluate(async (u) => {
           const res = await fetch(u);
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           const b = await res.blob();
@@ -687,7 +696,7 @@ async function fetchImages(shot, key) {
         type = url.slice(5, url.indexOf(";"));
         body = Buffer.from(url.slice(url.indexOf(",") + 1), "base64");
       } else {
-        const res = await page.request.get(src);
+        const res = await pg.request.get(src);
         if (!res.ok()) throw new Error(`HTTP ${res.status()}`);
         type = res.headers()["content-type"] || "";
         body = await res.body();
@@ -706,17 +715,17 @@ async function fetchImages(shot, key) {
   return { html, hashes, failed };
 }
 
-async function grab(url, { selector, fit, storybook }) {
-  await page.goto(url, { waitUntil: "networkidle" });
-  await page.addStyleTag({ content: "*,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important}" });
+async function grab(pg, url, { selector, fit, storybook, what = url }) {
+  await pg.goto(url, { waitUntil: "networkidle" });
+  await pg.addStyleTag({ content: "*,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important}" });
   // A story drawn as wide as what it holds, not as the window: a wrapper with a fill (a band
   // of colour behind a button) would otherwise stretch its artboard across the screen. What
   // asks for the full width (a screen) still gets it: fit-content stops at the window.
-  if (storybook) await page.addStyleTag({ content: `${selector}{width:fit-content!important}` });
-  await settle(storybook);
-  await page.waitForSelector(selector, { state: "attached" });
-  const shot = await page.evaluate(capture, { selector, fit, pad: fit ? 24 : 0 });
-  const { html, hashes, failed } = await fetchImages(shot, (shots = (shots || 0) + 1));
+  if (storybook) await pg.addStyleTag({ content: `${selector}{width:fit-content!important}` });
+  await settle(pg, storybook, what);
+  await pg.waitForSelector(selector, { state: "attached" });
+  const shot = await pg.evaluate(capture, { selector, fit, pad: fit ? 24 : 0 });
+  const { html, hashes, failed } = await fetchImages(pg, shot, ++shotCount);
   shot.final = html;
   // An image that didn't copy leaves the capture incomplete: no fingerprint, so it's tried again.
   shot.incomplete = failed > 0;
@@ -759,21 +768,80 @@ async function place(shot, name, { old, at }) {
   console.log(`${old ? "replaced" : "made"} ${name}`);
 }
 
-// The stamp: a summary line, and a line per story with its fingerprint.
+// --changed: the story files a change since `base` can reach, or null when it could reach
+// them all (or can't be traced). Paths are absolute.
+function changedStories(dir, base) {
+  dir = resolve(dir);
+  const git = (...a) => spawnSync("git", ["-C", dir, ...a], { encoding: "utf8" });
+  const all = (why) => (console.log(`--changed: rendering every story (${why})`), null);
+  if (!base) return all("the stamp names no commit: the last sync wasn't a full one");
+  if (git("cat-file", "-e", `${base}^{commit}`).status) return all(`${base} isn't in this checkout`);
+  const top = git("rev-parse", "--show-toplevel").stdout.trim();
+  const files = [
+    ...git("diff", "--name-only", base).stdout.split("\n"),
+    ...spawnSync("git", ["-C", top, "ls-files", "--others", "--exclude-standard"], { encoding: "utf8" }).stdout.split("\n"),
+  ]
+    .filter(Boolean)
+    .map((f) => resolve(top, f));
+  if (!files.length) return new Set();
+  // The dependency graph Storybook's build writes, each module with what imports it.
+  const out = join(tmpdir(), `to-paper-stats-${Date.now()}`);
+  mkdirSync(out, { recursive: true });
+  console.log(`--changed: ${files.length} files changed since ${base}; building Storybook's dependency graph`);
+  const built = spawnSync("npx", ["--no-install", "storybook", "build", "--stats-json", out, "--output-dir", join(out, "build"), "--quiet"], {
+    cwd: dir,
+    encoding: "utf8",
+  });
+  const statsFile = join(out, "preview-stats.json");
+  if (built.status || !existsSync(statsFile)) return all(`storybook build failed: ${(built.stderr || built.stdout).trim().split("\n").pop()}`);
+  const importers = new Map();
+  for (const m of JSON.parse(readFileSync(statsFile, "utf8")).modules) {
+    if (!m.id?.startsWith(".")) continue;
+    importers.set(resolve(dir, m.id), (m.reasons || []).map((r) => r.moduleName).filter((n) => n?.startsWith(".")).map((n) => resolve(dir, n)));
+  }
+  const config = join(dir, ".storybook") + sep;
+  const isStory = (f) => /\.stories\.[cm]?[jt]sx?$|\.mdx$/.test(f);
+  const stories = new Set();
+  for (const f of files) {
+    if (!importers.has(f)) {
+      // Outside the graph: what every story reads without importing it.
+      if (f.startsWith(config) || f.startsWith(join(dir, "public") + sep) || /^(package\.json|pnpm-lock\.yaml|package-lock\.json|yarn\.lock|bun\.lockb?)$/.test(basename(f)))
+        return all(`${f.slice(top.length + 1)} changed`);
+      continue;
+    }
+    // Up through what imports it, to the stories; the preview (every story) means all.
+    const seen = new Set([f]);
+    for (const m of seen) {
+      if (m.startsWith(config)) return all(`${f.slice(top.length + 1)} reaches the Storybook config`);
+      if (isStory(m)) stories.add(m);
+      for (const i of importers.get(m) || []) seen.add(i);
+    }
+  }
+  return stories;
+}
+
+// The stamp: a summary line ("Synced from <commit> on …" after a full run), and a line per
+// story with its fingerprint. Read back as the fingerprints and that commit.
 async function readStamp(stampName) {
   const stamp = existing.get(stampName);
-  if (!paper || !stamp) return new Map();
+  const none = Object.assign(new Map(), { commit: null });
+  if (!paper || !stamp) return none;
   // The stamp's text sits in one frame, inside the artboard.
   let list;
+  let summary;
   for (let ids = [stamp.id], depth = 0; ids.length && !list && depth < 3; depth++) {
     const kids = [];
     for (const nodeId of ids) kids.push(...((await paper.call("get_children", { nodeId })).children || []));
     list = kids.find((c) => c.name === "fingerprints");
+    summary ??= kids.find((c) => c.name === "summary");
     ids = kids.filter((c) => c.childCount).map((c) => c.id);
   }
-  if (!list) return new Map();
+  if (!list) return none;
   const { textContent = "" } = await paper.call("get_node_info", { nodeId: list.id });
-  return new Map(textContent.split("\n").filter(Boolean).map((l) => l.split(" ")));
+  const said = summary ? (await paper.call("get_node_info", { nodeId: summary.id })).textContent || "" : "";
+  return Object.assign(new Map(textContent.split("\n").filter(Boolean).map((l) => l.split(" "))), {
+    commit: said.match(/^Synced from (\S+) on /)?.[1] ?? null,
+  });
 }
 async function writeStamp(stampName, prints, summary, at) {
   const old = existing.get(stampName);
@@ -793,7 +861,7 @@ try {
     const name = opt.name || opt.url;
     const old = existing.get(name);
     if (old && !opt.replace) console.log(`skip ${name}: already on the page (pass --replace)`);
-    else await place(await grab(opt.url, { selector: opt.selector || "body", fit: false }), name, { old, at: {} });
+    else await place(await grab(page, opt.url, { selector: opt.selector || "body", fit: false }), name, { old, at: {} });
   } else {
     const base = String(opt.base || "http://localhost:6006").replace(/\/$/, "");
     // Through the browser, which trusts what the system does (a local proxy's certificate,
@@ -831,6 +899,33 @@ try {
     // order, laid out afresh each run: an artboard that changed size moves its neighbours
     // along rather than leaving a gap or overlapping them. With --only, a row keeps its place.
     // A run with a suffix (dark) goes below what's on the page that isn't its own.
+    // What to render: everything, or with --changed only what a change can reach, plus any
+    // story with no artboard or fingerprint yet. The rest keep their artboards untouched.
+    const reach = opt.changed && !opt.force ? changedStories(opt.changed, prints.commit) : null;
+    const render = (s) =>
+      !reach || reach.has(resolve(opt.changed, s.importPath)) || !existing.has(label(s)) || !prints.has(s.id);
+    const todo = stories.filter(render);
+    if (reach) console.log(`--changed: rendering ${todo.length} of ${stories.length} stories`);
+
+    // Rendered --jobs at a time, each in its own tab; written to Paper after, in order.
+    const shots = new Map();
+    const pages = [page];
+    for (let i = 1; i < Math.min(Number(opt.jobs || 4), todo.length); i++) pages.push(await context.newPage());
+    let next = 0;
+    await Promise.all(
+      pages.map(async (pg) => {
+        while (next < todo.length) {
+          const s = todo[next++];
+          const url = `${base}/iframe.html?id=${encodeURIComponent(s.id)}&viewMode=story${globals}`;
+          shots.set(s.id, await grab(pg, url, { selector: "#storybook-root", fit: true, storybook: true, what: label(s) }).catch((e) => e));
+        }
+      }),
+    );
+
+    // One row per component, its stories left to right, 80px apart, the rows in the index's
+    // order, laid out afresh each run: an artboard that changed size moves its neighbours
+    // along rather than leaving a gap or overlapping them. With --only, a row keeps its place.
+    // A run with a suffix (dark) goes below what's on the page that isn't its own.
     const rows = new Map();
     for (const s of stories) rows.set(s.title, [...(rows.get(s.title) || []), s]);
     const boards = [...existing.values()].filter((a) => a.worldY != null && a.name !== stampName);
@@ -845,18 +940,26 @@ try {
       let tallest = 0;
       for (const s of row) {
         const name = label(s);
+        const old = existing.get(name);
+        const at = { left: `${x}px`, top: `${rowY}px` };
+        const move = async () => {
+          if (paper && (Math.round(old.worldX) !== x || Math.round(old.worldY) !== rowY))
+            await paper.call("update_styles", { updates: [{ nodeIds: [old.id], styles: at }] });
+        };
         try {
-          const shot = await grab(`${base}/iframe.html?id=${encodeURIComponent(s.id)}&viewMode=story${globals}`, {
-            selector: "#storybook-root",
-            fit: true,
-            storybook: true,
-          });
-          const old = existing.get(name);
-          const at = { left: `${x}px`, top: `${rowY}px` };
+          const shot = shots.get(s.id);
+          if (!shots.has(s.id)) {
+            // Not reached by the change: as it is, moved into its place.
+            counts.same++;
+            await move();
+            x += old.width + 80;
+            tallest = Math.max(tallest, old.height);
+            continue;
+          }
+          if (shot instanceof Error) throw shot;
           if (old && prints.get(s.id) === shot.print && !opt.force) {
             counts.same++;
-            if (paper && (Math.round(old.worldX) !== x || Math.round(old.worldY) !== rowY))
-              await paper.call("update_styles", { updates: [{ nodeIds: [old.id], styles: at }] });
+            await move();
           } else await place(shot, name, { old, at });
           x += shot.width + 80;
           if (shot.incomplete) {
@@ -868,6 +971,12 @@ try {
           counts.failed++;
           prints.delete(s.id);
           console.error(`FAILED ${name}: ${e.message.split("\n")[0]}`);
+          // A failed story keeps its old artboard, in its place.
+          if (old) {
+            await move().catch(() => {});
+            x += old.width + 80;
+            tallest = Math.max(tallest, old.height);
+          }
         }
       }
       if (!(only && mine.length)) y += tallest + 160;

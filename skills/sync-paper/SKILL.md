@@ -7,7 +7,7 @@ description: Copy the app's parts from its Storybook into the team's Paper file,
 
 Keeps a **Parts** page in the team's Paper file in step with the app: every Storybook story as an artboard named `<title> / <story>`, measured in a real browser and rebuilt as editable layers by [`scripts/to-paper.mjs`](scripts/to-paper.mjs), and the theme's colours as Paper tokens. A sketch duplicates these instead of drawing parts from memory.
 
-The script renders every story each run and rewrites only the artboards whose render changed. It keeps each story's fingerprint on the page's **stamp**, an artboard named `Synced`. The stamp names a commit only after a full run with no failures; otherwise it says "Partly synced".
+The script rewrites only the artboards whose render changed. It keeps each story's fingerprint on the page's **stamp**, an artboard named `Synced`. The stamp names a commit only after a full run with no failures; otherwise it says "Partly synced". With `--changed`, it renders only the stories that the files changed since that commit can reach, as Chromatic's TurboSnap does: a few seconds when nothing changed, and everything when a global file (`.storybook/`, `public/`, a `package.json` or lockfile) changed.
 
 ## 1. Get the pieces running
 
@@ -22,10 +22,11 @@ Done when `index.json` lists stories and you have the file's and the Parts page'
 
 ```sh
 node scripts/to-paper.mjs storybook --base <storybook url> --file <fileId> --page <partsPageId> --prune \
-  --commit "$(git -C <checkout> rev-parse --short HEAD)" [--only "<title>,<title>"]
+  --changed <checkout>/<storybook project dir> --commit "$(git -C <checkout> rev-parse --short HEAD)" \
+  [--only "<title>,<title>"]
 ```
 
-Everything, unless the user named parts ("sync Paper, just the buttons"): then `--only` those titles. One row per component, its stories left to right, laid out afresh in the index's order each run, so an artboard that changed size moves its neighbours rather than leaving a gap. Each artboard is framed by what its story draws: an open dialog or sheet without the page behind it, a menu with its trigger. A changed artboard is replaced, and `--prune` removes the artboards of stories that are gone. `--force` rewrites every artboard, for after a change to the script itself. An artboard that comes out far larger than its part is a capture bug: fix the script, not the story.
+Everything, unless the user named parts ("sync Paper, just the buttons"): then `--only` those titles. One row per component, its stories left to right, laid out afresh in the index's order each run, so an artboard that changed size moves its neighbours rather than leaving a gap. Each artboard is framed by what its story draws: an open dialog or sheet without the page behind it, a menu with its trigger. A changed artboard is replaced, and `--prune` removes the artboards of stories that are gone. `--force` renders and rewrites every artboard, for after a change to the script itself. Stories render 4 tabs at a time (`--jobs`). An artboard that comes out far larger than its part is a capture bug: fix the script, not the story.
 
 Light only, unless the user asks for dark too. Then run it again with `--globals <theme global>:dark --suffix " · dark"`, using the theme global's name from Storybook's `preview` config. The dark rows go below the light ones, with their own stamp, `Synced · dark`.
 

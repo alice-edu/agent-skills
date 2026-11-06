@@ -21,7 +21,6 @@ They're written for our repo (Alicia), our Slack and our Linear, and they're pub
 | "student test" | [`student-test`](skills/student-test/SKILL.md) | A panel of agents, each playing a student, tries a screen, a flow or some wording. |
 | "babysit" | [`babysit-pr`](skills/babysit-pr/SKILL.md) | Watches a PR through CI and review bots, fixing what's real, until it's green. |
 | (automatic) | [`linear-track`](skills/linear-track/SKILL.md) | Keeps the thread's Linear issue in step with the work. |
-| "sync Linear" | [`linear-sweep`](skills/linear-sweep/SKILL.md) | Audits your Linear board against GitHub and fixes what drifted. |
 | "grill me" | [`grill-me`](skills/grill-me/SKILL.md), [`grilling`](skills/grilling/SKILL.md) | Interviews you about a plan or design in rounds, each question with a recommended answer, until nothing is left assumed. |
 
 ## How they fit together
@@ -94,7 +93,7 @@ Update with `git pull`: the links point at the checkout, so there's nothing to r
 What's specific to us, and where to change it:
 
 - **Slack**: the review channel is `#pr-review-channel` (`pr-flow/slack.md`, `send-for-review`).
-- **Linear**: the team key is `ALI` (`linear-track`, `linear-sweep`).
+- **Linear**: the team key is `ALI` (`linear-track`).
 - **The repo's docs**: the skills read our `AGENTS.md` and `docs/backend-review.md`. Point them at your own: the lenses look for "the repo's backend review doc", so any repo with one works.
 - **Models**: `review-loop` and `council` name the Claude and Codex models we use.
 

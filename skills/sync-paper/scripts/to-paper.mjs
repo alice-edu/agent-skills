@@ -19,8 +19,10 @@
 // inline elements. So each element is measured in the browser and rebuilt: a flex
 // container whose children are plain flex items stays flex (with its padding and gap);
 // anything else is placed at its measured position, and loose text line by line. Sizes
-// are fixed to what was measured. Not copied: ::before/::after content, background images
-// other than gradients, animations.
+// are fixed to what was measured. A background picture, or an svg that only frames one,
+// becomes an image. A story is framed by what it draws: no backdrop behind a dialog, nothing
+// off the page, no wrapper stretched to the window. Not copied: ::before/::after content,
+// animations.
 
 import { spawn } from "node:child_process";
 import { createHash } from "node:crypto";
@@ -141,8 +143,22 @@ function capture({ selector, fit, pad }) {
   const visible = (el) => {
     const cs = getComputedStyle(el);
     if (cs.display === "none" || cs.visibility === "hidden" || Number(cs.opacity) === 0) return false;
+    // Text for screen readers only (sr-only), clipped to nothing.
+    if (cs.clipPath === "inset(50%)" || cs.clip === "rect(0px, 0px, 0px, 0px)") return false;
     const r = el.getBoundingClientRect();
+    // Above or left of the page, where nothing can scroll to: a library's measuring box
+    // (Recharts puts one at top -20000px), not something drawn.
+    if (r.bottom < 0 || r.right < 0) return false;
+    // A story's dialog or sheet behind its backdrop: the part, not the dimmed screen around it.
+    if (fit && cs.position === "fixed" && r.width >= innerWidth - 1 && r.height >= innerHeight - 1 && !el.children.length && !el.textContent.trim())
+      return false;
     return r.width > 0 || r.height > 0 || el.children.length > 0;
+  };
+  // The image a background draws (url() or image-set(), its sharpest), or none.
+  const backgroundUrl = (cs) => {
+    const urls = [...cs.backgroundImage.matchAll(/url\("?(.*?)"?\)\s*(?:([\d.]+)(?:x|dppx))?/g)];
+    if (!urls.length || cs.backgroundImage.includes("gradient")) return null;
+    return urls.sort((a, b) => Number(b[2] || 1) - Number(a[2] || 1))[0][1];
   };
   const font = (f) => {
     // next/font names its faces "__Inter_5d4f2a"; Paper knows them as "Inter".
@@ -226,8 +242,11 @@ function capture({ selector, fit, pad }) {
     for (const n of el.childNodes) {
       if (n.nodeType === 3) {
         let t = collapse(cs, n.textContent);
-        if (n === ends.first) t = t.trimStart();
-        if (n === ends.last) t = t.trimEnd();
+        // The browser drops spaces at an end only where it collapses them: " notes" in a
+        // white-space: pre span (a file name split before its last word) keeps its space.
+        const kept = /^(pre|pre-wrap|break-spaces)$/.test(cs.whiteSpace);
+        if (n === ends.first && !kept) t = t.trimStart();
+        if (n === ends.last && !kept) t = t.trimEnd();
         out += esc(t);
       } else if (n.nodeType === 1 && visible(n)) {
         if (n.tagName === "BR") {
@@ -413,7 +432,31 @@ function capture({ selector, fit, pad }) {
     s.height = px(r.height);
     const layer = attr(name(el));
 
-    if (el instanceof SVGSVGElement) return svg(el, cs, s, layer);
+    // An svg that only frames a picture (<svg><image href="icon.webp"></svg>) is that picture.
+    if (el instanceof SVGSVGElement) {
+      const shown = [...el.querySelectorAll("*")].filter((e) => !(e instanceof SVGGElement) && !e.closest("defs") && getComputedStyle(e).display !== "none");
+      if (shown.length === 1 && shown[0] instanceof SVGImageElement && shown[0].href.baseVal) {
+        const i = images.push(new URL(shown[0].href.baseVal, document.baseURI).href) - 1;
+        const ir = shown[0].getBoundingClientRect();
+        Object.assign(s, { width: px(ir.width), height: px(ir.height), objectFit: "contain" });
+        if (!inFlow) Object.assign(s, { left: px(ir.left - origin.x), top: px(ir.top - origin.y) });
+        return `<img layer-name="${layer}" src="__IMAGE_${i}__" style="${attr(css(s))}">`;
+      }
+      return svg(el, cs, s, layer);
+    }
+    // A picture drawn as a background (an icon on a span): an image, or one behind the content.
+    const bgUrl = backgroundUrl(cs);
+    let backdrop = "";
+    if (bgUrl) {
+      const i = images.push(new URL(bgUrl, document.baseURI).href) - 1;
+      const fitTo = cs.backgroundSize === "cover" ? "cover" : cs.backgroundSize === "contain" ? "contain" : "fill";
+      if (![...el.childNodes].some((n) => (n.nodeType === 3 ? n.textContent.trim() : n.nodeType === 1 && visible(n)))) {
+        box(cs, s);
+        s.objectFit = fitTo;
+        return `<img layer-name="${layer}" src="__IMAGE_${i}__" style="${attr(css(s))}">`;
+      }
+      backdrop = `<img layer-name="background" src="__IMAGE_${i}__" style="position: absolute; left: ${px(-parseFloat(cs.borderLeftWidth))}; top: ${px(-parseFloat(cs.borderTopWidth))}; width: ${px(r.width)}; height: ${px(r.height)}; object-fit: ${fitTo}">`;
+    }
     if (el.tagName === "IMG" && el.currentSrc) {
       const i = images.push(el.currentSrc) - 1;
       box(cs, s);
@@ -425,7 +468,7 @@ function capture({ selector, fit, pad }) {
 
     const kids = [...el.childNodes].filter((n) => (n.nodeType === 3 ? n.textContent.trim() : n.nodeType === 1 && visible(n)));
     // Inline content only: one Paper text node, with its formatting as spans.
-    if (kids.length && [...el.childNodes].every(isInline)) {
+    if (!backdrop && kids.length && [...el.childNodes].every(isInline)) {
       text(cs, s, el);
       padding(cs, s);
       if (cs.display.includes("flex")) {
@@ -442,7 +485,8 @@ function capture({ selector, fit, pad }) {
       return `<div layer-name="${layer}" style="${attr(css(s))}">${body}</div>`;
     }
 
-    const flex = flowsAsFlex(el, cs);
+    // Behind a background picture, the content is placed where it sits, over it.
+    const flex = !backdrop && flowsAsFlex(el, cs);
     s.display = "flex";
     if (flex) {
       s.flexDirection = cs.flexDirection;
@@ -469,7 +513,7 @@ function capture({ selector, fit, pad }) {
           return `<span layer-name="text" style="${attr(css(ts))}">${esc(l.text)}</span>`;
         });
     });
-    return `<div layer-name="${layer}" style="${attr(css(s))}">${out.join("")}</div>`;
+    return `<div layer-name="${layer}" style="${attr(css(s))}">${backdrop}${out.join("")}</div>`;
   }
 
   const target = document.querySelector(selector);
@@ -489,7 +533,13 @@ function capture({ selector, fit, pad }) {
     // a dialog), framed by what has ink (text, fills, borders, icons), not by a wrapper's width.
     const chrome = (e) =>
       e === target || e.contains(target) || /^storybook-/.test(e.id) || /\bsb-/.test(String(e.className)) || ["SCRIPT", "STYLE", "LINK", "TEMPLATE"].includes(e.tagName);
-    const kids = [...target.children, ...[...document.body.children].filter((e) => !chrome(e))].filter(visible);
+    let kids = [...target.children, ...[...document.body.children].filter((e) => !chrome(e))].filter(visible);
+    // A modal open (a dialog or sheet, fixed over the window): the part is the modal, not the
+    // page behind it with the button that opened it. A popover or menu keeps its trigger.
+    const modals = kids
+      .flatMap((k) => [k, ...k.querySelectorAll("[role=dialog], [role=alertdialog]")])
+      .filter((e) => e.matches("[role=dialog], [role=alertdialog]") && getComputedStyle(e).position === "fixed" && visible(e));
+    if (modals.length) kids = modals;
     const rs = [];
     const meet = (a, b) => {
       const m = { left: Math.max(a.left, b.left), top: Math.max(a.top, b.top), right: Math.min(a.right, b.right), bottom: Math.min(a.bottom, b.bottom) };
@@ -587,11 +637,23 @@ const page = await context.newPage();
 const paper = opt["dry-run"] ? null : new Paper();
 if (paper) await paper.start();
 
-// Where each artboard already sits on the page, so a replaced one keeps its place.
+// What is on the page already, by name: replaced in place, moved, or (--prune) removed.
 const existing = new Map();
 if (paper) {
+  // get_basic_info lists only the first 100 artboards; the page's tree summary names them all,
+  // and get_node_info places the rest.
   const info = await paper.call("get_basic_info", { pageId: opt.page });
   for (const a of info.artboards || []) existing.set(a.name, a);
+  if ((info.artboardCount ?? 0) > existing.size) {
+    const { summary = "" } = await paper.call("get_tree_summary", { nodeId: info.rootNodeId || `root_node_${opt.page}`, depth: 1 });
+    const known = new Set([...existing.values()].map((a) => a.id));
+    for (const m of summary.matchAll(/^ {2}\S+ "(.*)" \(([^)\s]+)\) /gm)) {
+      if (known.has(m[2])) continue;
+      const n = await paper.call("get_node_info", { nodeId: m[2] });
+      existing.set(m[1], { id: n.id, name: n.name, width: n.width, height: n.height, worldX: n.worldX, worldY: n.worldY });
+    }
+    if (existing.size < info.artboardCount) throw new Error(`found ${existing.size} of the page's ${info.artboardCount} artboards`);
+  }
 }
 
 const counts = { made: 0, replaced: 0, same: 0, removed: 0, failed: 0, incomplete: 0 };
@@ -609,9 +671,13 @@ async function fetchImages(shot, key) {
       let body;
       let type = "";
       if (src.startsWith("file:")) body = readFileSync(fileURLToPath(src));
-      else if (src.startsWith("data:") || src.startsWith("blob:")) {
+      // The page's own files through the browser, which trusts a local proxy's certificate
+      // (portless's https://<name>.localhost) where Node doesn't; others, past CORS, from Node.
+      else if (src.startsWith("data:") || src.startsWith("blob:") || new URL(src).origin === new URL(page.url()).origin) {
         const url = await page.evaluate(async (u) => {
-          const b = await (await fetch(u)).blob();
+          const res = await fetch(u);
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const b = await res.blob();
           return await new Promise((ok) => {
             const r = new FileReader();
             r.onload = () => ok(r.result);
@@ -643,6 +709,10 @@ async function fetchImages(shot, key) {
 async function grab(url, { selector, fit, storybook }) {
   await page.goto(url, { waitUntil: "networkidle" });
   await page.addStyleTag({ content: "*,*::before,*::after{animation:none!important;transition:none!important;caret-color:transparent!important}" });
+  // A story drawn as wide as what it holds, not as the window: a wrapper with a fill (a band
+  // of colour behind a button) would otherwise stretch its artboard across the screen. What
+  // asks for the full width (a screen) still gets it: fit-content stops at the window.
+  if (storybook) await page.addStyleTag({ content: `${selector}{width:fit-content!important}` });
   await settle(storybook);
   await page.waitForSelector(selector, { state: "attached" });
   const shot = await page.evaluate(capture, { selector, fit, pad: fit ? 24 : 0 });
@@ -664,9 +734,10 @@ async function place(shot, name, { old, at }) {
   if (opt.out) writeFileSync(join(opt.out, `${name.replace(/[^\w.-]+/g, "_")}.html`), html);
   if (!paper) {
     counts.made++;
+    console.log(`made ${name} (${shot.width}×${shot.height})`);
     return;
   }
-  const pos = old ? { left: `${Math.round(old.worldX)}px`, top: `${Math.round(old.worldY)}px` } : at;
+  const pos = at.left ? at : old ? { left: `${Math.round(old.worldX)}px`, top: `${Math.round(old.worldY)}px` } : at;
   const board = await paper.call("create_artboard", {
     pageId: opt.page,
     name,
@@ -725,8 +796,10 @@ try {
     else await place(await grab(opt.url, { selector: opt.selector || "body", fit: false }), name, { old, at: {} });
   } else {
     const base = String(opt.base || "http://localhost:6006").replace(/\/$/, "");
-    const res = await fetch(`${base}/index.json`);
-    if (!res.ok) throw new Error(`${base}/index.json: HTTP ${res.status}`);
+    // Through the browser, which trusts what the system does (a local proxy's certificate,
+    // as portless's https://<name>.localhost), where Node's fetch wouldn't.
+    const res = await page.goto(`${base}/index.json`);
+    if (!res?.ok()) throw new Error(`${base}/index.json: HTTP ${res?.status()}`);
     const index = await res.json();
     const only = opt.only ? String(opt.only).split(",") : null;
     const all = Object.values(index.entries).filter((e) => e.type === "story" && !(e.tags || []).includes("no-paper"));
@@ -754,18 +827,21 @@ try {
       for (const id of prints.keys()) if (!ids.has(id)) prints.delete(id);
     }
 
-    // One row per component, its stories left to right, 80px apart. A component already
-    // on the page keeps its row, and a new story goes at its end; a new component gets a
-    // new row below everything there.
+    // One row per component, its stories left to right, 80px apart, the rows in the index's
+    // order, laid out afresh each run: an artboard that changed size moves its neighbours
+    // along rather than leaving a gap or overlapping them. With --only, a row keeps its place.
+    // A run with a suffix (dark) goes below what's on the page that isn't its own.
     const rows = new Map();
     for (const s of stories) rows.set(s.title, [...(rows.get(s.title) || []), s]);
     const boards = [...existing.values()].filter((a) => a.worldY != null && a.name !== stampName);
+    const others = boards.filter((a) => !ours(a.name));
     const top = Number(opt.top || 200);
-    let y = boards.length ? Math.max(...boards.map((a) => a.worldY + a.height)) + 160 : top;
+    let y = suffix && others.length ? Math.max(...others.map((a) => a.worldY + a.height)) + 160 : top;
+    if (only) y = boards.length ? Math.max(...boards.map((a) => a.worldY + a.height)) + 160 : top;
     for (const [title, row] of rows) {
       const mine = boards.filter((a) => a.name.startsWith(`${title} / `) && ours(a.name));
-      const rowY = mine.length ? Math.min(...mine.map((a) => a.worldY)) : y;
-      let x = mine.length ? Math.max(...mine.map((a) => a.worldX + a.width)) + 80 : 0;
+      const rowY = only && mine.length ? Math.min(...mine.map((a) => a.worldY)) : y;
+      let x = 0;
       let tallest = 0;
       for (const s of row) {
         const name = label(s);
@@ -776,11 +852,13 @@ try {
             storybook: true,
           });
           const old = existing.get(name);
-          if (old && prints.get(s.id) === shot.print && !opt.force) counts.same++;
-          else {
-            await place(shot, name, { old, at: { left: `${x}px`, top: `${rowY}px` } });
-            if (!old) x += shot.width + 80;
-          }
+          const at = { left: `${x}px`, top: `${rowY}px` };
+          if (old && prints.get(s.id) === shot.print && !opt.force) {
+            counts.same++;
+            if (paper && (Math.round(old.worldX) !== x || Math.round(old.worldY) !== rowY))
+              await paper.call("update_styles", { updates: [{ nodeIds: [old.id], styles: at }] });
+          } else await place(shot, name, { old, at });
+          x += shot.width + 80;
           if (shot.incomplete) {
             counts.incomplete++;
             prints.delete(s.id);
@@ -792,7 +870,7 @@ try {
           console.error(`FAILED ${name}: ${e.message.split("\n")[0]}`);
         }
       }
-      if (!mine.length) y += tallest + 160;
+      if (!(only && mine.length)) y += tallest + 160;
     }
 
     // Only a run that captured every story without a failure says the page matches a commit.

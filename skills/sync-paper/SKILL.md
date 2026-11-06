@@ -25,7 +25,7 @@ node scripts/to-paper.mjs storybook --base <storybook url> --file <fileId> --pag
   --commit "$(git -C <checkout> rev-parse --short HEAD)" [--only "<title>,<title>"]
 ```
 
-Everything, unless the user named parts ("sync Paper, just the buttons"): then `--only` those titles. One row per component, its stories left to right. A changed artboard is replaced in its place, a new story goes at the end of its component's row, and `--prune` removes the artboards of stories that are gone. `--force` rewrites every artboard, for after a change to the script itself.
+Everything, unless the user named parts ("sync Paper, just the buttons"): then `--only` those titles. One row per component, its stories left to right, laid out afresh in the index's order each run, so an artboard that changed size moves its neighbours rather than leaving a gap. Each artboard is framed by what its story draws: an open dialog or sheet without the page behind it, a menu with its trigger. A changed artboard is replaced, and `--prune` removes the artboards of stories that are gone. `--force` rewrites every artboard, for after a change to the script itself. An artboard that comes out far larger than its part is a capture bug: fix the script, not the story.
 
 Light only, unless the user asks for dark too. Then run it again with `--globals <theme global>:dark --suffix " · dark"`, using the theme global's name from Storybook's `preview` config. The dark rows go below the light ones, with their own stamp, `Synced · dark`.
 

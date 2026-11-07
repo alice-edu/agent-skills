@@ -21,6 +21,15 @@
 // graph `storybook build --stats-json` writes (built here, in that dir) up to the story files
 // that import them. A change it can't trace that could touch every story (the Storybook
 // config, public/, a lockfile, package.json), or a stamp with no commit, renders them all.
+// That dir is also what the page is checked against: the Parts page shows what's merged, so a
+// run that isn't --only refuses a checkout that isn't exactly origin's default branch, and
+// takes --commit from it when it isn't given.
+//
+// Tokens: each colour and radius the app's :root declares is a Paper token of the same name,
+// created, updated, or (one this script made, gone from the CSS) deleted each light run. An
+// artboard's colour is written as var(--token) where the element's own class names that token
+// (bg-primary, text-muted-foreground, inherited text colour too) and its value is the token's,
+// so a token edited in Paper repaints the parts; any other colour stays a literal.
 //
 // Paper takes HTML with inline styles, flex for layout, and no margins, grid, tables or
 // inline elements. So each element is measured in the browser and rebuilt: a flex
@@ -29,7 +38,7 @@
 // are fixed to what was measured. A background picture, or an svg that only frames one,
 // becomes an image. A story is framed by what it draws: no backdrop behind a dialog, nothing
 // off the page, no wrapper stretched to the window. Not copied: ::before/::after content,
-// animations.
+// animations (pages render with reduced motion, so what moves is drawn still).
 
 import { spawn, spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
@@ -71,6 +80,18 @@ if (opt["color-scheme"] && !["light", "dark"].includes(opt["color-scheme"])) usa
 if (opt.top && !Number.isFinite(Number(opt.top))) usage("--top is a number");
 if (opt.jobs && !(Number.isInteger(Number(opt.jobs)) && Number(opt.jobs) > 0)) usage("--jobs is a whole number above 0");
 if (opt.changed && !existsSync(join(opt.changed, ".storybook"))) usage(`--changed: no .storybook folder in ${opt.changed}`);
+// The Parts page shows what's merged: a full run takes its Storybook from exactly origin's
+// default branch (a checkout of it made for the run, when this one is elsewhere).
+if (mode === "storybook" && opt.changed) {
+  const git = (...a) => spawnSync("git", ["-C", opt.changed, ...a], { encoding: "utf8" }).stdout?.trim() ?? "";
+  if (!opt.only && !opt["dry-run"]) {
+    const main = git("rev-parse", "--abbrev-ref", "origin/HEAD") || "origin/main";
+    const dirty = git("status", "--porcelain", "--", ".");
+    if (git("rev-parse", "HEAD") !== git("rev-parse", main) || dirty)
+      usage(`${opt.changed} ${dirty ? "has uncommitted changes" : `isn't at ${main}`}: the Parts page shows what's merged. Run Storybook from a checkout of ${main} (git worktree add --detach <dir> ${main}), or pass --only`);
+  }
+  opt.commit ??= git("rev-parse", "--short", "HEAD");
+}
 for (const k of ["url", "base"]) {
   if (!opt[k]) continue;
   try {
@@ -143,8 +164,24 @@ class Paper {
 
 // Returns { html, width, height, background, images } for `selector`, or for the union of
 // its children when `fit` is set (a Storybook root is wider than the story it holds).
-function capture({ selector, fit, pad }) {
+function capture({ selector, fit, pad, tokens }) {
   const images = [];
+  // A colour as var(--token) where the element's own class names a token of that value
+  // (bg-primary, border-input, text-muted-foreground, inherited for text), else the colour.
+  const PAINT = { bg: /^bg-(.+)$/, text: /^text-(.+)$/, border: /^border(?:-[xytrbl])?-(.+)$/, fill: /^fill-(.+)$/, stroke: /^stroke-(.+)$/ };
+  const paint = (el, kind, value) => {
+    if (!tokens) return value;
+    for (let e = el; e; e = kind === "text" ? e.parentElement : null)
+      for (const c of e.classList || []) {
+        const name = c.match(PAINT[kind])?.[1];
+        if (name && tokens[name] === value) return `var(--${name})`;
+      }
+    // shadcn's base layer gives every border var(--border), and the body its foreground.
+    if (kind === "border" && tokens.border === value) return "var(--border)";
+    if (kind === "text" && tokens.foreground === value) return "var(--foreground)";
+    if ((kind === "fill" || kind === "stroke") && value !== "none") return paint(el, "text", value);
+    return value;
+  };
   const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   const attr = (s) => esc(s).replace(/"/g, "&quot;");
   const px = (n) => `${Math.round(n * 100) / 100}px`;
@@ -186,13 +223,13 @@ function capture({ selector, fit, pad }) {
     el.getAttribute("data-testid") ||
     el.tagName.toLowerCase();
 
-  function box(cs, s) {
-    if (!transparent(cs.backgroundColor)) s.backgroundColor = cs.backgroundColor;
+  function box(cs, s, el) {
+    if (!transparent(cs.backgroundColor)) s.backgroundColor = paint(el, "bg", cs.backgroundColor);
     if (cs.backgroundImage.includes("gradient")) s.backgroundImage = cs.backgroundImage;
     for (const side of SIDES) {
       const w = parseFloat(cs[`border${side}Width`]);
       if (w > 0 && cs[`border${side}Style`] !== "none")
-        s[`border${side}`] = `${w}px ${cs[`border${side}Style`].replace(/inset|outset|groove|ridge/, "solid")} ${cs[`border${side}Color`]}`;
+        s[`border${side}`] = `${w}px ${cs[`border${side}Style`].replace(/inset|outset|groove|ridge/, "solid")} ${paint(el, "border", cs[`border${side}Color`])}`;
     }
     for (const c of ["TopLeft", "TopRight", "BottomRight", "BottomLeft"]) {
       const r = cs[`border${c}Radius`];
@@ -216,7 +253,7 @@ function capture({ selector, fit, pad }) {
     return px(parseFloat(cs.fontSize) * 1.2);
   }
   function text(cs, s, el) {
-    s.color = cs.color;
+    s.color = paint(el, "text", cs.color);
     s.fontFamily = font(cs.fontFamily);
     s.fontSize = cs.fontSize;
     s.fontWeight = cs.fontWeight;
@@ -265,7 +302,8 @@ function capture({ selector, fit, pad }) {
         const c = getComputedStyle(n);
         const s = {};
         for (const k of RUN_STYLE) if (c[k] !== cs[k]) s[k === "textDecorationLine" ? "textDecoration" : k] = k === "fontFamily" ? font(c[k]) : c[k];
-        if (!transparent(c.backgroundColor)) s.backgroundColor = c.backgroundColor;
+        if (s.color) s.color = paint(n, "text", s.color);
+        if (!transparent(c.backgroundColor)) s.backgroundColor = paint(n, "bg", c.backgroundColor);
         const inner = run(n, c, ends);
         out += Object.keys(s).length ? `<span style="${attr(css(s))}">${inner}</span>` : inner;
       }
@@ -371,10 +409,10 @@ function capture({ selector, fit, pad }) {
       // differ from SVG's defaults: Paper drops a fill that has fill-opacity="1".
       for (const a of ["fill", "stroke", "stroke-width", "stroke-linecap", "stroke-linejoin", "stroke-opacity", "fill-opacity", "opacity"])
         dst.removeAttribute(a);
-      dst.setAttribute("fill", c.fill);
+      dst.setAttribute("fill", paint(src, "fill", c.fill));
       if (c.stroke === "none") dst.setAttribute("stroke", "none");
       else {
-        dst.setAttribute("stroke", c.stroke);
+        dst.setAttribute("stroke", paint(src, "stroke", c.stroke));
         dst.setAttribute("stroke-width", c.strokeWidth);
         if (c.strokeLinecap !== "butt") dst.setAttribute("stroke-linecap", c.strokeLinecap);
         if (c.strokeLinejoin !== "miter") dst.setAttribute("stroke-linejoin", c.strokeLinejoin);
@@ -386,7 +424,7 @@ function capture({ selector, fit, pad }) {
       dst.removeAttribute("class");
       dst.removeAttribute("style");
     });
-    const html = clone.outerHTML.replace(/currentColor/g, cs.color);
+    const html = clone.outerHTML.replace(/currentColor/g, paint(el, "text", cs.color));
     return `<div layer-name="${layer}" style="${attr(css(s))}; display: flex">${html}</div>`;
   }
 
@@ -460,7 +498,7 @@ function capture({ selector, fit, pad }) {
       const i = images.push(new URL(bgUrl, document.baseURI).href) - 1;
       const fitTo = cs.backgroundSize === "cover" ? "cover" : cs.backgroundSize === "contain" ? "contain" : "fill";
       if (![...el.childNodes].some((n) => (n.nodeType === 3 ? n.textContent.trim() : n.nodeType === 1 && visible(n)))) {
-        box(cs, s);
+        box(cs, s, el);
         s.objectFit = fitTo;
         return `<img layer-name="${layer}" src="__IMAGE_${i}__" style="${attr(css(s))}">`;
       }
@@ -468,11 +506,11 @@ function capture({ selector, fit, pad }) {
     }
     if (el.tagName === "IMG" && el.currentSrc) {
       const i = images.push(el.currentSrc) - 1;
-      box(cs, s);
+      box(cs, s, el);
       s.objectFit = cs.objectFit;
       return `<img layer-name="${layer}" src="__IMAGE_${i}__" style="${attr(css(s))}">`;
     }
-    box(cs, s);
+    box(cs, s, el);
     if (["INPUT", "TEXTAREA", "SELECT"].includes(el.tagName)) return field(el, cs, s, layer);
 
     const kids = [...el.childNodes].filter((n) => (n.nodeType === 3 ? n.textContent.trim() : n.nodeType === 1 && visible(n)));
@@ -603,7 +641,7 @@ function capture({ selector, fit, pad }) {
     html: parts.join(""),
     width: Math.ceil(bounds.r - bounds.x),
     height: Math.ceil(bounds.b - bounds.y),
-    background: bg,
+    background: tokens && tokens.background === bg ? "var(--background)" : bg,
     images,
   };
 }
@@ -639,6 +677,8 @@ const browser = await chromium.launch();
 const context = await browser.newContext({
   viewport: { width: vw, height: vh },
   colorScheme: opt["color-scheme"] === "dark" ? "dark" : "light",
+  // What animates in script (the mascot) draws its still: the same render every run.
+  reducedMotion: "reduce",
   deviceScaleFactor: 1,
   ...(opt["storage-state"] ? { storageState: opt["storage-state"] } : {}),
 });
@@ -667,6 +707,8 @@ if (paper) {
 
 const counts = { made: 0, replaced: 0, same: 0, removed: 0, failed: 0, incomplete: 0 };
 let shotCount = 0;
+// Token name (no --) to its computed colour, for capture to write as var(--name); null writes literals.
+let bindable = null;
 
 // Downloads the page's images for Paper, as local files it can read. Their bytes go into
 // the fingerprint, so a new image at the same URL counts as a change.
@@ -724,7 +766,7 @@ async function grab(pg, url, { selector, fit, storybook, what = url }) {
   if (storybook) await pg.addStyleTag({ content: `${selector}{width:fit-content!important}` });
   await settle(pg, storybook, what);
   await pg.waitForSelector(selector, { state: "attached" });
-  const shot = await pg.evaluate(capture, { selector, fit, pad: fit ? 24 : 0 });
+  const shot = await pg.evaluate(capture, { selector, fit, pad: fit ? 24 : 0, tokens: bindable });
   const { html, hashes, failed } = await fetchImages(pg, shot, ++shotCount);
   shot.final = html;
   // An image that didn't copy leaves the capture incomplete: no fingerprint, so it's tried again.
@@ -822,6 +864,90 @@ function changedStories(dir, base) {
 
 // The stamp: a summary line ("Synced from <commit> on …" after a full run), and a line per
 // story with its fingerprint. Read back as the fingerprints and that commit.
+// ---------- Tokens ----------
+
+// Each colour and radius custom property the page's own :root rule declares (not a library's
+// `:root, :host` theme layer), with the value the browser computes for it.
+function rootTokens() {
+  const names = new Set();
+  const walk = (rules) => {
+    for (const r of rules) {
+      if (r instanceof CSSStyleRule) {
+        const sel = r.selectorText.split(",").map((x) => x.trim());
+        if (sel.includes(":root") && !sel.includes(":host")) for (const p of r.style) if (p.startsWith("--")) names.add(p);
+      }
+      if (r.cssRules) walk(r.cssRules);
+    }
+  };
+  for (const sheet of document.styleSheets) {
+    try {
+      walk(sheet.cssRules);
+    } catch {}
+  }
+  // A colour resolves the same under two parents of different colours; anything else inherits.
+  const parents = ["rgb(1, 2, 3)", "rgb(4, 5, 6)"].map((c) => {
+    const p = document.body.appendChild(document.createElement("div"));
+    p.style.color = c;
+    const kid = p.appendChild(document.createElement("div"));
+    kid.style.position = "absolute";
+    return kid;
+  });
+  const out = [];
+  for (const name of names) {
+    for (const k of parents) k.style.color = `var(${name})`;
+    const [a, b] = parents.map((k) => getComputedStyle(k).color);
+    if (a === b) out.push({ name, type: "color", computed: a });
+    else if (/radius/.test(name)) {
+      parents[0].style.width = `var(${name})`;
+      const w = getComputedStyle(parents[0]).width;
+      if (w !== "0px" && w.endsWith("px")) out.push({ name, type: "radius", computed: w });
+    }
+  }
+  for (const k of parents) k.parentElement.remove();
+  return out;
+}
+const TOKEN_MARK = "From the app's :root, by sync-paper: an edit here is overwritten on the next sync.";
+// Paper's way of writing a value: an opaque colour as upper-case hex.
+const tokenValue = ({ type, computed }) => {
+  const m = type === "color" && computed.match(/^rgb\((\d+), (\d+), (\d+)\)$/);
+  return m ? `#${m.slice(1).map((n) => Number(n).toString(16).padStart(2, "0")).join("").toUpperCase()}` : computed;
+};
+
+// Makes the file's tokens match the app's (sync: a light run of everything) and sets what
+// capture may bind: a token the file holds with the app's value.
+async function syncTokens(pg, url, sync) {
+  await pg.goto(url, { waitUntil: "networkidle" });
+  await settle(pg, true, "tokens");
+  const app = await pg.evaluate(rootTokens);
+  if (!app.length) return console.log("tokens: none declared on :root");
+  if (!paper) {
+    bindable = Object.fromEntries(app.map((t) => [t.name.slice(2), t.computed]));
+    return console.log(`tokens: ${app.length} on :root (not written: dry run)`);
+  }
+  const { tokens: inPaper = [] } = await paper.call("get_tokens", { types: ["color", "radius"] });
+  const had = new Map(inPaper.map((t) => [t.name, t]));
+  if (sync) {
+    const names = new Set(app.map((t) => t.name));
+    const make = app.filter((t) => !had.has(t.name)).map((t) => ({ type: t.type, name: t.name, value: tokenValue(t), description: TOKEN_MARK }));
+    const set = [
+      ...app
+        .filter((t) => had.has(t.name) && (String(had.get(t.name).value).toUpperCase() !== tokenValue(t).toUpperCase() || had.get(t.name).description !== TOKEN_MARK))
+        .map((t) => ({ name: t.name, value: tokenValue(t), description: TOKEN_MARK })),
+      // One this script made that the CSS no longer declares.
+      ...inPaper.filter((t) => t.description === TOKEN_MARK && !names.has(t.name)).map((t) => ({ name: t.name, delete: true })),
+    ];
+    if (make.length) await paper.call("create_tokens", { tokens: make });
+    if (set.length) await paper.call("set_tokens", { tokens: set });
+    for (const t of make) had.set(t.name, t);
+    for (const t of set) if (!t.delete) had.set(t.name, t);
+    const gone = set.filter((t) => t.delete).length;
+    console.log(`tokens: ${make.length} made, ${set.length - gone} updated, ${gone} removed, of ${app.length} on :root`);
+  }
+  bindable = Object.fromEntries(
+    app.filter((t) => String(had.get(t.name)?.value ?? "").toUpperCase() === tokenValue(t).toUpperCase()).map((t) => [t.name.slice(2), t.computed]),
+  );
+}
+
 async function readStamp(stampName) {
   const stamp = existing.get(stampName);
   const none = Object.assign(new Map(), { commit: null });
@@ -895,10 +1021,11 @@ try {
       for (const id of prints.keys()) if (!ids.has(id)) prints.delete(id);
     }
 
-    // One row per component, its stories left to right, 80px apart, the rows in the index's
-    // order, laid out afresh each run: an artboard that changed size moves its neighbours
-    // along rather than leaving a gap or overlapping them. With --only, a row keeps its place.
-    // A run with a suffix (dark) goes below what's on the page that isn't its own.
+    // Tokens hold the light theme: a light run writes them (unless --only) and binds colours
+    // to them; a dark run writes literals.
+    if (!opt.globals && !suffix)
+      await syncTokens(page, `${base}/iframe.html?id=${encodeURIComponent(stories[0].id)}&viewMode=story`, !only);
+
     // What to render: everything, or with --changed only what a change can reach, plus any
     // story with no artboard or fingerprint yet. The rest keep their artboards untouched.
     const reach = opt.changed && !opt.force ? changedStories(opt.changed, prints.commit) : null;

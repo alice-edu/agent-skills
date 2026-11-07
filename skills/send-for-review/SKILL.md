@@ -1,11 +1,11 @@
 ---
 name: send-for-review
-description: 'Post the user''s PR in #pr-review-channel for review, or tell the reviewer in its thread that it''s ready for another round. Use when the user says "send for review" or "send it", and at the end of fix-comments.'
+description: 'Post the user''s PR in #pr-review-channel for review, or tell the reviewer in its thread that it''s ready for another round. Use when the user says "send for review" or "send it", for the check alone when they ask "is it ready?", and at the end of fix-comments.'
 ---
 
 # Send for review
 
-The one place the user's PRs are announced for review: the first post in `#pr-review-channel`, and each "ready for another round" in its thread after. It checks the PR is still ready before saying so.
+The one place the user's PRs are announced for review: the first post in `#pr-review-channel`, and each "ready for another round" in its thread after. It makes sure the PR is ready before saying so, reviewing whatever changed since the last review.
 
 Shared files: [slack.md](~/.agents/pr-flow/slack.md), [ready.md](~/.agents/pr-flow/ready.md), [github.md](~/.agents/pr-flow/github.md), [decision-card.md](~/.agents/pr-flow/decision-card.md).
 
@@ -13,11 +13,13 @@ Shared files: [slack.md](~/.agents/pr-flow/slack.md), [ready.md](~/.agents/pr-fl
 
 The PR (from the link, or the current branch's), its head, `additions`, `deletions`, title and URL (`gh pr view --json`), its Linear issue, and its thread in `#pr-review-channel` (slack.md). No thread: **first round**. A thread: **another round**, and its reviewer is whoever reviewed on GitHub or in the thread.
 
-## 2. Check it's still ready
+## 2. Make it ready
 
-Against [ready.md](~/.agents/pr-flow/ready.md) on the current head: the checklist's results are for this head, the base is merged in with nothing new on it that touches this PR's files, CI is green or running on this head, and a visible change has its screenshots. Fix what's missing (rerun a stale check, merge the base, take a screenshot) and push.
+[ready.md](~/.agents/pr-flow/ready.md), "Make it ready", on the current head: anything committed since `review-loop` last agreed is reviewed with the whole PR, proven again, and written into the PR body; the base is merged in; CI is green or running on this head. Push what it changes.
 
-What can't be made ready (a red check that isn't ours, a test that needs something we don't have) goes on the decision card: send it saying so, or wait.
+What can't be made ready (a P1 the loop can't settle, a red check that isn't ours, a test that needs something we don't have) goes on the decision card: send it saying so, or wait.
+
+Asked only "is it ready?": stop here and report the verdict, what the review fixed, and what's left. Post nothing.
 
 Done when every checklist item is true for the head being announced.
 

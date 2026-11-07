@@ -18,8 +18,6 @@ They're written for our repo (Alicia), our Slack and our Linear, and they're pub
 | "review loop" | [`review-loop`](skills/review-loop/SKILL.md) | Claude and Codex review a change in rounds until they agree. The other skills run it. |
 | "council" | [`council`](skills/council/SKILL.md) | Four models review instead of two, for changes that deserve it. |
 | "usability", "fix it with usability" | [`usability`](skills/usability/SKILL.md) | Judges a screen like a senior product designer, by *Don't Make Me Think* first, and fixes what a student would trip on in one pass, with before and after screenshots. Its principles are also what reviews judge UI by. |
-| "sketch it" | [`sketch-it`](skills/sketch-it/SKILL.md) | Settles a UI change in [Paper](https://paper.design) before any code: rounds of side-by-side variants built from the app's real parts, each with a recommended pick, until the design is agreed and drawn in every state. `build-it` offers it on its card. |
-| "sync Paper" | [`sync-paper`](skills/sync-paper/SKILL.md) | Copies every Storybook story into the team's Paper file as editable layers, measured from a real browser, so sketches start from what the app draws. |
 | "student test" | [`student-test`](skills/student-test/SKILL.md) | A panel of agents, each playing a student, tries a screen, a flow or some wording. |
 | "babysit" | [`babysit-pr`](skills/babysit-pr/SKILL.md) | Watches a PR through CI and review bots, fixing what's real, until it's green. |
 | (automatic) | [`linear-track`](skills/linear-track/SKILL.md) | Keeps the thread's Linear issue in step with the work. |
@@ -88,7 +86,6 @@ Update with `git pull`: the links point at the checkout, so there's nothing to r
 - [`gh`](https://cli.github.com), signed in.
 - The Slack and Linear connectors in Claude Code.
 - Codex, for the second reviewer.
-- Optional: [Paper Desktop](https://paper.design/downloads) with its agent plugin, and Node, for `sketch-it` and `sync-paper` (`install.sh` installs its capture script's browser).
 - Optional: the Excalidraw MCP for diagrams, and T3 Code for snoozing threads and the scheduled nudge. Without T3 Code those steps are skipped.
 
 ## Making them yours

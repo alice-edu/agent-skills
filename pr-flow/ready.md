@@ -26,6 +26,17 @@ Every item below ends as `[x]`, `N/A` or a Test-by-hand line:
 7. Screenshots for every change a student can see ([screenshots.md](screenshots.md)).
 8. `review-loop` agreed on this head.
 
+## Make it ready
+
+The gate before a reviewer sees the PR: `send-for-review` runs it before posting, and it runs alone when the user asks "is it ready?". The user often keeps changing a PR in its thread after `build-it` opened it, and those commits get no review of their own; this is where they get one.
+
+1. **What changed**: the head `review-loop` last agreed on is in the checklist's item 8 (`review-loop agreed at <sha>`). The current head is that one, with nothing new on the base: reuse it all and go to 4.
+2. **Review it**: merge the base in, then review until it would pass, as `build-it`'s step 8 ([its loop and its Done when](~/.agents/skills/build-it/SKILL.md)), on the **whole PR**, not only the new commits: a later change can undo why an earlier one was made, and the reviewer reads it whole.
+3. **Prove it again** on the new head: the checks above, the change seen in the running app when a student can see it, and screenshots retaken where the screen changed.
+4. **Rewrite the PR body** for where the PR ended up, not where it started ([pr-body.md](pr-body.md)): what changed, the behaviour table, the checklist with this head's SHA, the screenshots.
+
+Done when every checklist item is `[x]`, `N/A` or Test by hand on the current head, item 8 included. A P1 the loop can't settle stops it: it goes on the decision card, and the PR isn't announced while it's open.
+
 ## Reuse
 
 A check recorded against the same base and head is still proof. A later skill reruns only what a new commit or merge could have changed, and says which checks it reused.

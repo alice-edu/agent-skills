@@ -1,9 +1,0 @@
-{
-  "name": "to-paper",
-  "private": true,
-  "type": "module",
-  "description": "Copies rendered UI (a Storybook's stories, or a screen of the running app) into Paper as editable artboards.",
-  "dependencies": {
-    "playwright": "1.63.0"
-  }
-}

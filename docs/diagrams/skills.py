@@ -114,7 +114,10 @@ edges=[
 ])
 
 D["send"] = dict(title="4. Inside send-for-review and the nudge", nodes=[
-    N("s1", "Check it's still ready\nchecks green, main merged in"),
+    N("s0", "Changed since\nreview-loop agreed?", "decision"),
+    N("s6", "review-loop on the whole PR,\nprove it again, rewrite the PR body", "service"),
+    N("s1", "Ready\nchecks green, main merged in"),
+    N("s7", "\"is it ready?\":\nreport, post nothing", "terminal"),
     N("s2", "Post in #pr-review-channel\nrequest the reviewer, add the T3 link", "service"),
     N("s3", "Linear: In Review"),
     N("s4", "Schedule the nudge\n09:30 Monday to Friday", "queue"),
@@ -128,7 +131,8 @@ D["send"] = dict(title="4. Inside send-for-review and the nudge", nodes=[
     N("o5", "Already bumped once:\nask you", "client"),
     N("o6", "They forgot:\none polite bump", "service"),
 ], edges=[
-    E("s1", "s2"), E("s2", "s3"), E("s3", "s4"), E("s4", "s5"), E("s5", "n1", "next workday"),
+    E("s0", "s6", "yes"), E("s0", "s1", "no"), E("s6", "s1"),
+    E("s1", "s7", "check only"), E("s1", "s2"), E("s2", "s3"), E("s3", "s4"), E("s4", "s5"), E("s5", "n1", "next workday"),
     E("n1", "q"),
     E("q", "o1"), E("q", "o2", None, "success"), E("q", "o3", None, "failure"),
     E("q", "o4", None, "warning"), E("q", "o5"), E("q", "o6"),
@@ -302,35 +306,6 @@ D["usability"] = dict(title="9. Inside usability (\"usability this\")", nodes=[
     E("q", "f", "on its own", "success"), E("q", "led", "a review"), E("f", "r"),
 ])
 
-D["sketch"] = dict(title="12. Inside sketch-it (\"sketch it\", or a sketch on build-it's card)", nodes=[
-    N("s0", "You: \"sketch it\"\nor build-it's card picks a sketch;\none sentence on what's wrong", "terminal"),
-    N("sq", "Parts page\ncurrent?", "decision"),
-    N("sy", "sync-paper\nthe parts from Storybook", "external"),
-    N("s2", "Set up the page\nin the team's Paper file,\ntoday's screen as \"Now\""),
-    N("s3", "A round\n2-3 variants from the real parts,\njudged by usability; you pick\n\"1B, 2A\", or edit in Paper", "client"),
-    N("q", "Anything\nleft open?", "decision"),
-    N("s5", "Final row, every state,\nand a spec on the issue;\nthen build-it builds it", "terminal"),
-], edges=[
-    E("s0", "sq"), E("sq", "sy", "behind"), E("sy", "s2"), E("sq", "s2", "yes", "success"),
-    E("s2", "s3"), E("s3", "q"), E("q", "s3", "yes: next round", "warning"),
-    E("q", "s5", "no, and you agree", "success"),
-])
-
-D["psync"] = dict(title="13. Inside sync-paper (\"sync Paper\")", nodes=[
-    N("p0", "You: \"sync Paper\"\nor sketch-it, when the parts are behind", "terminal"),
-    N("p1", "1. Get it running\nPaper, Storybook from main,\nthe team's file, its Parts page"),
-    N("p2", "2. Capture every story\nto-paper.mjs: measure in a browser,\nrebuild as editable layers", "service"),
-    N("fp", "Fingerprint\nchanged?", "decision"),
-    N("pw", "Rewrite its artboard\nin place; new ones at\nthe end of their row"),
-    N("pk", "Keep it", "note"),
-    N("p3", "3. Tokens\nthe theme's colours and radius", "service"),
-    N("p4", "4. Check three\nagainst Storybook", "client"),
-    N("p5", "5. Report\nthe stamp names the commit\nwhen nothing failed", "terminal"),
-], edges=[
-    E("p0", "p1"), E("p1", "p2"), E("p2", "fp"), E("fp", "pw", "yes"), E("fp", "pk", "no"),
-    E("pw", "p3"), E("pk", "p3"), E("p3", "p4"), E("p4", "p5"),
-])
-
 # Where each one sits (x, y), so a redraw lands in the same place. The scene is in five sections,
 # tinted panels drawn by hand behind the diagrams: the big picture; commands you say, the PR flow;
 # commands you say, on their own; run by other skills; shared rules. A new diagram goes in its section,
@@ -343,7 +318,7 @@ AT = {
     "catch": (4310, 2700), "review": (5194, 2700),
     # Commands you say: on their own
     "grill": (150, 6350), "usability": (994, 6350), "student": (1868, 6350),
-    "council": (2820, 6350), "sketch": (3880, 6350), "psync": (4850, 6350),
+    "council": (2820, 6350),
     # Run by other skills
     "loop": (150, 8550), "babysit": (1076, 8550), "ltrack": (2693, 8550),
     # Shared rules

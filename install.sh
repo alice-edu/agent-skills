@@ -39,7 +39,7 @@ for d in "$agents/skills" "${claudes[@]}"; do
   done
 done
 
-# A skill's scripts with their own dependencies (sync-paper's browser) get them installed.
+# A skill's scripts with their own dependencies get them installed.
 for pkg in "$here"/skills/*/scripts/package.json; do
   [ -f "$pkg" ] || continue
   if command -v npm >/dev/null; then

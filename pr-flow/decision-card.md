@@ -16,11 +16,15 @@ A step outside what the skill grants (deleting data, touching production, closin
 ## How to ask
 
 1. Do all the work that doesn't depend on the answers first, so the card comes with everything else ready. After a review, the card follows its overview ([overview.md](overview.md)), and each question names its row's number.
-2. Ask with the harness's question tool (`AskUserQuestion` in Claude Code; in Codex, the user-input tool its current mode offers), so the thread shows it is waiting. One call. Each question is a **tldr** the user can answer cold in ten seconds:
-   - one plain line on what's being decided, in what a student sees or does (for Simplify?, what the code does), never in code names;
-   - options that each say what happens if picked, the recommended one first and marked;
-   - text to be posted, quoted in full;
+2. Ask with the harness's question tool (`AskUserQuestion` in Claude Code; in Codex, the user-input tool its current mode offers), so the thread shows it is waiting. One call. Each question is a **tldr** the user can answer cold in ten seconds, without having read the code:
+   - **the story first**: what a student sees or does, what goes wrong and when, and why the recommended option avoids it, in a few plain sentences. Parts are named as they look on screen ("the side rail", "the Back to Alice card"), never by code names or file paths;
+   - **a sketch** when the point turns on timing, order or where things are (two things swapping, a step running before another, a copy in two places): a few lines of text in a monospace block, in the option's `preview` where the tool has one, showing the moment it goes wrong. Plain words otherwise;
+   - options that each say what happens if picked, for the student and for the work, the recommended one first and marked;
+   - text to be posted (a reply to a reviewer), quoted in full in its option's `preview`, after the story: the reply is written for the reviewer, the story for the user;
    - the Links line last ([links.md](~/.agents/pr-flow/links.md)).
-3. Apply the answers and carry on to the end of the skill. A new choice for the user that turns up later (a full review after the card): ask one more card only when the next step depends on it; otherwise it goes at the top of the report.
+
+   Done with a question when the user could say, from it alone, why the recommended option is right. A question that needs the code to follow gets rewritten.
+3. When the user answers "explain" or "I don't get it", that's no pick: explain that question at more length, with a diagram ([diagrams.md](diagrams.md)) when a flow or an order is involved, then ask the same card again.
+4. Apply the answers and carry on to the end of the skill. A new choice for the user that turns up later (a full review after the card): ask one more card only when the next step depends on it; otherwise it goes at the top of the report.
 
 With no question tool, or no answer: post nothing that depends on the card, finish the rest, and start the report with the card.

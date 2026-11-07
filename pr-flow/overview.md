@@ -25,7 +25,7 @@ How a review is shown to the user: in `review-pr` (our review of a teammate's PR
 
 - **Point**: the number; the kind in bold; the point in six words or fewer, linked to its comment (fix-comments) or its `file:line` (review-pr); `· [diagram](…)` when it has one.
 - **Kind**, one of a fixed set. Product: **UX**, **Copy**, **Flow**, **Scope**. Technical: **Bug**, **Perf**, **Design**, **Cleanup**, **Test**.
-- **What it means**: in the product table, what a student sees or does; in the technical table, the cause and effect in plain words. No code names in either.
+- **What it means**: in the product table, what a student sees or does; in the technical table, the cause and effect in plain words. No code names or file paths in either: parts are named as they look on screen. The test: someone who hasn't read the code understands the row.
 - **Recommended**: one emoji and a word, then the action, verb first.
   - fix-comments: ✅ **Fix**, 💬 **Push back** (the reviewer is wrong, with evidence), ⏭️ **Skip** (optional, and it doesn't matter here).
   - review-pr: 🔴 **Blocking**, 🟡 **Optional**, ⚪ **Drop** (not worth posting).

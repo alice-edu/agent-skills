@@ -4,7 +4,7 @@ The user switches between many threads, Slack and Linear. Every place a skill ha
 
 ## The Links line
 
-Every report (just above waiting.md's `Snoozed until …` / `Settled.` line), and every question on a decision card, ends with one line holding each of these that exists for the work, in this order:
+Every report (after its **You:** line, [report.md](report.md), and just above waiting.md's `Snoozed until …` / `Settled.` line), and every question on a decision card, ends with one line holding each of these that exists for the work, in this order:
 
 ```
 **Links:** [PR #723](…) · [Slack thread](…) · [ALI-10824](…) · [Diagram: <what it shows>](…)

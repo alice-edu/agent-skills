@@ -69,6 +69,6 @@ Done when Linear shows every answered row as answered.
 
 Propose the order of Ready to Build's top five, by what each unblocks and how many students it touches, and set priorities on the user's answer.
 
-Then report: each status's count before and after, what was canceled and why (grouped by reason), what's in Needs Shaping waiting on the user, and the issues set aside.
+Then report, shaped by [report.md](~/.agents/pr-flow/report.md): each status's count before and after, what was canceled and why (grouped by reason), what's in Needs Shaping waiting on the user, and the issues set aside.
 
 Done when the report is sent.

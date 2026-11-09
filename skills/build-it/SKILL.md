@@ -108,11 +108,13 @@ Done when the PR shows the current head, every image loads, and every checklist 
 
 ## 10. Report
 
+Shaped by [report.md](~/.agents/pr-flow/report.md):
+
 - the verdict, and the PR link with two or three lines on what changed, or for a parked one, why and what was posted, or for one already done, the commit or PR that did it;
 - the behaviour table when behaviour changed;
 - Test by hand, and anything that couldn't be proven;
 - **Decided**: choices made without asking;
-- next: "say *send for review*" when there's a PR;
+- the **You:** line: "say *send for review*" when there's a PR;
 - the Links line ([links.md](~/.agents/pr-flow/links.md)).
 
 Then put the thread where [waiting.md](~/.agents/pr-flow/waiting.md) says.

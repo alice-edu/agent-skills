@@ -66,6 +66,6 @@ gh api repos/<o>/<r>/deployments/$id/statuses --jq '.[0].state'   # success | fa
 
 Once merged, delete its `Nudge PR #<n>` task, if any (`list_scheduled_tasks`, `delete_scheduled_task`; nudge.md).
 
-Merged or not, the merge commit, the deploy's state, the proof, what was posted where, and **Decided**: every call made on the user's behalf. When the run stops before merging, `unwatch_pull_request` first, and start the report with why. End with the Links line ([links.md](~/.agents/pr-flow/links.md)).
+Shaped by [report.md](~/.agents/pr-flow/report.md). Merged or not, the merge commit, the deploy's state, the proof, what was posted where, and **Decided**: every call made on the user's behalf. When the run stops before merging, `unwatch_pull_request` first, and start the report with why. End with the Links line ([links.md](~/.agents/pr-flow/links.md)).
 
 Then put the thread where [waiting.md](~/.agents/pr-flow/waiting.md) says.

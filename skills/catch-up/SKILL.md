@@ -59,12 +59,12 @@ New review comments found in step 1 aren't handled here: list them in the report
 
 Everything that needs the user goes on one decision card ([decision-card.md](~/.agents/pr-flow/decision-card.md)), after all the other work is done. Apply their answers, and prove again what they changed.
 
-Report:
+Report, shaped by [report.md](~/.agents/pr-flow/report.md):
 
 - how far behind it was, and what landed on the base that mattered to it;
 - simple or complex, and each conflict's resolution in a line;
 - the proof: checks, `review-loop`'s verdict, the app;
 - **Decided**: each call made on the user's behalf;
-- what's next: comments for `fix-comments`, a review to request, or nothing.
+- the **You:** line: comments for `fix-comments`, a review to request, or nothing.
 
 End with the Links line ([links.md](~/.agents/pr-flow/links.md)). The thread stays in sight ([waiting.md](~/.agents/pr-flow/waiting.md)): what happens next is the user's call.

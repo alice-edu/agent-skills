@@ -65,6 +65,6 @@ Done when GitHub shows the review's state at the head, the Slack reply is in the
 
 ## 6. Report
 
-The explanation and diagram (round 1), the overview with each row as posted, each lens's result (Spec, Correctness, Standards, Backend, UI and UX: [lenses.md](~/.agents/pr-flow/lenses.md)), the review's link, anything decided on the user's behalf. When it wasn't a council and the PR changes the data model, a workflow, auth or a migration, suggest one: "say *council* for four models on it". When it adds or reworks a flow a student goes through and had no student test, suggest "say *student test*". When changes were requested, end with what's next: "When they've pushed, say *another look*." Last, the Links line ([links.md](~/.agents/pr-flow/links.md)).
+Shaped by [report.md](~/.agents/pr-flow/report.md). The explanation and diagram (round 1), the overview with each row as posted, each lens's result (Spec, Correctness, Standards, Backend, UI and UX: [lenses.md](~/.agents/pr-flow/lenses.md)), the review's link, anything decided on the user's behalf. When it wasn't a council and the PR changes the data model, a workflow, auth or a migration, suggest one: "say *council* for four models on it". When it adds or reworks a flow a student goes through and had no student test, suggest "say *student test*". When changes were requested, the **You:** line is "When they've pushed, say *another look*." Last, the Links line ([links.md](~/.agents/pr-flow/links.md)).
 
 Then put the thread where [waiting.md](~/.agents/pr-flow/waiting.md) says.

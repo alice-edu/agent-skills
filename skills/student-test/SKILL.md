@@ -37,7 +37,7 @@ what you understand, what you'd do, and what confuses you, in your own words.
 
 ## 3. What comes back
 
-Report:
+Report, shaped by [report.md](~/.agents/pr-flow/report.md):
 
 - what more than one of them got wrong or found confusing, in their words, with a suggested fix for each;
 - what only one of them hit, listed apart;

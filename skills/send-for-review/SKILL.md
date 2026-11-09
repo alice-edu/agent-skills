@@ -19,7 +19,7 @@ The PR (from the link, or the current branch's), its head, `additions`, `deletio
 
 What can't be made ready (a P1 the loop can't settle, a red check that isn't ours, a test that needs something we don't have) goes on the decision card: send it saying so, or wait.
 
-Asked only "is it ready?": stop here and report the verdict, what the review fixed, and what's left. Post nothing.
+Asked only "is it ready?": stop here and report ([report.md](~/.agents/pr-flow/report.md)) the verdict, what the review fixed, and what's left. Post nothing.
 
 Done when every checklist item is true for the head being announced.
 
@@ -35,6 +35,6 @@ Done when the message is in Slack once, exactly one `Nudge PR #<n>` task is sche
 
 ## 4. Report
 
-One or two lines on what was posted, then the Links line ([links.md](~/.agents/pr-flow/links.md)).
+Shaped by [report.md](~/.agents/pr-flow/report.md): one or two lines on what was posted, then the Links line ([links.md](~/.agents/pr-flow/links.md)).
 
 Then put the thread where [waiting.md](~/.agents/pr-flow/waiting.md) says.

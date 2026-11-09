@@ -60,6 +60,8 @@ Done when every finding is fixed or listed as left, with a reason, each product 
 
 ### 4. Report
 
+Shaped by [report.md](~/.agents/pr-flow/report.md):
+
 - Before and after, side by side, per state.
 - What changed and why, one line each, with the principle it serves.
 - **Your call**: product choices still waiting on the card, numbered with the recommended answer, so "2: yes" applies one.

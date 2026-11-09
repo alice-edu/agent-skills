@@ -58,6 +58,6 @@ Run `send-for-review`: it posts "ready for another round" in the thread and re-r
 
 ## 7. Report
 
-The overview, updated: each row's outcome (fixed in <sha>, pushed back, skipped) and any rows the full review added. Then the head, and CI's state. End with the Links line ([links.md](~/.agents/pr-flow/links.md)).
+Shaped by [report.md](~/.agents/pr-flow/report.md). The overview, updated: each row's outcome (fixed in <sha>, pushed back, skipped) and any rows the full review added. Then the head, and CI's state. End with the Links line ([links.md](~/.agents/pr-flow/links.md)).
 
 Then put the thread where [waiting.md](~/.agents/pr-flow/waiting.md) says.

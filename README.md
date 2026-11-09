@@ -18,6 +18,7 @@ They're written for our repo (Alicia), our Slack and our Linear, and they're pub
 | "review loop" | [`review-loop`](skills/review-loop/SKILL.md) | Claude and Codex review a change in rounds until they agree. The other skills run it. |
 | "council" | [`council`](skills/council/SKILL.md) | Four models review instead of two, for changes that deserve it. |
 | "usability", "fix it with usability" | [`usability`](skills/usability/SKILL.md) | Judges a screen like a senior product designer, by *Don't Make Me Think* first, and fixes what a student would trip on in one pass, with before and after screenshots. Its principles are also what reviews judge UI by. |
+| "clean Linear", "triage" | [`clean-linear`](skills/clean-linear/SKILL.md) | Sorts every waiting Linear issue into the status whose bar it meets (Ready to Build, Needs Shaping, Backlog) or cancels it with a reason, checking the code for what's already done, and asks you in batches of 10 to 15. |
 | "student test" | [`student-test`](skills/student-test/SKILL.md) | A panel of agents, each playing a student, tries a screen, a flow or some wording. |
 | "babysit" | [`babysit-pr`](skills/babysit-pr/SKILL.md) | Watches a PR through CI and review bots, fixing what's real, until it's green. |
 | (automatic) | [`linear-track`](skills/linear-track/SKILL.md) | Keeps the thread's Linear issue in step with the work. |

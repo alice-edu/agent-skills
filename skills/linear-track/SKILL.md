@@ -15,7 +15,14 @@ Every PR the user ships has one Linear issue, and the issue's status says where 
 
 In a repo without a row, track only when the user names the issue; ask them for the team and project before creating one, then add the row.
 
-Statuses on `ALI`, in the order work moves through them:
+Before work starts, an issue waits in one of four statuses. Each has a bar, and an issue that doesn't meet it moves (`clean-linear` keeps them honest):
+
+- **Triage**: the inbox. Every issue leaves it, for one of the three below, Canceled or Duplicate.
+- **Ready to Build**: an agent could build it without asking anything: the problem, its evidence or cause, the constraints and what done means, with no product call left open. It describes the problem, never the design. Ordered by priority, so its top is what's next.
+- **Needs Shaping**: needed, but something is open. Its description ends with a **To shape** section: the open question, and what settles it (the user, a student, a sketch, a whiteboard session).
+- **Backlog**: maybe some day; nothing in it is promised. Canceling is normal too, with the reason in a comment, and a canceled issue can be reopened.
+
+Once work starts, in the order it moves:
 
 - **In Progress**: set by this skill when work starts. Linear's GitHub integration keeps it there while a linked PR is open, and resets In Review to it when a PR is linked.
 - **In Review**: set by `send-for-review` when the PR is posted for review, or by the user.

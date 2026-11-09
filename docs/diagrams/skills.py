@@ -93,7 +93,7 @@ D["fix"] = dict(title="3. Inside fix-comments", nodes=[
     E("f4b", "f5", "clean", "success"), E("f5", "f6"), E("f6", "f7"),
 ])
 
-D["loop"] = dict(title="14. Inside review-loop (used by every skill that reviews)", nodes=[
+D["loop"] = dict(title="13. Inside review-loop (used by every skill that reviews)", nodes=[
     N("r1", "Scope\nbase, head, what was asked, checks"),
     N("cx", "Codex reviews\nevery lens, every repo doc", "external", "rv"),
     N("cl", "Claude reviews\nevery lens, every repo doc", "service", "rv"),
@@ -200,7 +200,7 @@ D["grill"] = dict(title="8. Inside grilling (\"grill me\")", nodes=[
     E("q", "g2", "no: next round", "warning"), E("q", "g5", "yes", "success"),
 ])
 
-D["babysit"] = dict(title="15. Inside babysit-pr (from full-send, or \"babysit\")", nodes=[
+D["babysit"] = dict(title="14. Inside babysit-pr (from full-send, or \"babysit\")", nodes=[
     N("w", "Watch the PR\nT3 wakes the thread on news;\nelsewhere pr-wait", "queue"),
     N("q", "What\nhappened?", "decision"),
     N("ci", "A check failed\nours: fix, prove, push\na flake: rerun once", "warning"),
@@ -241,7 +241,7 @@ D["student"] = dict(title="10. Inside student-test (\"student test\")", nodes=[
     E("q", "b"), E("q", "v"), E("q", "o"),
 ])
 
-D["ltrack"] = dict(title="16. Inside linear-track (every PR has one issue)", nodes=[
+D["ltrack"] = dict(title="15. Inside linear-track (every PR has one issue)", nodes=[
     N("f", "1. Find the issue\nALI-123 in the prompt or branch,\na search, or a new one"),
     N("q", "Someone\nelse has it?", "decision"),
     N("ask", "Stop and tell you\nwho has it, its PR", "client"),
@@ -254,7 +254,7 @@ D["ltrack"] = dict(title="16. Inside linear-track (every PR has one issue)", nod
     E("s", "l"), E("l", "st"), E("s", "d", "work dropped", "warning"),
 ])
 
-D["rules"] = dict(direction="RIGHT", title="17. The shared rules every skill leans on (pr-flow/)", nodes=[
+D["rules"] = dict(direction="RIGHT", title="16. The shared rules every skill leans on (pr-flow/)", nodes=[
     N("dc", "decision-card\none question a command,\nwho decides what", "client", "ask"),
     N("ov", "overview\nyour table, then ours,\nwith confidence", "client", "ask"),
     N("le", "lenses\nSpec, Correctness, Standards,\nBackend, UI and UX, the repo's docs", "service", "rev"),
@@ -275,7 +275,7 @@ edges=[
     E("pb", "li"), E("li", "sl"), E("sl", "wa"), E("wa", "nu"), E("nu", "ov", "a review landed"),
 ])
 
-D["excalidraw"] = dict(title="18. Inside diagrams (Excalidraw), used by build-it, review-pr, the overview", nodes=[
+D["excalidraw"] = dict(title="17. Inside diagrams (Excalidraw), used by build-it, review-pr, the overview", nodes=[
     N("q", "Hard to follow\nin prose?", "decision"),
     N("no", "Skip it\nUI-only, one file, a rename", "terminal"),
     N("t", "Tools there?", "decision"),
@@ -289,6 +289,19 @@ D["excalidraw"] = dict(title="18. Inside diagrams (Excalidraw), used by build-it
 ], edges=[
     E("q", "no", "no"), E("q", "t", "yes"), E("t", "m", "no", "warning"), E("t", "c", "yes", "success"),
     E("c", "d"), E("d", "f"), E("f", "s"), E("s", "f", "fixed something"), E("s", "sh", "reads cleanly", "success"), E("sh", "p"),
+])
+
+D["clean"] = dict(title="12. Inside clean-linear (\"clean Linear\", \"triage\")", nodes=[
+    N("c1", "1. Gather\nTriage, Backlog, Needs Shaping,\nReady to Build (or Triage alone)"),
+    N("c2", "2. Find the facts\nalready done? duplicate?\nout of date? thin? open?", "service"),
+    N("c3", "3. Recommend\none status each, a reason in a line,\ngrouped by area of the app"),
+    N("c4", "4. A batch of 10 to 15\n\"yes, except 4: backlog\"", "client"),
+    N("c5", "5. Apply\ncancel with a reason, bring Ready up to its bar,\nadd To shape to Needs Shaping"),
+    N("q", "More\nbatches?", "decision"),
+    N("c6", "6. Rank Ready to Build's top five,\nreport counts before and after", "terminal"),
+], edges=[
+    E("c1", "c2"), E("c2", "c3"), E("c3", "c4"), E("c4", "c5"), E("c5", "q"),
+    E("q", "c4", "yes"), E("q", "c6", "no", "success"),
 ])
 
 D["usability"] = dict(title="9. Inside usability (\"usability this\")", nodes=[
@@ -318,7 +331,7 @@ AT = {
     "catch": (4310, 2700), "review": (5194, 2700),
     # Commands you say: on their own
     "grill": (150, 6350), "usability": (994, 6350), "student": (1868, 6350),
-    "council": (2820, 6350),
+    "council": (2820, 6350), "clean": (3880, 6350),
     # Run by other skills
     "loop": (150, 8550), "babysit": (1076, 8550), "ltrack": (2693, 8550),
     # Shared rules

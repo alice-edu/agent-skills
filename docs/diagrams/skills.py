@@ -56,7 +56,7 @@ D["build"] = dict(title="2. Inside build-it", nodes=[
     N("b8q", "Would a reviewer\napprove it?", "decision", "r"),
     N("b8f", "Fix it, prove it again", "warning", "r"),
     N("b9", "9. Open the PR\nscreenshots, body, checklist"),
-    N("b10", "10. Report\nsay \"send for review\"", "terminal"),
+    N("b10", "10. Report\nverdict first, then You:\nsay \"send for review\"", "terminal"),
 ], groups=[{"id": "u", "label": "Understand"}, {"id": "p", "label": "Build and prove"},
            {"id": "r", "label": "Review until it would pass"}],
 edges=[
@@ -262,6 +262,7 @@ D["rules"] = dict(direction="RIGHT", title="16. The shared rules every skill lea
     N("sc", "screenshots\nbefore and after, uploaded", "service", "prv"),
     N("dg", "diagrams\nExcalidraw, public link", "external", "show"),
     N("pb", "pr-body\nwhat, why, proof", "default", "show"),
+    N("rp", "report\nverdict first, ends on You:\nthe exact words to reply", "client", "show"),
     N("li", "links\nthe Links line every report ends on", "default", "show"),
     N("sl", "slack, slack-report, github\nhow we post and reply", "default", "talk"),
     N("wa", "waiting\nsnooze or settle the thread", "queue", "wait"),
@@ -272,7 +273,7 @@ D["rules"] = dict(direction="RIGHT", title="16. The shared rules every skill lea
 edges=[
     E("le", "ov", "findings"), E("ov", "dc", "your rows"),
     E("re", "sc"), E("re", "pb", "the checklist"), E("sc", "pb"), E("dg", "pb"), E("dg", "li"),
-    E("pb", "li"), E("li", "sl"), E("sl", "wa"), E("wa", "nu"), E("nu", "ov", "a review landed"),
+    E("pb", "li"), E("rp", "li", "then"), E("li", "sl"), E("sl", "wa"), E("wa", "nu"), E("nu", "ov", "a review landed"),
 ])
 
 D["excalidraw"] = dict(title="17. Inside diagrams (Excalidraw), used by build-it, review-pr, the overview", nodes=[

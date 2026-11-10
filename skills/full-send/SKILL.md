@@ -62,10 +62,13 @@ gh api repos/<o>/<r>/deployments/$id/statuses --jq '.[0].state'   # success | fa
 - **failure**: post nothing in that thread; main's deploy is broken, and the user hears about it first in the report.
 - Still deploying when the run must end: post nothing, and say it's merged but not live yet.
 
-## 6. Report
+## 6. Settle, then report
 
 Once merged, delete its `Nudge PR #<n>` task, if any (`list_scheduled_tasks`, `delete_scheduled_task`; nudge.md).
 
-Shaped by [report.md](~/.agents/pr-flow/report.md). Merged or not, the merge commit, the deploy's state, the proof, what was posted where, and **Decided**: every call made on the user's behalf. When the run stops before merging, `unwatch_pull_request` first, and start the report with why. End with the Links line ([links.md](~/.agents/pr-flow/links.md)).
+Two actions, in this order, because the report is your last message and the turn ends with it:
 
-Then put the thread where [waiting.md](~/.agents/pr-flow/waiting.md) says.
+1. **Put the thread away.** Merged and live, with the Slack thread told when there was one: `t3_thread_organize` with `action: "settle"`. Sent back for review (step 2): `action: "snooze"` and `snoozedUntil` 10:30 on the next working day, with the local offset. Anything else (stopped before merging, merged but not live): the thread stays in sight, no call.
+2. **Write the report**, shaped by [report.md](~/.agents/pr-flow/report.md). Merged or not, the merge commit, the deploy's state, the proof, what was posted where, and **Decided**: every call made on the user's behalf. When the run stops before merging, `unwatch_pull_request` first, and start the report with why. Then the Links line ([links.md](~/.agents/pr-flow/links.md)), and last, where the thread went: `Settled.`, `Snoozed until Wed 10:30.` or `In sight: <why>.`
+
+Done when `t3_thread_organize` has answered (or the thread is in sight for a reason) and the report's last line says which ([waiting.md](~/.agents/pr-flow/waiting.md)).

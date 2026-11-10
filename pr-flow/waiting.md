@@ -13,7 +13,7 @@ Where a thread goes when its skill ends, so the user's T3 list shows only thread
 
 ## How
 
-In T3 Code, as the skill's last action, after its report is written:
+In T3 Code, as the skill's last action before its report: the report is the turn's last message, so an action after it never runs. Each skill's last step names its own outcome; this table is where they come from.
 
 For a time of day (10:30 on the next working day, nudge.md), work out the date, skipping weekends and Danish public holidays, and give it with the local offset. For hours from now:
 
@@ -28,4 +28,4 @@ When one skill runs another (`fix-comments` runs `send-for-review`, `full-send` 
 
 A thread that watches a PR (`babysit-pr`) unwatches before either. Outside T3 Code there's no thread list to tidy: this step is skipped.
 
-The report's last line says where the thread went: `Snoozed until 14:30.` (local time) or `Settled.`
+The report's last line says where the thread went: `Snoozed until 14:30.` (local time), `Settled.`, or `In sight: <why>.`

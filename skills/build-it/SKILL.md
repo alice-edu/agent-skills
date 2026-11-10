@@ -106,15 +106,19 @@ Screenshots per [screenshots.md](~/.agents/pr-flow/screenshots.md); the body per
 
 Done when the PR shows the current head, every image loads, and every checklist item is `[x]`, `N/A` or Test by hand.
 
-## 10. Report
+## 10. Settle, then report
 
-Shaped by [report.md](~/.agents/pr-flow/report.md):
+Two actions, in this order, because the report is your last message and the turn ends with it:
+
+1. **Put the thread away.** Parked (unconfirmed, or a big feature left in Linear), or found already done: `t3_thread_organize` with `action: "settle"`. A PR opened: it isn't sent yet, so the thread stays in sight, no call.
+2. **Write the report**, shaped by [report.md](~/.agents/pr-flow/report.md):
 
 - the verdict, and the PR link with two or three lines on what changed, or for a parked one, why and what was posted, or for one already done, the commit or PR that did it;
 - the behaviour table when behaviour changed;
 - Test by hand, and anything that couldn't be proven;
 - **Decided**: choices made without asking;
 - the **You:** line: "say *send for review*" when there's a PR;
-- the Links line ([links.md](~/.agents/pr-flow/links.md)).
+- the Links line ([links.md](~/.agents/pr-flow/links.md));
+- last, where the thread went: `Settled.` or `In sight: <why>.`
 
-Then put the thread where [waiting.md](~/.agents/pr-flow/waiting.md) says.
+Done when `t3_thread_organize` has answered (or the thread is in sight for a reason) and the report's last line says which ([waiting.md](~/.agents/pr-flow/waiting.md)).

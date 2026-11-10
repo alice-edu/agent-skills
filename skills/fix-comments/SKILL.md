@@ -36,14 +36,14 @@ Show the user the overview. Then:
 - **Nothing on the card** (every row is technical, High and ✅ Fix): no question. Go on to step 4; the overview opens the report.
 - **Otherwise**: one decision card: each product row, each Push back and Skip with its reply quoted, each Stuck row. Fixing the technical ✅ rows doesn't wait for it: start step 4 first and ask once that work is under way. Product rows wait for the answer.
 
-For "review's back" or "what did they say", stop after the overview, with the card's questions in it: "say *fix comments* to go". A later "fix comments" in the same thread starts from this overview when the review hasn't changed since.
+For "review's back" or "what did they say", stop after the overview, with the card's questions in it: "say *fix comments* to go", the last line `In sight: <why>.` A later "fix comments" in the same thread starts from this overview when the review hasn't changed since.
 
 ## 4. Fix
 
 1. Merge the base in first, so the fixes are proven on what will merge.
 2. Fix each ✅ row, the whole of what it points at (the same problem in its sibling code too), the right way ([lenses.md](~/.agents/pr-flow/lenses.md), "The right way"): fix the shape a comment exposes rather than patching around it. A point that was a bug gets a test that fails without the fix.
 3. Hold the PR to [ready.md](~/.agents/pr-flow/ready.md) again: rerun the checks the fixes touch, see a visible fix in the running app.
-4. `review-loop` in **author** mode on the whole PR (the base merged in, to the head), from scratch, as if it were new: a fresh ledger, not one reused from an earlier run, with only the user's approved answers carried over; every lens that fits, the Backend lens through the repo's backend review doc when it touches the backend. On top of that, each fix this round gets a **regression** check: its callers, its sibling code and the tests around it, for what the fix could have broken. Fix what it finds the same way (items 2 and 3), whether or not the reviewer raised it, and list the new ones in the report. A regression a fix caused is fixed whatever its grade. Done when the loop agrees on the final head, every fix (the reviewer's and the loop's own) has had its regression check, and each regression found is fixed and proven. Budget spent with a P1 open: stop here, and report it rather than sending it back.
+4. `review-loop` in **author** mode on the whole PR (the base merged in, to the head), from scratch, as if it were new: a fresh ledger, not one reused from an earlier run, with only the user's approved answers carried over; every lens that fits, the Backend lens through the repo's backend review doc when it touches the backend. On top of that, each fix this round gets a **regression** check: its callers, its sibling code and the tests around it, for what the fix could have broken. Fix what it finds the same way (items 2 and 3), whether or not the reviewer raised it, and list the new ones in the report. A regression a fix caused is fixed whatever its grade. Done when the loop agrees on the final head, every fix (the reviewer's and the loop's own) has had its regression check, and each regression found is fixed and proven. Budget spent with a P1 open: don't send it back; go to step 7, where the thread stays in sight.
 5. Screenshots retaken where something visible changed (screenshots.md), and the PR body updated: What changed, the checklist, Test by hand.
 
 ## 5. Push and reply
@@ -56,8 +56,11 @@ Done when every point from step 1 has a reply on GitHub pointing at a pushed com
 
 Run `send-for-review`: it posts "ready for another round" in the thread and re-requests the reviewer.
 
-## 7. Report
+## 7. Snooze, then report
 
-Shaped by [report.md](~/.agents/pr-flow/report.md). The overview, updated: each row's outcome (fixed in <sha>, pushed back, skipped) and any rows the full review added. Then the head, and CI's state. End with the Links line ([links.md](~/.agents/pr-flow/links.md)).
+Two actions, in this order, because the report is your last message and the turn ends with it:
 
-Then put the thread where [waiting.md](~/.agents/pr-flow/waiting.md) says.
+1. **Snooze the thread.** When `send-for-review` posted, call `t3_thread_organize` with `action: "snooze"` and `snoozedUntil` 10:30 on the next working day, with the local offset (`date`; skip weekends and Danish public holidays, [waiting.md](~/.agents/pr-flow/waiting.md)). When it didn't post (a card unanswered, a red check of ours), the thread stays in sight: no call.
+2. **Write the report** ([report.md](~/.agents/pr-flow/report.md)): the verdict first; the overview, updated, each row's outcome (fixed in <sha>, pushed back, skipped) and any rows the full review added; the head and CI's state; the **You:** line; the Links line ([links.md](~/.agents/pr-flow/links.md)); and last, where the thread went: `Snoozed until Wed 10:30.` or `In sight: <why>.`
+
+Done when `t3_thread_organize` has answered (or the thread is in sight for a reason) and the report's last line says which.

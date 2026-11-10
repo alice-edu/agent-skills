@@ -56,7 +56,7 @@ D["build"] = dict(title="2. Inside build-it", nodes=[
     N("b8q", "Would a reviewer\napprove it?", "decision", "r"),
     N("b8f", "Fix it, prove it again", "warning", "r"),
     N("b9", "9. Open the PR\nscreenshots, body, checklist"),
-    N("b10", "10. Report\nverdict first, then You:\nsay \"send for review\"", "terminal"),
+    N("b10", "10. Settle if parked, then report\nverdict first, then You:\nsay \"send for review\"", "terminal"),
 ], groups=[{"id": "u", "label": "Understand"}, {"id": "p", "label": "Build and prove"},
            {"id": "r", "label": "Review until it would pass"}],
 edges=[
@@ -81,7 +81,7 @@ D["fix"] = dict(title="3. Inside fix-comments", nodes=[
     N("f4b", "Full re-review from scratch\n+ what could each fix have broken?", "service"),
     N("f5", "5. Push, reply on every comment"),
     N("f6", "6. send-for-review\n\"ready for another round\"", "service"),
-    N("f7", "7. Report", "terminal"),
+    N("f7", "7. Snooze, then report\nlast line: Snoozed until …", "terminal"),
 ], edges=[
     E("in1", "f1"), E("in2", "f1"), E("in3", "f1"),
     E("f1", "f2"), E("f2", "f3"),
@@ -148,7 +148,7 @@ D["full"] = dict(title="5. Inside full-send", nodes=[
     N("a4", "4. babysit-pr\nCI and review bots until green", "service"),
     N("a5", "Merge", "service"),
     N("a6", "5. Check it's live\nLinear to Done, nudge stopped"),
-    N("a7", "6. Report", "terminal"),
+    N("a7", "6. Settle, then report\nlast line: Settled.", "terminal"),
 ], edges=[
     E("a1", "a2"), E("a2", "q"), E("q", "back", "no: it grew", "warning"),
     E("q", "a3", "yes", "success"), E("a3", "a4"), E("a4", "a5", "green", "success"),
@@ -163,7 +163,7 @@ D["review"] = dict(title="7. Inside review-pr (a teammate's PR)", nodes=[
     N("q", "Anything\nfor you?", "decision"),
     N("card", "Overview + decision card", "client"),
     N("p5", "5. Post on GitHub,\nreply in the Slack thread", "service"),
-    N("p6", "6. Report", "terminal"),
+    N("p6", "6. Snooze or settle, then report\nlast line says which", "terminal"),
 ], edges=[
     E("p1", "p2"), E("p1", "p2b"), E("p2", "p3"), E("p2b", "p3"), E("p3", "q"),
     E("q", "card", "yes"), E("card", "p5", "go"), E("q", "p5", "no", "success"),
@@ -265,7 +265,7 @@ D["rules"] = dict(direction="RIGHT", title="16. The shared rules every skill lea
     N("rp", "report\nverdict first, ends on You:\nthe exact words to reply", "client", "show"),
     N("li", "links\nthe Links line every report ends on", "default", "show"),
     N("sl", "slack, slack-report, github\nhow we post and reply", "default", "talk"),
-    N("wa", "waiting\nsnooze or settle the thread", "queue", "wait"),
+    N("wa", "waiting\nsnooze or settle the thread,\nbefore the report", "queue", "wait"),
     N("nu", "nudge\nthe 09:30 check", "queue", "wait"),
 ], groups=[{"id": "ask", "label": "Asking you"}, {"id": "rev", "label": "Reviewing"},
            {"id": "prv", "label": "Proving"}, {"id": "show", "label": "Showing the work"},

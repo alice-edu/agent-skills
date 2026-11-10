@@ -19,7 +19,7 @@ The PR (from the link, or the current branch's), its head, `additions`, `deletio
 
 What can't be made ready (a P1 the loop can't settle, a red check that isn't ours, a test that needs something we don't have) goes on the decision card: send it saying so, or wait.
 
-Asked only "is it ready?": stop here and report ([report.md](~/.agents/pr-flow/report.md)) the verdict, what the review fixed, and what's left. Post nothing.
+Asked only "is it ready?": post nothing, and go to step 4 with the verdict, what the review fixed, and what's left.
 
 Done when every checklist item is true for the head being announced.
 
@@ -33,8 +33,11 @@ Either way, add the T3 link in the thread ([links.md](~/.agents/pr-flow/links.md
 
 Done when the message is in Slack once, exactly one `Nudge PR #<n>` task is scheduled with its own id in its prompt (in T3 Code), the thread has a `T3 thread:` reply linking this thread (in T3 Code), the reviewer is requested on GitHub where there is one, and Linear reads In Review.
 
-## 4. Report
+## 4. Snooze, then report
 
-Shaped by [report.md](~/.agents/pr-flow/report.md): one or two lines on what was posted, then the Links line ([links.md](~/.agents/pr-flow/links.md)).
+Run from another skill (`fix-comments`, `full-send`): report what was posted and hand back; the outer skill puts the thread away. On its own, two actions, in this order, because the report is your last message and the turn ends with it:
 
-Then put the thread where [waiting.md](~/.agents/pr-flow/waiting.md) says.
+1. **Snooze the thread.** When it posted, call `t3_thread_organize` with `action: "snooze"` and `snoozedUntil` 10:30 on the next working day, with the local offset (`date`; skip weekends and Danish public holidays, [waiting.md](~/.agents/pr-flow/waiting.md)). When it didn't (asked only "is it ready?", or not ready), the thread stays in sight: no call.
+2. **Write the report** ([report.md](~/.agents/pr-flow/report.md)): one or two lines on what was posted, the **You:** line, the Links line ([links.md](~/.agents/pr-flow/links.md)), and last, where the thread went: `Snoozed until Wed 10:30.` or `In sight: <why>.`
+
+Done when `t3_thread_organize` has answered (or the thread is in sight for a reason) and the report's last line says which.

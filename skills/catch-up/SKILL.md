@@ -68,4 +68,4 @@ Report, shaped by [report.md](~/.agents/pr-flow/report.md):
 - **Decided**: each call made on the user's behalf;
 - the **You:** line: comments for `fix-comments`, a review to request, or nothing.
 
-End with the Links line ([links.md](~/.agents/pr-flow/links.md)). The thread stays in sight ([waiting.md](~/.agents/pr-flow/waiting.md)): what happens next is the user's call.
+End with the Links line ([links.md](~/.agents/pr-flow/links.md)), then `In sight: <why>.` The thread stays in sight with no `t3_thread_organize` call ([waiting.md](~/.agents/pr-flow/waiting.md)): what happens next is the user's call.

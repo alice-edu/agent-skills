@@ -28,4 +28,4 @@ Keep the PR the size its goal needs: a bot's nit on a rare path is answered, not
 
 ## Done
 
-The required checks are green on the latest head, every bot finding is fixed or answered, the branch is up to date, and GitHub reports it mergeable. Merging is `full-send`'s call, or the user's: report the PR ready ([report.md](~/.agents/pr-flow/report.md)), unwatched, ending with the Links line ([links.md](~/.agents/pr-flow/links.md)).
+The required checks are green on the latest head, every bot finding is fixed or answered, the branch is up to date, and GitHub reports it mergeable. Merging is `full-send`'s call, or the user's: report the PR ready ([report.md](~/.agents/pr-flow/report.md)), unwatched, ending with the Links line ([links.md](~/.agents/pr-flow/links.md)) and, run on its own, `In sight: ready to merge.` A stop that's blocked or asking ends the same way, `In sight: <why>.` Run from `full-send`, it hands back and `full-send` reports.

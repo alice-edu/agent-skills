@@ -12,8 +12,11 @@ How a review is shown to the user: in `review-pr` (our review of a teammate's PR
    - **Technical (we decide)** second.
 
    Leave out a table with no rows. Number the rows across both tables (1, 2, 3 …), so the user can answer "go, but 2 the other way".
+   Before showing the tables, go through every row against [diagrams.md](diagrams.md), "When": each one that matches gets its diagram, before and after, linked in its Point cell. Whatever the row's owner or confidence: a technical rework needs one as much as a product question.
 3. **Details**, under the tables: the card's question for each row on it, written as [decision-card.md](decision-card.md) "How to ask" says, and a diagram's screenshot. Then one line per row giving its confidence's evidence. On GitHub, the details go in a `<details>` block.
 4. The Links line ([links.md](links.md)).
+
+Done when every row has its cells, and every row that matches diagrams.md's "When" has `· [diagram](…)` in its Point cell.
 
 ## The columns
 
@@ -31,7 +34,7 @@ How a review is shown to the user: in `review-pr` (our review of a teammate's PR
   - review-pr: 🔴 **Blocking**, 🟡 **Optional**, ⚪ **Drop** (not worth posting).
 - **Conf.**: High, Med or Low.
 
-Each cell stays under about 60 characters. Whatever doesn't fit goes in the details.
+Each cell stays under about 60 characters, not counting its links. Whatever doesn't fit goes in the details.
 
 ## Confidence
 
@@ -45,4 +48,4 @@ A reviewer's certainty is no evidence: check every point against the code before
 
 ## Diagrams
 
-A row gets a diagram when its recommendation changes how something works (a flow, the shape of the data, the order of steps), even where diagrams.md's "When" would skip it: before and after, drawn per [diagrams.md](diagrams.md), showing what a student sees before code names. One diagram can serve several rows.
+Which rows: [diagrams.md](diagrams.md), "When"; in doubt, draw it. Each shows before and after, what a student sees before code names, drawn per diagrams.md. One diagram can serve several rows; a row without one where When matches is an unfinished overview.

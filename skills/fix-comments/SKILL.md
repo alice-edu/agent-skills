@@ -27,7 +27,7 @@ Read the code each point is about and check the claim yourself; a reviewer's cer
 
 Every Push back and Skip is a reply that speaks for the user, so it goes on the card with its wording, whichever table it's in. A technical row below High: investigate until it's High (overview.md, "Confidence"), while the rest goes on.
 
-Done when every point from step 1 has its row, and every technical row is High or Stuck. A technical fix that turns out, while it's built, to change what a student sees or to grow the PR's scope moves to the product table and waits for the card.
+Done when every point from step 1 has its row, every technical row is High or Stuck, and every row that matches [diagrams.md](~/.agents/pr-flow/diagrams.md)'s "When" has its diagram drawn and linked. A technical fix that turns out, while it's built, to change what a student sees or to grow the PR's scope moves to the product table and waits for the card.
 
 ## 3. The overview, and the card
 

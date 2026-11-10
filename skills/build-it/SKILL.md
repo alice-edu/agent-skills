@@ -51,7 +51,7 @@ Done when each check is answered.
 - For each outside package or service it uses in a new way, read the docs for the installed version, and note which.
 - For UI: what the student sees in each state (empty, loading, error, long text, dark), where it lives on screen, what it says, and how it fits what's around it, following the repo's component and state rules.
 - For backend work, the repo's backend review doc, the one `AGENTS.md` points to (in Alicia, `docs/backend-review.md`): design to every section of it, and write down what each new query and workflow step costs at the largest size it supports.
-- When the design is hard to follow in prose, draw it per [diagrams.md](~/.agents/pr-flow/diagrams.md), so the user sees it before any code is written: with the card when there is one, otherwise in the report. A diagram alone asks nothing.
+- When the design matches [diagrams.md](~/.agents/pr-flow/diagrams.md)'s "When" (in doubt, draw it), draw it, so the user sees it before any code is written: with the card when there is one, otherwise in the report. A diagram alone asks nothing.
 
 It ends as one verdict:
 
@@ -63,7 +63,7 @@ It ends as one verdict:
 | **Unconfirmed** | noise, the student's network, a one-off, or not reproducible | park it |
 | **Big feature** | a wish the user hasn't asked to build yet, needing design or a product call | park it |
 
-Done when the verdict has its evidence: a red test, numbers, a repro, the place in the app, or the design in a few lines.
+Done when the verdict has its evidence: a red test, numbers, a repro, the place in the app, or the design in a few lines, with its diagram when it matches diagrams.md's "When".
 
 ## 5. Ask the user, once
 

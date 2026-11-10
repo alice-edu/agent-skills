@@ -31,11 +31,11 @@ While it runs, on round 1, write the user the **explanation**, in plain words, f
 - where the risk is, and the file to read first;
 - what the author says wasn't tested.
 
-Add a **diagram** per [diagrams.md](~/.agents/pr-flow/diagrams.md) when the change is hard to follow in prose; its public link (and screenshot, when it reads at PR width) goes in the GitHub review. On a re-review, reuse its scene and redraw only when the structure changed.
+Add a **diagram** per [diagrams.md](~/.agents/pr-flow/diagrams.md) when the change matches its "When" (in doubt, draw it); its public link (and screenshot, when it reads at PR width) goes in the GitHub review. On a re-review, reuse its scene and redraw only when the structure changed.
 
 When the user asked for a student test (`student-test`), run it beside `review-loop` on the PR's head, in reviewer mode.
 
-Done when `review-loop` has stopped (and the student test, when one runs), its Backend lens has gone through every section of the repo's backend review doc when the PR touches the backend (in Alicia, `docs/backend-review.md`), and, on round 1, the explanation is written.
+Done when `review-loop` has stopped (and the student test, when one runs), its Backend lens has gone through every section of the repo's backend review doc when the PR touches the backend (in Alicia, `docs/backend-review.md`), and, on round 1, the explanation is written with its diagram when the change matches diagrams.md's "When".
 
 ## 3. Decide the verdict
 
@@ -49,7 +49,7 @@ Draft the whole review now: body and every inline comment, worded as github.md s
 
 ## 4. Ask the user, when there's something to ask
 
-Show the user the explanation, then the ledger as an overview ([overview.md](~/.agents/pr-flow/overview.md)): one row a finding, 🔴 Blocking for a P1, 🟡 Optional for a P2, ⚪ Drop for one not worth posting, with the diagram linked on its rows. The drafted review follows, folded. Then, if any of these exist, one decision card with all of them:
+Show the user the explanation, then the ledger as an overview ([overview.md](~/.agents/pr-flow/overview.md)): one row a finding, 🔴 Blocking for a P1, 🟡 Optional for a P2, ⚪ Drop for one not worth posting, with a diagram linked on each row that matches diagrams.md's "When" (the explanation's, or one drawn for the finding: a fix that reworks a flow or a cost). The drafted review follows, folded. Then, if any of these exist, one decision card with all of them:
 
 - the product table's rows: post as blocking, optional, or drop;
 - a finding the loop returned Stuck (still disputed, or the budget spent with a P1 open);

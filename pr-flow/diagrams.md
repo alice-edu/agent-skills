@@ -4,7 +4,20 @@ A diagram lets the user see a change's shape before they read its code: in `revi
 
 ## When
 
-Draw one when the change is hard to follow in prose: an ordering, a state machine, a flow across client, mutation, workflow and scheduler, or a change to the data model. Skip it for a UI-only change, one file, or a rename.
+One diagram too many beats one too few: when in doubt, draw it. Draw one for a change, a review row or a question that:
+
+- **adds or changes a flow**: what calls what, a request's way through client, mutation, workflow and scheduler, the steps a student goes through;
+- **changes the data model**: a table or field added or moved, where something is stored or read from, a copy that becomes a reference or back;
+- **turns on order or timing**: a race, a retry, a step that now runs before another, two things swapping at once, something read before it's written;
+- **changes a cost**: reads, writes or jobs queued, before and after, with the counts (one job per student → one per batch of 100);
+- **adds or changes states**: a status and what moves it on, a state machine;
+- **changes who can see or do what**: access, sharing, roles;
+- **reshapes one thing from two sides**: a merge where both branches changed it (each side, then the result);
+- **puts one of these to the user**: a decision card's question, or a push back or skip on a reviewer's point, that turns on a flow, the data, an order, a cost, states or access. The diagram is what lets them decide it cold. A question about wording or a look gets a screenshot instead.
+
+Skip it only where nothing above matches and there's no shape to draw: wording, a style, a rename, a missing test or story file. A match above wins over a short fix: a one-line change to a race or to who can see what still gets its diagram.
+
+A skill that explains a change or a review to the user goes through what it's showing against this list before it shows it, and draws one for each match. Several matches about the same thing share one diagram.
 
 ## What
 

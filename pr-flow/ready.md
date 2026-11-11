@@ -6,6 +6,8 @@ What "ready for review" means for a PR of the user's. `build-it`, `fix-comments`
 
 Proof is evidence observed in this session on the current **head** (the PR's latest commit, with its base merged in): command output, a test that went red without the change and green with it, the running app. Green mocked tests prove the logic; for a change a student sees, proof is the change seen in the running app (`pnpm dev`, the `run` skill), used as a student would: upload the file, send the message, get the answer graded. What that bills (models, grading, reading a file) is part of testing and needs no asking; reuse an upload that already does the job. A check run on an earlier head is history, not proof: after any commit or merge of the base, rerun what the change could affect.
 
+**A stack that won't come up.** Give the local stack (`pnpm dev`, the E2E stack) about 5 minutes, and every network call a timeout (`curl -m 30`). Not up by then: push, and prove it on the branch's preview deploy (`gh pr checks` names its URL; a protected one needs the bypass the repo or your notes give), and leave E2E to CI's job. The checklist says which was used and why. The stack's failure goes in the report; fixing it isn't this PR's work.
+
 ## The checklist
 
 The PR body ends with the checklist (shape in [pr-body.md](pr-body.md)). It is the record of every check this run made, so a reviewer sees what is done and what is left to them:
@@ -20,7 +22,7 @@ Every item below ends as `[x]`, `N/A` or a Test-by-hand line:
 1. The template's items, each one.
 2. The checks CI runs for what the PR touches (`AGENTS.md`, "CI"): typecheck, lint, format, tests of the touched packages.
 3. The base merged in before those final checks, so a key or type another PR added is in the run.
-4. Docs read for the installed version wherever the diff calls an outside package's API in a new way, each named (`next-intl 4.3 useTranslations`, `convex-helpers workpool`). The installed version is in `node_modules/<pkg>/package.json`; its bundled docs or the docs site for that version.
+4. Research written in the PR body ([pr-body.md](pr-body.md), "Research") for each outside package the diff uses in a new way and each solved problem it meets: the docs for the installed version read, each named (`next-intl 4.3 useTranslations`), and how others use it. The installed version is in `node_modules/<pkg>/package.json`; its bundled docs or the docs site for that version.
 5. Edge cases: the ones handled, each with its test, and the ones left on purpose, each with why.
 6. A file this PR made large or grew a lot: split considered, with the outcome. Only files the PR itself grew.
 7. Screenshots for every change a student can see ([screenshots.md](screenshots.md)).

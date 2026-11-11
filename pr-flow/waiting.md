@@ -29,3 +29,12 @@ When one skill runs another (`fix-comments` runs `send-for-review`, `full-send` 
 A thread that watches a PR (`babysit-pr`) unwatches before either. Outside T3 Code there's no thread list to tidy: this step is skipped.
 
 The report's last line says where the thread went: `Snoozed until 14:30.` (local time), `Settled.`, or `In sight: <why>.`
+
+## Waiting on CI
+
+Every skill that waits on a PR's checks or reviews waits this way: one watcher a PR, never a `sleep` loop or repeated `gh pr checks`. Before ending the turn, write what the wake should pick up ("on a wake: fix a red check the merge caused"), since the next turn resumes from there.
+
+- **In T3 Code**: handle what's already there, then `watch_pull_request` and end the turn. T3 wakes the thread when a check fails, the required checks pass, someone comments or reviews, or the branch conflicts. A wake is news; check the gate yourself. Only the thread that owns the PR watches it: a delegated child never does. Before handing back (ready, blocked, or asking), `unwatch_pull_request`, except where a skill watches on past its report until CI finishes (`send-for-review`'s "Checks still running", `catch-up`'s step 4): there the green wake unwatches. "Could not read it" usually means GitHub's GraphQL limit is spent: `gh api rate_limit --jq .resources.graphql`, and wait for its `reset` once before watching again.
+- **Elsewhere**: `~/.agents/skills/babysit-pr/scripts/pr-wait <pr> --until ready`, run with Claude Code's Monitor tool, or as one long command. One line a real event; exit 0 when the condition is met or the PR merged, 1 when it needs you, 2 on bad input. Start it again after each push.
+
+An event that needs nothing: end the turn without a message.

@@ -9,12 +9,7 @@ Keeps one of the user's PRs moving while nobody watches: CI failures fixed, bot 
 
 ## Waiting
 
-One watcher a PR, never a loop of your own:
-
-- **In T3 Code**: handle what's already there, then `watch_pull_request` and end the turn. T3 wakes the thread when a check fails, the required checks pass, someone comments or reviews, or the branch conflicts. A wake is news; check the gate yourself. Only the thread that owns the PR watches it: a delegated child never does. Before handing back (ready, blocked, or asking), `unwatch_pull_request`. "Could not read it" usually means GitHub's GraphQL limit is spent: `gh api rate_limit --jq .resources.graphql`, and wait for its `reset` once before watching again.
-- **Elsewhere**: `scripts/pr-wait <pr> --until ready` (absolute path from this skill's folder), run with Claude Code's Monitor tool, or as one long command. One line a real event; exit 0 when the condition is met or the PR merged, 1 when it needs you, 2 on bad input. Start it again after each push.
-
-An event that needs nothing: end the turn without a message.
+On CI and reviews, as [waiting.md](~/.agents/pr-flow/waiting.md), "Waiting on CI" says.
 
 ## Each wake
 

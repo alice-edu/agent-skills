@@ -21,7 +21,7 @@ List each point once, with its link, what it asks, and its severity as the revie
 
 Read the code each point is about and check the claim yourself; a reviewer's certainty is no evidence. Then give each point a row in the overview ([overview.md](~/.agents/pr-flow/overview.md)): its owner by [decision-card.md](~/.agents/pr-flow/decision-card.md), "Who decides", its kind, what it means, the recommendation, and the confidence with its evidence.
 
-- ✅ **Fix**: the point is right. Its whole cause gets fixed in this PR.
+- ✅ **Fix**: the point is right. Its whole cause gets fixed in this PR. A point of a class an earlier round on this PR already fixed is a sign the approach is wrong: redesign it, as `review-loop`'s "A recurring class". A fix the reviewer suggests is a change like any other: read it through its callers before taking it.
 - 💬 **Push back**: the claim is wrong, with evidence (a line, a test, a doc). A technical point the reviewer and the docs see differently is settled by the docs (lenses.md, "The technology's way").
 - ⏭️ **Skip**: an optional point that doesn't matter for what the PR touches, with a short reason.
 

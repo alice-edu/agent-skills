@@ -48,7 +48,7 @@ Done when each check is answered.
 
 - Read the repo's `AGENTS.md` sections for what this touches, and search for the parts that already exist (components, hooks, backend paths) before adding any.
 - Design from the setup it should have, not from the earlier choices around it ([lenses.md](~/.agents/pr-flow/lenses.md), "The right way"): name each inherited constraint as a requirement or an earlier choice, and plan to clear out the earlier choices that a cleaner setup drops.
-- For each outside package or service it uses in a new way, read the docs for the installed version, and note which.
+- **Research before any logic** ([lenses.md](~/.agents/pr-flow/lenses.md), "The technology's way"): for each problem other projects have solved, what solves it and what was checked; for each technology used in a new way, its docs for the installed version and how others use it. Each becomes a line of the PR body's Research section.
 - For UI: what the student sees in each state (empty, loading, error, long text, dark), where it lives on screen, what it says, and how it fits what's around it, following the repo's component and state rules.
 - For backend work, the repo's backend review doc, the one `AGENTS.md` points to (in Alicia, `docs/backend-review.md`): design to every section of it, and write down what each new query and workflow step costs at the largest size it supports.
 - When the design matches [diagrams.md](~/.agents/pr-flow/diagrams.md)'s "When" (in doubt, draw it), draw it, so the user sees it before any code is written: with the card when there is one, otherwise in the report. A diagram alone asks nothing.
@@ -73,6 +73,7 @@ One decision card holding what's open:
 - the verdict, when it's anything but a **Bug** or a **Build**;
 - a fix whose scope grew;
 - each choice that's the user's by [decision-card.md](~/.agents/pr-flow/decision-card.md), "Who decides" (a UX or product choice, a Simplify? question), the recommended one first;
+- **slices**, when the design spans the data model, the backend and the UI together: split it into PRs that each branch from and merge to main on their own (the schema and backend first, then the UI on top), each its own thread, PR and Linear issue, the first built in this thread. A stack of PRs on each other isn't offered: every merge would mean updating the ones above it;
 - a council review (the `council` skill), when the user hasn't asked for one and the change reaches the data model, a workflow, auth or a migration;
 - a student test (`student-test`), when they haven't asked for one and the change adds or reworks a flow a student goes through;
 - for a parked report, the reply to post;

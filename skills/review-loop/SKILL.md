@@ -33,7 +33,7 @@ Re-grade every finding yourself, whatever label it came with. A rare or speculat
 Four seats, one from each model line: Codex's **Sol** and **Astra**, Claude's **Opus** and **Fable**, each the newest of its line, at high effort. In T3 Code, read the ids from `orchestrator_capabilities`. Outside it, a seat whose model id can't be named for certain from the CLI's own model list is unavailable. You hold a seat only when your own model and effort match it; otherwise you coordinate and all four are delegated. A line that isn't listed, or a seat that errors, is named in the report. A council with fewer than three seats, or with only one provider left, is a normal review, and the report says so.
 
 - **Round 1**: every seat gets the same brief (step 2) at the same time, and you write your own review before reading any of theirs (step 3).
-- **Wait for all of them**: merge, edit and judge agreement only once every seat has replied or clearly failed.
+- **Wait for all of them**: merge, edit and judge agreement only once every seat has replied or clearly failed. A seat still out 15 minutes after the others replied is named late in the report, and the merge goes on without it while three seats remain.
 - **Merge** (step 4): each ledger row also records which seats raised it. A P1 from one seat only is checked against the code by you before it counts. One raised by two seats or more is more likely real, but still needs its evidence.
 - **Round 2 on**: only you and the other provider's newest seat (Sol when you are Claude, Opus when you are Codex), as in a normal loop, so it can still finish. A seat whose P1 is still disputed gets the dispute in a reply of its own once. After that, the dispute goes to the caller's card (step 7).
 - **Budget**: the same as a normal loop, counting round 1 as one round.
@@ -88,7 +88,7 @@ Done when every changed file has been read in full with its callers, and every d
 
 ### 4. Merge
 
-Put both reviews in the ledger: one row a finding, duplicates merged, each with id, severity (re-graded), owner (decision-card.md, "Who decides"), lens, file:line, claim, source, evidence, and who raised it. Check each against the code yourself; a finding you can't confirm is marked unconfirmed, not dropped. Compare each reviewer's DOCS with your own list: a doc it missed makes the lenses that doc bears on `not verified` for it, and the next round's brief names the doc.
+Put both reviews in the ledger: one row a finding, duplicates merged, each with id, severity (re-graded), owner (decision-card.md, "Who decides"), lens, **class** (the way the bug gets through: "an image URL gets past the Mermaid text filter"), file:line, claim, source, evidence, and who raised it. Check each against the code yourself; a finding you can't confirm is marked unconfirmed, not dropped. Compare each reviewer's DOCS with your own list: a doc it missed makes the lenses that doc bears on `not verified` for it, and the next round's brief names the doc.
 
 ### 5. Act
 
@@ -98,7 +98,9 @@ Put both reviews in the ledger: one row a finding, duplicates merged, each with 
 
 ### 6. Next round
 
-Go again when budget remains and a P1 is open, or code changed since the other reviewer last looked. New P2s alone don't start another round. Wait for each reply before the next round; a timeout, an error or no reply is not approval.
+Go again when budget remains and a P1 is open, or code changed since the other reviewer last looked. New P2s alone don't start another round.
+
+**A recurring class.** A P1 of a class this PR already fixed once (an earlier round, an earlier run of this loop in the thread, or a human review's point fixed before) means the approach is wrong, not the case: redesign so the class can't happen (a library that solves it, lenses.md "A solved problem"; a boundary that holds for every case), rather than patching this one, and note the redesign in the ledger. It's the agents' call, under **Decided**, unless it changes what a student sees or grows the scope. Findings of other classes are fixed as usual. Wait for each reply before the next round; a timeout, an error or no reply is not approval.
 
 ### 7. Stop
 

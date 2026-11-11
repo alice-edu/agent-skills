@@ -50,7 +50,7 @@ Done when every check is green on the merged head, and for a complex merge, `rev
 
 ## 4. Push and settle
 
-Push to the branch. When the PR is open, wait for CI to start on the new head, and fix a red check the merge caused.
+Push to the branch. When the PR is open, `watch_pull_request` ([waiting.md](~/.agents/pr-flow/waiting.md), "Waiting on CI") and go on to step 5 without waiting. Each wake: a red check the merge caused gets fixed, proven and pushed; the checks green, unwatch; anything else is the user's, for the next skill they run.
 
 An approved PR whose merge was complex no longer has what was approved: say so on the card, with sending it back for review (`send-for-review`) as the default.
 

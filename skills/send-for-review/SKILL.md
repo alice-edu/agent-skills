@@ -15,7 +15,7 @@ The PR (from the link, or the current branch's), its head, `additions`, `deletio
 
 ## 2. Make it ready
 
-[ready.md](~/.agents/pr-flow/ready.md), "Make it ready", on the current head: anything committed since `review-loop` last agreed is reviewed with the whole PR, proven again, and written into the PR body; the base is merged in; CI is green or running on this head. A check that failed or timed out on an earlier head of this PR, and hasn't passed since, is red until it passes: fix it, or wait for it the way [babysit-pr](~/.agents/skills/babysit-pr/SKILL.md) does ("Waiting"), never with a `sleep` loop. Push what it changes.
+[ready.md](~/.agents/pr-flow/ready.md), "Make it ready", on the current head: anything committed since `review-loop` last agreed is reviewed with the whole PR, proven again, and written into the PR body; the base is merged in; CI is green or running on this head. A check that failed or timed out on an earlier head of this PR, and hasn't passed since, is red until it passes: fix it, or wait for it as [waiting.md](~/.agents/pr-flow/waiting.md), "Waiting on CI" says. Push what it changes.
 
 A red check this PR didn't cause (main fails it too, or its test is in files the PR doesn't touch): rerun it once and send, saying so in the post. What else can't be made ready (a P1 the loop can't settle, a test that needs something we don't have) goes on the decision card: send it saying so, or wait.
 

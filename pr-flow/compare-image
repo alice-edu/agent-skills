@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+# compare-image <out.png> <Label=image.png>...
+#
+# Joins screenshots into one PNG, each under its label ("Now=now.png"
+# "Proposed=after.png"), for a decision card's question or a review comment.
+# T3 Code shows a picture at most 480 px wide: panels that fit side by side at
+# that width go side by side, wider ones are stacked, the first on top.
+# Screenshots are read as taken at 2x. Needs Google Chrome (macOS).
+set -euo pipefail
+[ $# -ge 3 ] || { echo "usage: compare-image <out.png> <Label=image.png> <Label=image.png>..." >&2; exit 2; }
+out=$1; shift
+chrome="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+[ -x "$chrome" ] || { echo "compare-image: Google Chrome not found at $chrome" >&2; exit 1; }
+
+total=480 gap=12 pad=12 label=22
+n=$#
+side=$(( (total - 2 * pad - (n - 1) * gap) / n ))
+stack=$(( total - 2 * pad ))
+
+dir=$(mktemp -d)
+trap 'rm -rf "$dir"' EXIT
+names=() files=() ws=() hs=() row=1 i=0
+for arg in "$@"; do
+  name=${arg%%=*} file=${arg#*=}
+  [ "$name" != "$arg" ] || { echo "compare-image: '$arg' is not Label=file" >&2; exit 2; }
+  [ -f "$file" ] || { echo "compare-image: no file $file" >&2; exit 1; }
+  w=$(sips -g pixelWidth "$file" | awk '/pixelWidth/{print $2}')
+  h=$(sips -g pixelHeight "$file" | awk '/pixelHeight/{print $2}')
+  [ $(( w / 2 )) -gt "$side" ] && row=0
+  cp "$file" "$dir/$i.png"
+  names+=("$(printf '%s' "$name" | sed 's/&/\&amp;/g; s/</\&lt;/g')") ws+=("$w") hs+=("$h")
+  i=$(( i + 1 ))
+done
+
+cap=$stack; [ "$row" = 1 ] && cap=$side
+cells="" width=0 height=0
+for i in "${!names[@]}"; do
+  dw=$(( ws[i] / 2 )); [ "$dw" -gt "$cap" ] && dw=$cap; [ "$dw" -lt 1 ] && dw=1
+  dh=$(( hs[i] * dw / ws[i] ))
+  cells+="<div><div class=l>${names[i]}</div><img src=\"$i.png\" width=$dw height=$dh></div>"
+  if [ "$row" = 1 ]; then
+    width=$(( width + dw + gap )); [ "$dh" -gt "$height" ] && height=$dh
+  else
+    [ "$dw" -gt "$width" ] && width=$dw; height=$(( height + dh + label + gap ))
+  fi
+done
+if [ "$row" = 1 ]; then
+  width=$(( width - gap + 2 * pad )); height=$(( height + label + 2 * pad )); dirn=row
+else
+  width=$(( width + 2 * pad )); height=$(( height - gap + 2 * pad )); dirn=column
+fi
+cat > "$dir/index.html" <<EOF
+<html><body style="margin:0;background:#f4f4f5">
+<style>.r{display:flex;flex-direction:$dirn;gap:${gap}px;padding:${pad}px;align-items:flex-start}
+.l{font:600 12px -apple-system,sans-serif;color:#52525b;height:${label}px}
+img{display:block;border:1px solid #d4d4d8;border-radius:8px;box-sizing:border-box}</style>
+<div class=r>$cells</div></body></html>
+EOF
+"$chrome" --headless=new --disable-gpu --hide-scrollbars --force-device-scale-factor=2 \
+  --window-size="$width,$height" --screenshot="$dir/out.png" "file://$dir/index.html" >/dev/null 2>&1
+mv "$dir/out.png" "$out"
+echo "$out"

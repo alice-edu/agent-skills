@@ -13,7 +13,7 @@ One diagram too many beats one too few: when in doubt, draw it. Draw one for a c
 - **adds or changes states**: a status and what moves it on, a state machine;
 - **changes who can see or do what**: access, sharing, roles;
 - **reshapes one thing from two sides**: a merge where both branches changed it (each side, then the result);
-- **puts one of these to the user**: a decision card's question, or a push back or skip on a reviewer's point, that turns on a flow, the data, an order, a cost, states or access. The diagram is what lets them decide it cold. A question about wording or a look gets a screenshot instead.
+- **puts one of these to the user**: a decision card's question, or a push back or skip on a reviewer's point, that turns on a flow, the data, an order, a cost, states or access. The diagram is what lets them decide it cold. A question about wording or a look gets a comparison picture instead (screenshots.md, "Comparison").
 
 Skip it only where nothing above matches and there's no shape to draw: wording, a style, a rename, a missing test or story file. A match above wins over a short fix: a one-line change to a race or to who can see what still gets its diagram.
 

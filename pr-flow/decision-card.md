@@ -15,12 +15,13 @@ A step outside what the skill grants (deleting data, touching production, closin
 
 ## How to ask
 
-1. Do all the work that doesn't depend on the answers first, so the card comes with everything else ready. After a review, the card follows its overview ([overview.md](overview.md)), and each question names its row's number.
-2. Ask with the harness's question tool (`AskUserQuestion` in Claude Code; in Codex, the user-input tool its current mode offers), so the thread shows it is waiting. One call. Each question is a **tldr** the user can answer cold in ten seconds, without having read the code:
+1. Do all the work that doesn't depend on the answers first, the card's pictures included, so the card comes with everything else ready. After a review, the card follows its overview ([overview.md](overview.md)), and each question names its row's number.
+2. Ask with the harness's question tool (`AskUserQuestion` in Claude Code; in Codex, the user-input tool its current mode offers), so the thread shows it is waiting. One call. Everything the user reads goes in the question text, which T3 Code renders as markdown, images included; it never shows an option's `preview`. Each question is a **tldr** the user can answer cold in ten seconds, without having read the code:
    - **the story first**: what a student sees or does, what goes wrong and when, and why the recommended option avoids it, in a few plain sentences. Parts are named as they look on screen ("the side rail", "the Back to Alice card"), never by code names or file paths;
-   - **a sketch** when the point turns on timing, order or where things are (two things swapping, a step running before another, a copy in two places): a few lines of text in a monospace block, in the option's `preview` where the tool has one, showing the moment it goes wrong, and the row's Excalidraw diagram linked when it has one (diagrams.md, "When", lists the questions that should). Plain words otherwise;
+   - **a picture** when the question is about what a student sees (a look, wording, a control, where something sits): the comparison ([screenshots.md](screenshots.md), "Comparison"), the screen now beside each option that changes it, as `![<row>: now and proposed](/absolute/path.png)` after the story;
+   - **a sketch** when the point turns on timing, order or where things are (two things swapping, a step running before another, a copy in two places): a few lines of text in a monospace block showing the moment it goes wrong, and the row's Excalidraw diagram linked when it has one (diagrams.md, "When", lists the questions that should). Plain words otherwise;
    - options that each say what happens if picked, for the student and for the work, the recommended one first and marked;
-   - text to be posted (a reply to a reviewer), quoted in full in its option's `preview`, after the story: the reply is written for the reviewer, the story for the user;
+   - text to be posted (a reply to a reviewer), quoted in full as a blockquote after the story: the reply is written for the reviewer, the story for the user;
    - the Links line last ([links.md](~/.agents/pr-flow/links.md)).
 
    Done with a question when the user could say, from it alone, why the recommended option is right. A question that needs the code to follow gets rewritten.

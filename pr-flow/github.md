@@ -15,6 +15,7 @@ How the user's reviews and replies read on GitHub, and how to post them so they 
   #  "body": "**AI:** …", "comments": [{"path": "…", "line": 12, "side": "RIGHT", "body": "**AI:** **P2.** …"}]}
   ```
 
+- A finding about what a student sees carries its comparison ([screenshots.md](screenshots.md), "Comparison"; the decision card's when it had one): the PR's screen as Now beside the suggested fix. Upload it with `upload-screenshots review-<n> <file>` and put it in the inline comment as `<img src="<url>" width="480">`, so the author sees what's meant.
 - An inline comment's `line` has to be a line the diff shows (`side: "RIGHT"` for the new code, `"LEFT"` for removed), or GitHub rejects the whole review with a 422. A finding about code outside the diff goes in the body, with its `file:line`.
 - Read it back (`gh api repos/<owner>/<repo>/pulls/<n>/reviews`). Done when the newest review by `gh api user --jq .login` has the intended `state` and `commit_id`. Saying "approved" in Slack while GitHub shows no approval leaves the author unable to merge (alicia #711), so the Slack reply waits for this.
 
@@ -22,5 +23,6 @@ How the user's reviews and replies read on GitHub, and how to post them so they 
 
 - Each reviewer comment gets a reply in its thread, no prefix: `Agreed, fixed in <sha>: <what changed>.`, or for one kept as it is, the reason in a sentence or two, with the evidence (a line, a test, a doc).
 - Post with `gh api repos/<owner>/<repo>/pulls/<n>/comments/<root id>/replies -f body=…`, where the root is the thread's first comment: a comment's `in_reply_to_id` when it has one, else its own `id` (GitHub takes replies to the root only). A top-level review's points get one PR comment (`gh pr comment`).
+- A reply about how something looks carries its picture the same way: the comparison, uploaded with the PR's screenshots.
 - The reviewer resolves threads. Leave them open.
 - Re-request the reviewer after a round: `gh api -X POST repos/<owner>/<repo>/pulls/<n>/requested_reviewers -f 'reviewers[]=<login>'`.

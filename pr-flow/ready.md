@@ -4,7 +4,7 @@ What "ready for review" means for a PR of the user's. `build-it`, `fix-comments`
 
 ## Proof
 
-Proof is evidence observed in this session on the current **head** (the PR's latest commit, with its base merged in): command output, a test that went red without the change and green with it, the running app. Green mocked tests prove the logic; for a change a student sees, proof is the change seen in the running app (`pnpm dev`, the `run` skill). A check run on an earlier head is history, not proof: after any commit or merge of the base, rerun what the change could affect.
+Proof is evidence observed in this session on the current **head** (the PR's latest commit, with its base merged in): command output, a test that went red without the change and green with it, the running app. Green mocked tests prove the logic; for a change a student sees, proof is the change seen in the running app (`pnpm dev`, the `run` skill), used as a student would: upload the file, send the message, get the answer graded. What that bills (models, grading, reading a file) is part of testing and needs no asking; reuse an upload that already does the job. A check run on an earlier head is history, not proof: after any commit or merge of the base, rerun what the change could affect.
 
 ## The checklist
 
@@ -13,7 +13,7 @@ The PR body ends with the checklist (shape in [pr-body.md](pr-body.md)). It is t
 - `- [x]` marks a requirement that **passed** on the current head, with its evidence: the command, the result, the short SHA (`- [x] Vitest, web: 675 pass at abc1234`).
 - A check that fails is written as failing with the reason, and the PR is not ready.
 - A requirement that doesn't apply is `- N/A: <requirement>: <why>`, never a tick.
-- **Test by hand** lists, unticked, what a person should check because it couldn't be proven here: what to do, what should happen, and why it wasn't tested (needs production data, a real phone, a paid model, another account). This is also what whoever checks production works from.
+- **Test by hand** lists, unticked, what a person should check because it couldn't be proven here: what to do, what should happen, and why it wasn't tested (needs production data, a real phone, another account). This is also what whoever checks production works from.
 
 Every item below ends as `[x]`, `N/A` or a Test-by-hand line:
 

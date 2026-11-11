@@ -9,7 +9,7 @@ They're written for our repo (Alicia), our Slack and our Linear, and they're pub
 | Say | Skill | What happens |
 |---|---|---|
 | "build it", "fix it", "take this" | [`build-it`](skills/build-it/SKILL.md) | Takes a bug or feature from wherever it starts (your words, a Linear issue, a Slack report) to a PR that's ready for review: finds the cause, designs, builds, tests, reviews, opens the PR. |
-| "send for review", "send it" | [`send-for-review`](skills/send-for-review/SKILL.md) | Posts the PR in the review channel, requests the reviewer, and sets up a daily nudge that reads the thread before bumping anyone. |
+| "send for review", "send it" | [`send-for-review`](skills/send-for-review/SKILL.md) | Posts the PR in the review channel, requests the reviewer, and sets up a daily nudge that reads the thread before bumping anyone, and fixes a red check or a conflict itself first. |
 | "review's back", "what did they say" | [`fix-comments`](skills/fix-comments/SKILL.md) | An overview of the review that came back: what we'll fix and what needs you, with confidence, in two tables. Nothing changed yet. |
 | "fix comments" | [`fix-comments`](skills/fix-comments/SKILL.md) | The same overview, then fixes what's right (without asking when it's all technical and certain), asks you the product calls, re-reviews the whole PR, replies on every comment, and sends it back. |
 | "full send" | [`full-send`](skills/full-send/SKILL.md) | Takes an approved PR the rest of the way: last comments, conflicts, CI, merge, and checks it's live. |

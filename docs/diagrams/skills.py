@@ -126,7 +126,7 @@ D["send"] = dict(title="4. Inside send-for-review and the nudge", nodes=[
     N("q", "What does\nit say?", "decision"),
     N("o1", "Merged or closed:\nstop the nudge", "terminal"),
     N("o2", "Reviewed:\nfix-comments or the overview", "client"),
-    N("o3", "Red CI or a conflict:\ntell you", "warning"),
+    N("o3", "Red CI or a conflict:\nfix it, rerun or merge,\nthen bump", "warning"),
     N("o4", "A reason to wait\n(\"Thursday\", looking, away):\nwait", "queue"),
     N("o5", "Already bumped once:\nask you", "client"),
     N("o6", "They forgot:\none polite bump", "service"),
@@ -134,7 +134,7 @@ D["send"] = dict(title="4. Inside send-for-review and the nudge", nodes=[
     E("s0", "s6", "yes"), E("s0", "s1", "no"), E("s6", "s1"),
     E("s1", "s7", "check only"), E("s1", "s2"), E("s2", "s3"), E("s3", "s4"), E("s4", "s5"), E("s5", "n1", "next workday"),
     E("n1", "q"),
-    E("q", "o1"), E("q", "o2", None, "success"), E("q", "o3", None, "failure"),
+    E("q", "o1"), E("q", "o2", None, "success"), E("q", "o3", None, "warning"), E("o3", "o6", "fixed"),
     E("q", "o4", None, "warning"), E("q", "o5"), E("q", "o6"),
     E("o4", "n1", "next morning", "warning"), E("o6", "n1", "next morning"),
 ])

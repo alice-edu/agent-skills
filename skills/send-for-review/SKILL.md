@@ -15,9 +15,9 @@ The PR (from the link, or the current branch's), its head, `additions`, `deletio
 
 ## 2. Make it ready
 
-[ready.md](~/.agents/pr-flow/ready.md), "Make it ready", on the current head: anything committed since `review-loop` last agreed is reviewed with the whole PR, proven again, and written into the PR body; the base is merged in; CI is green or running on this head. Push what it changes.
+[ready.md](~/.agents/pr-flow/ready.md), "Make it ready", on the current head: anything committed since `review-loop` last agreed is reviewed with the whole PR, proven again, and written into the PR body; the base is merged in; CI is green or running on this head. A check that failed or timed out on an earlier head of this PR, and hasn't passed since, is red until it passes: fix it, or wait for it the way [babysit-pr](~/.agents/skills/babysit-pr/SKILL.md) does ("Waiting"), never with a `sleep` loop. Push what it changes.
 
-What can't be made ready (a P1 the loop can't settle, a red check that isn't ours, a test that needs something we don't have) goes on the decision card: send it saying so, or wait.
+A red check this PR didn't cause (main fails it too, or its test is in files the PR doesn't touch): rerun it once and send, saying so in the post. What else can't be made ready (a P1 the loop can't settle, a test that needs something we don't have) goes on the decision card: send it saying so, or wait.
 
 Asked only "is it ready?": post nothing, and go to step 4 with the verdict, what the review fixed, and what's left.
 
@@ -30,6 +30,12 @@ Done when every checklist item is true for the head being announced.
 **Another round**: the **Ready for another round** reply in the thread, @mentioning the reviewer, built from the fixes and replies on the PR since their last review. Re-request them on GitHub.
 
 Either way, add the T3 link in the thread ([links.md](~/.agents/pr-flow/links.md), "The T3 link in Slack"): on the first round, a reply under the post. Then set the Linear issue to **In Review**, and set up the nudge ([nudge.md](~/.agents/pr-flow/nudge.md), "Setting it up").
+
+**Checks still running** (in T3 Code): `watch_pull_request`, so a red check gets fixed the same day rather than at the next morning's nudge. Each wake, then snooze again until 10:30 on the next working day:
+
+- a check failed: as nudge.md's rule 3, without the bump (it was just posted);
+- the checks finished green: `unwatch_pull_request`;
+- a review or comment: `unwatch_pull_request`, then nudge.md's "The check", now.
 
 Done when the message is in Slack once, exactly one `Nudge PR #<n>` task is scheduled with its own id in its prompt (in T3 Code), the thread has a `T3 thread:` reply linking this thread (in T3 Code), the reviewer is requested on GitHub where there is one, and Linear reads In Review.
 

@@ -32,14 +32,21 @@ The first of these that's true decides:
    - **Nothing on the card** (every row technical, High and ✅ Fix): run `fix-comments` in full, as if the user had said it. Its report lands in this thread.
    - **Something on the card**: unsnooze and post the overview with the card's questions, ending "say *fix comments* to go". Nothing fixed, replied or published yet; a row that needs a diagram says so, and it's drawn when `fix-comments` runs.
    - **No points** (an approval and nothing else): unsnooze and say who approved: "say *full send* to merge".
-3. **Not ready to bump**: a check is red, the base conflicts, or the PR is a draft again. The reviewers may be waiting on it. Delete the task, unsnooze, and say what's wrong.
+3. **Fix first**: a check is red or the base conflicts. Nobody has started reviewing, so make it ready yourself, then go on to rule 4 in this same run:
+   - **A conflict**: merge the base in as `catch-up` does (its steps 2 and 3), and push.
+   - **A red check this PR didn't cause** (main fails it too, its test is in files the PR doesn't touch, or it passed on an earlier head of this PR): rerun it once (`gh run rerun <id> --failed`), and go on without waiting for it.
+   - **A red check this PR caused**: fix it as `babysit-pr` does ("Each wake"): read its log, fix the whole cause, prove it, push. Rule 8's bump then says in a line what changed.
+
+   After a push, bump in this run without waiting for CI on it: the reviewer reads the code while it runs. `watch_pull_request`, so a check that goes red on it is fixed the same day, as `send-for-review` does after posting.
+
+   Find the cause before deciding the fix is the user's: a slow test, a slow query or a flaky assertion is fixed in the code or the test, and that's technical (the agents' call). It goes to the user only when the fix found would change what a student sees or the PR's scope, the merge is complex (both sides reshaped the same thing), an earlier run already pushed a fix for the same red check, or the PR is a draft again: delete the task, unsnooze, and say what's wrong on a card ([decision-card.md](decision-card.md)).
 4. **Waiting, with a reason**: since the round started, someone said why the review is waiting (the reviewer will look later, is busy, is waiting on something; someone asked to hold it), a reviewer reacted 👀 to the round's message, or a reviewer's status says away. Read a named time against the message it was said in: "Thursday" in a Tuesday message is two days later. Keep waiting until one working day after that time. A reason with no time (👀, "soon", an away status) keeps waiting for two working days from when it appeared; after that, delete the task, unsnooze, and ask the user on a decision card ([decision-card.md](decision-card.md)): bump, ask someone else, or leave it.
 5. **Too soon**: the round started less than one working day ago.
 6. **No reviewer**: nobody was @mentioned or requested. Delete the task, unsnooze, and ask the user who should review, suggesting whoever reviewed these files last (`gh pr list --state merged --search <path>`).
 7. **Already bumped**: since the round's message, the user has posted a message that @mentions a reviewer, and no reviewer replied after it. Delete the task, unsnooze, and ask on a decision card: bump again, ask someone else, or leave it. Bump again: post it, then set up a new task ("Setting it up").
-8. **Bump**: one reply in the Slack thread, @mentioning each reviewer still requested, in the user's voice (slack.md), fitting what the thread last said and the PR's size: "any chance you could take a look today? it's a small one".
+8. **Bump**: one reply in the Slack thread, @mentioning each reviewer still requested, in the user's voice (slack.md), fitting what the thread last said and the PR's size: "any chance you could take a look today? it's a small one". When rule 3 pushed a fix, one more line says what changed: "fixed a load test that timed out in CI since".
 
-A **working day** is Monday to Friday, except Danish public holidays. While waiting (4, 5, 8), snooze until 10:30 on the next working day.
+A **working day** is Monday to Friday, except Danish public holidays. While waiting (3 once fixed, 4, 5, 8), snooze until 10:30 on the next working day.
 
 Every run ends with one line in this thread: the date, which rule decided and why, and what it did. `Tue 29 Oct: waiting, Adam said Thursday. Snoozed till Fri 10:30.`
 

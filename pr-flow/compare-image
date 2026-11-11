@@ -60,3 +60,6 @@ EOF
   --window-size="$width,$height" --screenshot="$dir/out.png" "file://$dir/index.html" >/dev/null 2>&1
 mv "$dir/out.png" "$out"
 echo "$out"
+# T3 Code fits a picture in 480x480; one shown taller than that is shrunk past reading.
+shown=$(( height * (width > total ? total : width) / width ))
+[ "$shown" -le "$total" ] || echo "compare-image: shown $shown px tall, over the $total T3 Code fits: crop each panel to the part that differs, or split it into two pictures" >&2

@@ -72,7 +72,7 @@ One decision card holding what's open:
 - which Linear issue, when step 2 found several;
 - the verdict, when it's anything but a **Bug** or a **Build**;
 - a fix whose scope grew;
-- each choice that's the user's by [decision-card.md](~/.agents/pr-flow/decision-card.md), "Who decides" (a UX or product choice, a Simplify? question), the recommended one first;
+- each choice that's the user's by [decision-card.md](~/.agents/pr-flow/decision-card.md), "Who decides" (a UX or product choice, a Simplify? question), the recommended one first. A UX choice comes with its picture: the screen now beside a mockup of each option (decision-card.md, "a picture"), made before asking, even for a dialog nothing has drawn yet;
 - **slices**, when the design spans the data model, the backend and the UI together: split it into PRs that each branch from and merge to main on their own (the schema and backend first, then the UI on top), each its own thread, PR and Linear issue, the first built in this thread. A stack of PRs on each other isn't offered: every merge would mean updating the ones above it;
 - a council review (the `council` skill), when the user hasn't asked for one and the change reaches the data model, a workflow, auth or a migration;
 - a student test (`student-test`), when they haven't asked for one and the change adds or reworks a flow a student goes through;

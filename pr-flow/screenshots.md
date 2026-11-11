@@ -17,9 +17,9 @@ A choice about what a student sees is shown, not described: one picture with the
 - **Now** from the running app, as in Capture. On a teammate's PR under review, Now is the PR's head: its own after screenshot when that shows the part.
 - **Each option** made for real and captured, then undone, when it's a small change (a label, a variant, one control swapped for another). Otherwise a mockup: HTML in the app's look (its theme variables, in Alicia `apps/web/app/globals.css`) captured with headless Chrome, its label ending "(mockup)".
 - Every panel cropped to the same part of the screen, at the same width and theme. Labels name the options as the question does.
-- Joined with `~/.agents/pr-flow/compare-image <out.png> "Now=now.png" "Proposed=proposed.png"`. T3 Code shows a picture at most 480 px wide: small crops go side by side, wider ones are stacked, so crop to the part in question.
+- Joined with `~/.agents/pr-flow/compare-image <out.png> "Now=now.png" "Proposed=proposed.png"`. T3 Code shows a picture at most 480 px wide **and 480 px tall**, shrinking a taller one until nothing in it can be read. So crop each panel to the part that differs (the new section of a dialog, not the whole dialog around it), one state an option; another state worth seeing is a second picture. compare-image warns when its picture won't fit.
 
-Done when the picture reads at 480 px wide: open it and look.
+Done when the picture reads at 480 × 480 px: compare-image gives no warning, and you open it and look.
 
 ## Upload
 

@@ -15,16 +15,18 @@ A step outside what the skill grants (deleting data, touching production, closin
 
 ## How to ask
 
+Read this file again right before asking, whenever the last read is from an earlier run or from before the work it asks about: a card often comes long after the skill first loaded it.
+
 1. Do all the work that doesn't depend on the answers first, the card's pictures included, so the card comes with everything else ready. After a review, the card follows its overview ([overview.md](overview.md)), and each question names its row's number.
 2. Ask with the harness's question tool (`AskUserQuestion` in Claude Code; in Codex, the user-input tool its current mode offers), so the thread shows it is waiting. One call. Everything the user reads goes in the question text, which T3 Code renders as markdown, images included; it never shows an option's `preview`. Each question is a **tldr** the user can answer cold in ten seconds, without having read the code:
    - **the story first**: what a student sees or does, what goes wrong and when, and why the recommended option avoids it, in a few plain sentences. Parts are named as they look on screen ("the side rail", "the Back to Alice card"), never by code names or file paths;
-   - **a picture** when the question is about what a student sees (a look, wording, a control, where something sits): the comparison ([screenshots.md](screenshots.md), "Comparison"), the screen now beside each option that changes it, as `![<row>: now and proposed](/absolute/path.png)` after the story;
-   - **a diagram** when the question turns on a flow, the data, an order, a cost, states or access ([diagrams.md](diagrams.md), "When"): each option's way as one picture ([diagrams.md](diagrams.md), "On a card") after the story, the scene's link under it. Where Excalidraw can't be reached, a few lines of text in a monospace block showing the moment it goes wrong. Plain words otherwise;
+   - **a picture** when the question is about what a student sees (a look, wording, a control, a dialog, where something sits), also when it isn't built yet: a PNG with the screen now beside each option, made as [screenshots.md](screenshots.md), "Comparison" says (read it before making one). Each option is made for real when it's small; otherwise it's a **mockup**, HTML in the app's look captured with headless Chrome and labelled "(mockup)". A part that doesn't exist yet gets one mockup per option, beside the screen it goes on. It goes in as `![<row>: now and proposed](/absolute/path.png)` after the story. The picture is the image: text drawn in a code block never stands in for it;
+   - **a diagram** when the question turns on a flow, the data, an order, a cost, states or access ([diagrams.md](diagrams.md), "When"): each option's way as one picture ([diagrams.md](diagrams.md), "On a card") after the story, the scene's link under it. Where Excalidraw can't be reached, a flow (never a screen) can be a few lines of text in a monospace block showing the moment it goes wrong. Plain words otherwise;
    - options that each say what happens if picked, for the student and for the work, the recommended one first and marked;
    - text to be posted (a reply to a reviewer), quoted in full as a blockquote after the story: the reply is written for the reviewer, the story for the user;
    - the Links line last ([links.md](~/.agents/pr-flow/links.md)).
 
-   Done with a question when the user could say, from it alone, why the recommended option is right. A question that needs the code to follow gets rewritten.
+   Done with a question when the user could say, from it alone, why the recommended option is right, and a question about what a student sees shows its picture. A question that needs the code to follow gets rewritten.
 3. When the user answers "explain" or "I don't get it", that's no pick: explain that question at more length, with a diagram ([diagrams.md](diagrams.md)) when a flow or an order is involved, then ask the same card again.
 4. Apply the answers and carry on to the end of the skill. A new choice for the user that turns up later (a full review after the card): ask one more card only when the next step depends on it; otherwise it goes at the top of the report.
 

@@ -42,4 +42,15 @@ A skill that explains a change or a review to the user goes through what it's sh
 
 Done when the screenshot reads cleanly, link sharing is on, and it's on the Links line and in the PR or the review.
 
+## On a card
+
+A decision card's question shows its diagram, not only its link: the user decides from the picture in the question box, which T3 Code shows at most 480 px wide. So it's a small diagram of its own, beside the change's full one:
+
+- One row for each option, left to right, stacked: `create_mermaid_diagram` with `flowchart TB`, a `direction LR` subgraph a row, joined by `~~~`. Each row named as the card names its option ("Keep (this PR): per page", "Adam's ask: whole course"), the recommended one first. At most four nodes a row: only the part the question turns on.
+- The edge that differs coloured in every row (`linkStyle`: green for the recommended, red where it goes wrong), its label saying what differs: the count, the index, which runs first.
+- Each row drawn from the code it stands for (the diff, or the planned change read against the files it touches).
+- `take_screenshot` with the subgraphs' `elementIds` at full size (no `maxWidth` below 960, or it's blurred at 480 px), saved as a PNG, and put in the question as `![<row>: the options](/absolute/path.png)`, the public link (step 6) on the line under it.
+
+Done when the PNG, opened, reads at 480 px wide: every label legible.
+
 Codex finds the Excalidraw tools through tool search. When they're missing or a call is refused, draw it as Mermaid instead (in T3 Code, `html_preview` then `html_render`) and say which step failed, so the user can fix the connection. A Mermaid diagram has no link: show it with the design or the report and leave it off the Links line. Done when it renders readably.

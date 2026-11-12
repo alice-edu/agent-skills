@@ -58,7 +58,7 @@ New review comments found in step 1 aren't handled here: list them in the report
 
 ## 5. Ask, then report
 
-Everything that needs the user goes on one decision card ([decision-card.md](~/.agents/pr-flow/decision-card.md)), after all the other work is done. Apply their answers, and prove again what they changed.
+Everything that needs the user goes on one decision card, asked as [decision-card.md](~/.agents/pr-flow/decision-card.md)'s "How to ask" says (read it first, pictures included), after all the other work is done. Apply their answers, and prove again what they changed.
 
 Report, shaped by [report.md](~/.agents/pr-flow/report.md):
 

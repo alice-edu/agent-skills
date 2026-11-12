@@ -83,7 +83,7 @@ Done when every section is filled or says "none", every row has its source, and 
 
 ## 5. Ask once
 
-One decision card ([decision-card.md](~/.agents/pr-flow/decision-card.md)): each "theirs better" verdict, each confirmed skeptic finding worth changing, each failed audit check, each open P1 from the review, and each decision that should have been the user's. Every question carries its picture or diagram as the card says, the recommended option first. A user's call that changes little (a placeholder's wording, a small fix's side effect) goes in one line at the card's end, "Kept as built unless you say: …", rather than a question of its own. The agents' calls the comparer, skeptic or audit settled are listed under "Done on go" and need no question.
+One decision card, asked as [decision-card.md](~/.agents/pr-flow/decision-card.md)'s "How to ask" says (read it first, pictures included): each "theirs better" verdict, each confirmed skeptic finding worth changing, each failed audit check, each open P1 from the review, and each decision that should have been the user's. Every question carries its picture or diagram as the card says, the recommended option first. A user's call that changes little (a placeholder's wording, a small fix's side effect) goes in one line at the card's end, "Kept as built unless you say: …", rather than a question of its own. The agents' calls the comparer, skeptic or audit settled are listed under "Done on go" and need no question.
 
 What "go" does depends on whose PR it is:
 

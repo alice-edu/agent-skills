@@ -67,7 +67,7 @@ Done when the verdict has its evidence: a red test, numbers, a repro, the place 
 
 ## 5. Ask the user, once
 
-One decision card holding what's open:
+Read [decision-card.md](~/.agents/pr-flow/decision-card.md) now, whole, and ask as its "How to ask" says. One decision card holding what's open:
 
 - which Linear issue, when step 2 found several;
 - the verdict, when it's anything but a **Bug** or a **Build**;
@@ -80,6 +80,8 @@ One decision card holding what's open:
 - the other problems of a bundled report.
 
 Nothing open: no card. Everything else is decided and listed under **Decided**.
+
+Done when the card is asked, and each question about what a student sees has its picture in the question text as `![…](/absolute/path.png)`: the screen now beside each option, a mockup where it isn't built. Options described in words only are a card not yet ready.
 
 **Parked**: return the Linear issue to where it was, saying why (`linear-track` step 4), or for a big feature leave it in the backlog with the recommended next step. From Slack, post the reply (slack-report.md, "Parked"). Then go to the report.
 

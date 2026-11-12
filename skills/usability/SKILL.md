@@ -52,7 +52,7 @@ Done when every principle and basic has a finding or a "clear".
 
 Fix the findings, most important first, with the app's own parts: the repo's components and theme, as its `AGENTS.md` says. When nothing in the app fits, a shadcn component is the next choice; a new component comes last. A finding with two reasonable fixes takes the one that's closer to what the app already does.
 
-Some findings are a real product choice rather than a fix: removing a feature from the main path, changing what a flow asks for, renaming something students already know. Those are the user's ([decision card](~/.agents/pr-flow/decision-card.md)): fix everything else first, then ask them all on one card, each with the recommended choice first, and apply the answers. With no answer, leave those changes unmade and start the report with the card.
+Some findings are a real product choice rather than a fix: removing a feature from the main path, changing what a flow asks for, renaming something students already know. Those are the user's ([decision card](~/.agents/pr-flow/decision-card.md)): fix everything else first, then ask them all on one card as its "How to ask" says (read it first: each with the screen now beside each option), the recommended choice first, and apply the answers. With no answer, leave those changes unmade and start the report with the card.
 
 Prove it per the repo's checks for what you touched, then take the after screenshots in the same states as before.
 

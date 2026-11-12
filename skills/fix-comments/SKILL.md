@@ -34,7 +34,7 @@ Done when every point from step 1 has its row, every technical row is High or St
 Show the user the overview. Then:
 
 - **Nothing on the card** (every row is technical, High and ✅ Fix): no question. Go on to step 4; the overview opens the report.
-- **Otherwise**: one decision card: each product row, each Push back and Skip with its reply quoted, each Stuck row. Fixing the technical ✅ rows doesn't wait for it: start step 4 first and ask once that work is under way. Product rows wait for the answer.
+- **Otherwise**: one decision card, asked as [decision-card.md](~/.agents/pr-flow/decision-card.md)'s "How to ask" says (read it first, pictures included): each product row, each Push back and Skip with its reply quoted, each Stuck row. Fixing the technical ✅ rows doesn't wait for it: start step 4 first and ask once that work is under way. Product rows wait for the answer.
 
 For "review's back" or "what did they say", stop after the overview, with the card's questions in it: "say *fix comments* to go", the last line `In sight: <why>.` A later "fix comments" in the same thread starts from this overview when the review hasn't changed since.
 

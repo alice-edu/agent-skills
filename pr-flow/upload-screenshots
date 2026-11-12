@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# upload-screenshots <slug> <file.png>...
+# upload-screenshots <slug> <file.png|file.gif>...
 #
 # Puts screenshots on the orphan branch assets/<slug> under <slug>/ (the repo's
 # convention), keeping what is already there, and prints one raw URL per file

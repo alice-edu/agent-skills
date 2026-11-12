@@ -11,6 +11,8 @@ The shape of a PR description for the user's PRs, from their recent ones (alicia
 
 <More screenshot tables when there's more than one state: dark, an error, after an action.>
 
+<For what moves, a table of GIFs the same way: Before | After, or After alone for a new flow.>
+
 | Behaviour | Before | After |
 | --- | --- | --- |
 | <case> | <what happened> | <what happens now> |
@@ -48,7 +50,7 @@ Reviewed by Claude and Codex (`review-loop`, <N> rounds); <what its findings cha
 Fixes ALI-123
 ```
 
-- The behaviour table goes in whenever behaviour changes; the screenshot tables whenever something on screen changes. Leave out a section with nothing in it. The Diagram section holds each diagram drawn for this work (diagrams.md): its public link, and its screenshot when it reads at PR width. A change that matches diagrams.md's "When" and has none yet gets one drawn before the body is written.
+- The behaviour table goes in whenever behaviour changes; the screenshot tables whenever something on screen changes, and the GIFs whenever something moves (screenshots.md, "Recording"). Leave out a section with nothing in it. The Diagram section holds each diagram drawn for this work (diagrams.md): its public link, and its screenshot when it reads at PR width. A change that matches diagrams.md's "When" and has none yet gets one drawn before the body is written.
 - The Research section has a line for each technology used in a new way and each solved problem ([lenses.md](lenses.md), "The technology's way"), so the reviewer can check the reasoning without asking.
 - The checklist follows [ready.md](ready.md).
 - End with `Fixes ALI-123`, or `Part of ALI-123` when the issue stays open (`linear-track`), then the attribution line the harness gives.

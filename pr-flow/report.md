@@ -13,4 +13,6 @@ The user comes back to a thread cold, between many others, and reads its report'
 
    It points at what the report already holds (the card, its rows, the next skill to say); every question it names is asked in full above it.
 
-Done when someone reading only the first line and the **You:** line knows what happened and what to type.
+3. **Shows what changed on screen**: each screenshot and recording it made, inline ([screenshots.md](screenshots.md), "Show them").
+
+Done when someone reading only the first line and the **You:** line knows what happened and what to type, and every screenshot or GIF it made is on screen.

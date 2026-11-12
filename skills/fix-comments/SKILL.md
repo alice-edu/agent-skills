@@ -44,7 +44,7 @@ For "review's back" or "what did they say", stop after the overview, with the ca
 2. Fix each ✅ row, the whole of what it points at (the same problem in its sibling code too), the right way ([lenses.md](~/.agents/pr-flow/lenses.md), "The right way"): fix the shape a comment exposes rather than patching around it. A point that was a bug gets a test that fails without the fix.
 3. Hold the PR to [ready.md](~/.agents/pr-flow/ready.md) again: rerun the checks the fixes touch, see a visible fix in the running app.
 4. `review-loop` in **author** mode on the whole PR (the base merged in, to the head), from scratch, as if it were new: a fresh ledger, not one reused from an earlier run, with only the user's approved answers carried over; every lens that fits, the Backend lens through the repo's backend review doc when it touches the backend. On top of that, each fix this round gets a **regression** check: its callers, its sibling code and the tests around it, for what the fix could have broken. Fix what it finds the same way (items 2 and 3), whether or not the reviewer raised it, and list the new ones in the report. A regression a fix caused is fixed whatever its grade. Done when the loop agrees on the final head, every fix (the reviewer's and the loop's own) has had its regression check, and each regression found is fixed and proven. Budget spent with a P1 open: don't send it back; go to step 7, where the thread stays in sight.
-5. Screenshots retaken where something visible changed (screenshots.md), and the PR body updated: What changed, the checklist, Test by hand.
+5. Screenshots and GIFs retaken where something visible changed (screenshots.md), and the PR body updated: What changed, the checklist, Test by hand.
 
 ## 5. Push and reply
 

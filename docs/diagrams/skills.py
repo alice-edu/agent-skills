@@ -55,8 +55,8 @@ D["build"] = dict(title="2. Inside build-it", nodes=[
     N("b8", "8. review-loop\nClaude + Codex, every lens,\nevery repo doc read", "service", "r"),
     N("b8q", "Would a reviewer\napprove it?", "decision", "r"),
     N("b8f", "Fix it, prove it again", "warning", "r"),
-    N("b9", "9. Open the PR\nscreenshots, body, checklist"),
-    N("b10", "10. Settle if parked, then report\nverdict first, then You:\nsay \"send for review\"", "terminal"),
+    N("b9", "9. Open the PR\nscreenshots, GIFs of what moves,\nbody, checklist"),
+    N("b10", "10. Settle if parked, then report\nverdict first, the pictures, then You:\nsay \"send for review\"", "terminal"),
 ], groups=[{"id": "u", "label": "Understand"}, {"id": "p", "label": "Build and prove"},
            {"id": "r", "label": "Review until it would pass"}],
 edges=[
@@ -259,7 +259,7 @@ D["rules"] = dict(direction="RIGHT", title="16. The shared rules every skill lea
     N("ov", "overview\nyour table, then ours,\nwith confidence", "client", "ask"),
     N("le", "lenses\nSpec, Correctness, Standards,\nBackend, UI and UX, the repo's docs", "service", "rev"),
     N("re", "ready\nproof on the current head,\nthe checklist", "service", "prv"),
-    N("sc", "screenshots\nbefore and after, uploaded", "service", "prv"),
+    N("sc", "screenshots\nbefore and after, a GIF of what moves,\nmade without asking, shown to you", "service", "prv"),
     N("dg", "diagrams\nExcalidraw, public link", "external", "show"),
     N("pb", "pr-body\nwhat, why, proof", "default", "show"),
     N("rp", "report\nverdict first, ends on You:\nthe exact words to reply", "client", "show"),
@@ -272,8 +272,30 @@ D["rules"] = dict(direction="RIGHT", title="16. The shared rules every skill lea
            {"id": "talk", "label": "Talking to people"}, {"id": "wait", "label": "Waiting"}],
 edges=[
     E("le", "ov", "findings"), E("ov", "dc", "your rows"),
-    E("re", "sc"), E("re", "pb", "the checklist"), E("sc", "pb"), E("dg", "pb"), E("dg", "li"),
+    E("re", "sc"), E("re", "pb", "the checklist"), E("sc", "pb"), E("sc", "rp", "inline"), E("dg", "pb"), E("dg", "li"),
     E("pb", "li"), E("rp", "li", "then"), E("li", "sl"), E("sl", "wa"), E("wa", "nu"), E("nu", "ov", "a review landed"),
+])
+
+D["walkthrough"] = dict(title="17. Inside walkthrough (\"human review\", \"walk me through\")", nodes=[
+    N("w1", "1. Gather\nthe PR, its build thread,\nLinear, Slack"),
+    N("w2", "2. Decisions\nlayer by layer: who made each,\nthe lines that carry it"),
+    N("sk", "Skeptic, blind\nover-built, hacky, wrong tool", "service", "j"),
+    N("ch", "Challengers, blind\none per hard-to-undo agent call,\nredesigned from the base", "service", "j"),
+    N("au", "Audit of the agents' work\ntests really test, scope,\nproof at this head", "service", "j"),
+    N("cr", "Code review\nreview-loop, or the council", "service", "j"),
+    N("cmp", "Comparer\nsame, ours better, theirs better", "service", "j"),
+    N("pg", "4. The page, private\nscreens and GIFs, diagrams,\ndecisions, findings", "client"),
+    N("q", "Anything\nfor you?", "decision"),
+    N("card", "Decision card", "client"),
+    N("mine", "Your PR\nfix, prove, push", "service"),
+    N("theirs", "A teammate's PR\npost the review", "service"),
+    N("w6", "6. Report\nthe page's link, then You:", "terminal"),
+], groups=[{"id": "j", "label": "3. Judge, all at once"}],
+edges=[
+    E("w1", "w2"), E("w2", "sk"), E("w2", "ch"), E("w2", "au"), E("w2", "cr"), E("ch", "cmp"),
+    E("sk", "pg"), E("cmp", "pg"), E("au", "pg"), E("cr", "pg"), E("pg", "q"),
+    E("q", "card", "yes"), E("q", "w6", "no", "success"),
+    E("card", "mine", "go"), E("card", "theirs", "go"), E("mine", "w6"), E("theirs", "w6"),
 ])
 
 D["excalidraw"] = dict(title="17. Inside diagrams (Excalidraw), used by build-it, review-pr, the overview", nodes=[
@@ -332,7 +354,7 @@ AT = {
     "catch": (4310, 2700), "review": (5194, 2700),
     # Commands you say: on their own
     "grill": (150, 6350), "usability": (994, 6350), "student": (1868, 6350),
-    "council": (2820, 6350), "clean": (3880, 6350),
+    "council": (2820, 6350), "clean": (3880, 6350), "walkthrough": (4900, 6230),
     # Run by other skills
     "loop": (150, 8550), "babysit": (1076, 8550), "ltrack": (2693, 8550),
     # Shared rules

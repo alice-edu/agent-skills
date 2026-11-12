@@ -89,6 +89,7 @@ Update with `git pull`: the links point at the checkout, so there's nothing to r
 - [`gh`](https://cli.github.com), signed in.
 - The Slack and Linear connectors in Claude Code.
 - Codex, for the second reviewer.
+- `ffmpeg`, and Playwright in the repo (its E2E tests'), for the GIFs of what moves (`pr-flow/record-flow`).
 - Optional: the Excalidraw MCP for diagrams, and T3 Code for snoozing threads and the scheduled nudge. Without T3 Code those steps are skipped.
 
 ## Making them yours

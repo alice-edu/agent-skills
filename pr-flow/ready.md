@@ -25,7 +25,7 @@ Every item below ends as `[x]`, `N/A` or a Test-by-hand line:
 4. Research written in the PR body ([pr-body.md](pr-body.md), "Research") for each outside package the diff uses in a new way and each solved problem it meets: the docs for the installed version read, each named (`next-intl 4.3 useTranslations`), and how others use it. The installed version is in `node_modules/<pkg>/package.json`; its bundled docs or the docs site for that version.
 5. Edge cases: the ones handled, each with its test, and the ones left on purpose, each with why.
 6. A file this PR made large or grew a lot: split considered, with the outcome. Only files the PR itself grew.
-7. Screenshots for every change a student can see ([screenshots.md](screenshots.md)).
+7. Screenshots for every change a student can see, and GIFs for each that moves ([screenshots.md](screenshots.md)), shown to the user in the report.
 8. `review-loop` agreed on this head.
 
 ## Make it ready
@@ -34,8 +34,8 @@ The gate before a reviewer sees the PR: `send-for-review` runs it before posting
 
 1. **What changed**: the head `review-loop` last agreed on is in the checklist's item 8 (`review-loop agreed at <sha>`). The current head is that one, with nothing new on the base: reuse it all and go to 4.
 2. **Review it**: merge the base in, then review until it would pass, as `build-it`'s step 8 ([its loop and its Done when](~/.agents/skills/build-it/SKILL.md)), on the **whole PR**, not only the new commits: a later change can undo why an earlier one was made, and the reviewer reads it whole.
-3. **Prove it again** on the new head: the checks above, the change seen in the running app when a student can see it, and screenshots retaken where the screen changed.
-4. **Rewrite the PR body** for where the PR ended up, not where it started ([pr-body.md](pr-body.md)): what changed, the behaviour table, the checklist with this head's SHA, the screenshots.
+3. **Prove it again** on the new head: the checks above, the change seen in the running app when a student can see it, and screenshots and GIFs retaken where the screen changed.
+4. **Rewrite the PR body** for where the PR ended up, not where it started ([pr-body.md](pr-body.md)): what changed, the behaviour table, the checklist with this head's SHA, the screenshots and GIFs.
 
 Done when every checklist item is `[x]`, `N/A` or Test by hand on the current head, item 8 included. A P1 the loop can't settle stops it: it goes on the decision card, and the PR isn't announced while it's open.
 

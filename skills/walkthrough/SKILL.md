@@ -63,7 +63,7 @@ Done when every agent has answered, every skeptic finding is checked against the
 
 Make it while step 3 runs, and add the judging when it lands.
 
-- **Screens**: real screenshots from the running app at the head, before (base) and after, for every state the PR touches, as [screenshots.md](~/.agents/pr-flow/screenshots.md) "Capture" says. The PR body's own screenshots count when the head differs from where they were taken only by a merge of the base that touched none of the PR's files. A PR no student sees has none.
+- **Screens**: real screenshots from the running app at the head, before (base) and after, for every state the PR touches, as [screenshots.md](~/.agents/pr-flow/screenshots.md) "Capture" says, and a GIF of each flow that moves ("Recording"). The PR body's own screenshots count when the head differs from where they were taken only by a merge of the base that touched none of the PR's files. A PR no student sees has none.
 - **Diagrams**: one of how the change works end to end, and one for each decision or finding that matches [diagrams.md](~/.agents/pr-flow/diagrams.md) "When", each option's way for a "theirs better" verdict. They're drawn in the page itself (Mermaid), since the page is private: an Excalidraw scene's public link would share what the PR keeps private. For a card question, the same Mermaid rendered alone in headless Chrome and saved as a PNG is its picture.
 - **Publish** it as a private Artifact: the Artifact tool's quickstart gives the design guidance (load `artifact-design` only without one); images as the page's files. Without an Artifact tool, an HTML file shown with `html_preview` and `html_render`.
 

@@ -44,7 +44,7 @@ A **complex** merge also gets:
 
 - `review-loop` in **author** mode, on the resolution: `git show --remerge-diff <merge sha>` shows what was decided beyond the automatic merge, together with the branch's whole diff against the new base;
 - a diagram ([diagrams.md](~/.agents/pr-flow/diagrams.md)) when both sides reshaped the same thing: each side, then how the merge put them together, shown with the card or in the report;
-- the change seen working in the running app, when it's something a student sees (ready.md, "Proof"), with screenshots updated where the screen changed.
+- the change seen working in the running app, when it's something a student sees (ready.md, "Proof"), with screenshots and GIFs updated where the screen changed.
 
 Done when every check is green on the merged head, and for a complex merge, `review-loop` agreed, the app shows the change working, and a merge where both sides reshaped the same thing has its diagram.
 

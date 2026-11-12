@@ -1,0 +1,219 @@
+#!/usr/bin/env node
+// record-flow <out.gif> <steps.mjs> <url> [--dark] [--size 1280x800] [--width 800] [--crop x,y,w,h] [--fps 12]
+//
+// Records a flow in the running app as a GIF a reviewer can follow: the steps file drives a real
+// browser (Playwright, from the repo it's run in), slowed down, with a cursor drawn where it
+// clicks, and a caption for each step. Run it from the repo's checkout, once on the base's app for
+// the before and once on the head's for the after, with the same steps file.
+//
+// The steps file's default export gets { page, click, type, press, dismiss, caption, pause }:
+//   export default async ({ page, click, type, caption }) => {
+//     await caption("Open Practice");
+//     await click(page.getByRole("button", { name: "Practice" }));
+//     await type(page.getByLabel("Topic"), "Cells");   // type(null, "…") types where the focus is;
+//                                                     // { replace: true } replaces what's there
+//   };
+// caption(text, "top") puts it at the top, for a flow that happens at the bottom of the screen.
+// dismiss(locator) clicks it when it shows within 2 s and goes on when it doesn't: for what only
+// some runs see (a banner, a welcome shown once an account).
+// An optional `export async function setup(...)`, given the same, runs first and is cut from the
+// GIF: dismiss what a fresh browser shows (a cookie banner, a welcome), or get to the screen the
+// flow starts on (<url> is loaded first; setup can go elsewhere), and to clear what an earlier
+// run left. The GIF starts after it, and ends a second after the last step.
+//
+// record-flow --look <out.png> <url> [steps.mjs] runs the setup (when given), then saves the screen
+// and lists what can be clicked or typed in, by role and name, to write the steps from. A setup that
+// opens a menu or a dialog shows what's inside it.
+// --crop is in CSS pixels of the window; --width is the GIF's width (default 800, the PR body's).
+// The steps are slowed; the app's own animations play at their real speed, so one under half a
+// second wants --fps 30 to show more than a few frames of it.
+
+import { createRequire } from "node:module";
+import { execFileSync } from "node:child_process";
+import { existsSync, mkdtempSync, readdirSync, rmSync, statSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join, resolve } from "node:path";
+import { pathToFileURL } from "node:url";
+
+const args = process.argv.slice(2);
+const look = args[0] === "--look" && args.shift();
+const flag = (name, fallback) => {
+  const i = args.indexOf(name);
+  if (i < 0) return fallback;
+  const v = name === "--dark" ? true : args[i + 1];
+  args.splice(i, name === "--dark" ? 1 : 2);
+  return v;
+};
+const dark = flag("--dark", false);
+const [vw, vh] = flag("--size", "1280x800").split("x").map(Number);
+const width = Number(flag("--width", "800"));
+const crop = flag("--crop", null)?.split(",").map(Number);
+const fps = Number(flag("--fps", "12"));
+const [out, a1, a2] = args;
+const [stepsFile, url] = look ? [a2, a1] : [a1, a2];
+if (!out || !url || (!look && !stepsFile)) {
+  console.error("usage: record-flow <out.gif> <steps.mjs> <url> [--dark] [--size WxH] [--width N] [--crop x,y,w,h] [--fps N]");
+  process.exit(2);
+}
+
+// Playwright from the repo: its root, or a workspace package that depends on it (an e2e app).
+function playwright() {
+  const roots = [process.cwd()];
+  for (const dir of ["apps", "packages"]) {
+    const d = join(process.cwd(), dir);
+    if (existsSync(d)) for (const p of readdirSync(d)) roots.push(join(d, p));
+  }
+  for (const root of roots) {
+    const req = createRequire(join(root, "package.json"));
+    for (const name of ["playwright", "@playwright/test"]) {
+      try { return req(name); } catch {}
+    }
+  }
+  console.error("record-flow: no Playwright in this repo; run it from the repo's checkout, installed.");
+  process.exit(1);
+}
+
+// A cursor where the mouse is, a ring where it clicks, and a caption at the bottom.
+const OVERLAY = `(() => {
+  const add = () => {
+    if (document.getElementById("__rf_cursor")) return;
+    const s = document.createElement("style");
+    s.textContent = \`#__rf_cursor{position:fixed;z-index:2147483647;width:18px;height:18px;margin:-9px 0 0 -9px;
+      border-radius:50%;background:rgba(20,20,20,.55);border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.4);
+      pointer-events:none;transition:transform .12s}
+      #__rf_cursor.down{transform:scale(.7)}
+      .__rf_ring{position:fixed;z-index:2147483646;width:36px;height:36px;margin:-18px 0 0 -18px;border-radius:50%;
+      border:3px solid rgba(255,120,40,.9);pointer-events:none;animation:__rf_ring .5s ease-out forwards}
+      @keyframes __rf_ring{from{transform:scale(.3);opacity:1}to{transform:scale(1.3);opacity:0}}
+      #__rf_caption{position:fixed;z-index:2147483647;left:50%;bottom:24px;transform:translateX(-50%);
+      background:rgba(20,20,20,.85);color:#fff;font:600 18px/1.3 system-ui,sans-serif;padding:8px 16px;
+      border-radius:10px;pointer-events:none;max-width:80vw;text-align:center}
+      #__rf_caption.top{bottom:auto;top:24px}
+      #__rf_caption:empty{display:none}
+      nextjs-portal{display:none!important}\`;
+    document.documentElement.append(s);
+    const c = document.createElement("div"); c.id = "__rf_cursor"; c.style.left = "-40px";
+    const cap = document.createElement("div"); cap.id = "__rf_caption";
+    cap.textContent = sessionStorage.getItem("__rf_caption") || "";
+    document.documentElement.append(c, cap);
+    addEventListener("mousemove", e => { c.style.left = e.clientX + "px"; c.style.top = e.clientY + "px"; }, true);
+    addEventListener("mousedown", e => {
+      c.classList.add("down");
+      const r = document.createElement("div"); r.className = "__rf_ring";
+      r.style.left = e.clientX + "px"; r.style.top = e.clientY + "px";
+      document.documentElement.append(r); setTimeout(() => r.remove(), 600);
+    }, true);
+    addEventListener("mouseup", () => c.classList.remove("down"), true);
+  };
+  document.readyState === "loading" ? addEventListener("DOMContentLoaded", add) : add();
+})();`;
+
+const { chromium } = playwright();
+const dir = mkdtempSync(join(tmpdir(), "record-flow-"));
+const browser = await chromium.launch({ slowMo: look ? 0 : 120 });
+const context = await browser.newContext({
+  viewport: { width: vw, height: vh },
+  colorScheme: dark ? "dark" : "light",
+  ignoreHTTPSErrors: true,
+  ...(look ? {} : { recordVideo: { dir, size: { width: vw, height: vh } } }),
+});
+await context.addInitScript(OVERLAY);
+const page = await context.newPage();
+page.setDefaultTimeout(10_000);
+const born = Date.now();
+
+const pause = (ms = 700) => page.waitForTimeout(ms);
+let mouse = { x: vw / 2, y: vh / 2 };
+async function moveTo(locator) {
+  await locator.scrollIntoViewIfNeeded();
+  const box = await locator.boundingBox();
+  if (!box) throw new Error("record-flow: nothing on screen to move to");
+  const to = { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+  const steps = Math.max(8, Math.round(Math.hypot(to.x - mouse.x, to.y - mouse.y) / 25));
+  await page.mouse.move(to.x, to.y, { steps });
+  mouse = to;
+}
+const click = async (locator) => { await moveTo(locator); await pause(250); await locator.click(); await pause(); };
+const type = async (locator, text, { replace = false } = {}) => {
+  if (locator) { await moveTo(locator); await locator.click(); }
+  if (replace) await page.keyboard.press("ControlOrMeta+A");
+  await page.keyboard.type(text, { delay: 45 }); await pause();
+};
+const press = async (key) => { await page.keyboard.press(key); await pause(); };
+const dismiss = async (locator) => {
+  if (await locator.waitFor({ timeout: 2000 }).then(() => true, () => false)) await locator.click();
+};
+let current = "";
+const caption = async (text, at = "bottom") => {
+  current = text;
+  await page.evaluate(([t, at]) => {
+    sessionStorage.setItem("__rf_caption", t);
+    const el = document.getElementById("__rf_caption");
+    if (el) { el.textContent = t; el.classList.toggle("top", at === "top"); }
+  }, [text, at]);
+  await pause(500);
+};
+
+let failed;
+let start = 0;
+try {
+  await page.goto(url, { waitUntil: "load" });
+  await page.waitForLoadState("networkidle", { timeout: 15_000 }).catch(() => {});
+  await page.mouse.move(mouse.x, mouse.y);
+  const mod = stepsFile ? await import(pathToFileURL(resolve(stepsFile)).href) : {};
+  const api = { page, click, type, press, dismiss, caption, pause };
+  if (mod.setup) { current = "setup"; await mod.setup(api); await caption(""); }
+  if (look) {
+    await page.waitForTimeout(800);
+    await page.screenshot({ path: out });
+    const seen = await page.evaluate(() => {
+      const sel = "button,a[href],input,textarea,select,[role=button],[role=tab],[role=link],[role=menuitem],[role=checkbox],[role=option],[contenteditable=true]";
+      return [...document.querySelectorAll(sel)].filter(e => e.getClientRects().length && getComputedStyle(e).visibility !== "hidden")
+        .map(e => `${e.getAttribute("role") || e.tagName.toLowerCase()}: ${(e.getAttribute("aria-label") || e.innerText || e.getAttribute("placeholder") || e.getAttribute("title") || "").trim().replace(/\s+/g, " ").slice(0, 60)}`)
+        .filter(l => !l.endsWith(": "));
+    });
+    console.log([...new Set(seen)].join("\n"));
+    console.log(`\nthe screen: ${out}`);
+    await browser.close();
+    process.exit(0);
+  }
+  // Let what animates on arriving settle before the first frame.
+  await pause(800);
+  start = (Date.now() - born) / 1000;
+  await pause(400);
+  current = "";
+  await mod.default(api);
+  await pause(1000);
+} catch (e) {
+  failed = e;
+  await page.screenshot({ path: out.replace(/\.gif$/, "") + "-failed.png" }).catch(() => {});
+}
+const video = await page.video().path();
+await context.close();
+await browser.close();
+if (failed) {
+  const at = current ? ` (at "${current}")` : "";
+  console.error(`record-flow: a step failed${at}, nothing recorded: ${failed.message.split("\n").slice(0, 3).join(" | ")}`);
+  console.error(`the screen when it failed: ${out.replace(/\.gif$/, "")}-failed.png`);
+  rmSync(dir, { recursive: true, force: true });
+  process.exit(1);
+}
+
+// Two passes: a palette from the video, then the GIF in it, so the app's colours don't band.
+const cropF = crop ? `crop=${crop[2]}:${crop[3]}:${crop[0]}:${crop[1]},` : "";
+const vf = `${cropF}fps=${fps},scale=${width}:-1:flags=lanczos,split[a][b];[a]palettegen=stats_mode=diff[p];[b][p]paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle`;
+execFileSync("ffmpeg", ["-nostdin", "-loglevel", "error", "-y", "-ss", String(start), "-i", video, "-vf", vf, out]);
+rmSync(dir, { recursive: true, force: true });
+
+const seconds = Number(execFileSync("ffprobe", ["-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", out]).toString());
+const mb = statSync(out).size / 1e6;
+// A sheet of one frame a second, to look at the whole flow in one picture.
+const sheet = out.replace(/\.gif$/, "") + "-sheet.png";
+const rows = Math.ceil(Math.ceil(seconds) / 4);
+execFileSync("ffmpeg", ["-nostdin", "-loglevel", "error", "-y", "-i", out, "-vf", `fps=1,scale=400:-1,tile=4x${rows}:padding=8:margin=8:color=white`, "-frames:v", "1", sheet]);
+const last = out.replace(/\.gif$/, "") + "-last.png";
+execFileSync("ffmpeg", ["-nostdin", "-loglevel", "error", "-y", "-sseof", "-0.3", "-i", out, "-frames:v", "1", "-update", "1", last]);
+console.log(`${out}: ${seconds.toFixed(1)} s, ${mb.toFixed(1)} MB\nits frames, one a second: ${sheet}\nits last frame, full size: ${last}`);
+// GitHub shows an image of at most 10 MB; T3 Code a picture of at most 480 x 480.
+if (mb > 10) console.error(`record-flow: ${mb.toFixed(1)} MB is over GitHub's 10 MB: crop it, or split the flow`);
+if (seconds > 30) console.error(`record-flow: ${seconds.toFixed(0)} s is long to watch: split the flow into two`);

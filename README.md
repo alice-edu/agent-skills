@@ -15,6 +15,7 @@ They're written for our repo (Alicia), our Slack and our Linear, and they're pub
 | "full send" | [`full-send`](skills/full-send/SKILL.md) | Takes an approved PR the rest of the way: last comments, conflicts, CI, merge, and checks it's live. |
 | "catch up" | [`catch-up`](skills/catch-up/SKILL.md) | Brings a stale branch up to date: merges the base in, resolves conflicts, and proves it still works. |
 | "review this", "another look" | [`review-pr`](skills/review-pr/SKILL.md) | Reviews a teammate's PR with Claude and Codex, explains it in plain words, and posts the review on GitHub and in Slack. |
+| "human review", "walk me through" | [`walkthrough`](skills/walkthrough/SKILL.md) | A private page for reviewing a PR yourself, yours or a teammate's: what changed, real screenshots, diagrams, the reading order and every decision with who made it; what's over-built, hacky or the wrong tool; agent-made decisions challenged by blind agents; the agents' work audited. Then one card, and go fixes or posts the review. |
 | "review loop" | [`review-loop`](skills/review-loop/SKILL.md) | Claude and Codex review a change in rounds until they agree. The other skills run it. |
 | "council" | [`council`](skills/council/SKILL.md) | Four models review instead of two, for changes that deserve it. |
 | "usability", "fix it with usability" | [`usability`](skills/usability/SKILL.md) | Judges a screen like a senior product designer, by *Don't Make Me Think* first, and fixes what a student would trip on in one pass, with before and after screenshots. Its principles are also what reviews judge UI by. |
@@ -38,7 +39,7 @@ flowchart LR
   C -->|approved| G[full send] --> H[Merged and live]
 ```
 
-`review-loop` runs inside `build-it`, `fix-comments`, `full-send` and `review-pr`. `babysit-pr` runs inside `full-send`.
+`review-loop` runs inside `build-it`, `fix-comments`, `full-send`, `review-pr` and `walkthrough`. `babysit-pr` runs inside `full-send`.
 
 ### See inside each skill
 

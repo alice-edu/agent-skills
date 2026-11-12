@@ -11,6 +11,8 @@ Every choice and every finding has an **owner**, apart from its severity:
 - **Simplify?**: a technical choice gone hairy, where a simpler shape exists only if a requirement gives. The cleanest design the agents can find still needs something heavy (a data migration, a new table, service or package, a flag, a second path doing what one path does; a package that replaces hand-rolled logic doesn't count, lenses.md, "A solved problem"), and dropping or changing one named requirement would remove it. The user's call, as one question: the simpler shape, the requirement it drops, what a student loses, and what it saves. Choosing between documented approaches is the agents'.
 - **Stuck**: reviewers still disagreeing on a technical point after the docs and a check that could decide it (a test, a repro, a measurement). One question: both sides in a line each, and which the agents lean to.
 
+A step off the documented path with no precedent found ([lenses.md](lenses.md), "Precedent") goes on the card too, as one question: what it does, what was searched, and the documented alternative it gives up.
+
 A step outside what the skill grants (deleting data, touching production, closing a PR) goes on the card too.
 
 ## How to ask

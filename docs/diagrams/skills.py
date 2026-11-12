@@ -342,6 +342,21 @@ D["usability"] = dict(title="9. Inside usability (\"usability this\")", nodes=[
     E("q", "f", "on its own", "success"), E("q", "led", "a review"), E("f", "r"),
 ])
 
+D["sketch"] = dict(title="18. Inside sketch-it (\"sketch it\", from build-it)", nodes=[
+    N("in", "You: \"sketch it\"\nor build-it: a new screen,\nflow or panel", "terminal"),
+    N("f", "1. Frame it\nwhat, which state, the problem;\nproduct or marketing; a picture of now"),
+    N("m", "2. References\nMobbin: 3-5 well-known apps,\nthe convention each shows", "external"),
+    N("s", "3. Sketch\nup to 3 options as throwaway stories,\nthe app's real components and fake data"),
+    N("u", "4. Usability\neach option judged,\nfixed within its idea", "service"),
+    N("d", "5. Show\na Doop page a round, frames beside now;\nthe card in chat, a picture each", "client"),
+    N("q", "Agreed?", "decision"),
+    N("i", "6. Iterate\npicks, mixes, chat and\nDoop comments", "service"),
+    N("h", "7. Hand over\nthe agreed story, new parts, new text;\nbuild-it builds from it", "terminal"),
+], edges=[
+    E("in", "f"), E("f", "m"), E("m", "s"), E("s", "u"), E("u", "d"), E("d", "q"),
+    E("q", "i", "not yet"), E("i", "s", "next round"), E("q", "h", "agreed", "success"),
+])
+
 # Where each one sits (x, y), so a redraw lands in the same place. The scene is in five sections,
 # tinted panels drawn by hand behind the diagrams: the big picture; commands you say, the PR flow;
 # commands you say, on their own; run by other skills; shared rules. A new diagram goes in its section,
@@ -354,7 +369,7 @@ AT = {
     "catch": (4310, 2700), "review": (5194, 2700),
     # Commands you say: on their own
     "grill": (150, 6350), "usability": (994, 6350), "student": (1868, 6350),
-    "council": (2820, 6350), "clean": (3880, 6350), "walkthrough": (4900, 6230),
+    "council": (2820, 6350), "clean": (3880, 6350), "walkthrough": (4900, 6230), "sketch": (6300, 6350),
     # Run by other skills
     "loop": (150, 8550), "babysit": (1076, 8550), "ltrack": (2693, 8550),
     # Shared rules

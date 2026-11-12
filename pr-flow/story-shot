@@ -1,0 +1,214 @@
+#!/usr/bin/env node
+// story-shot <out.png> <storybook url> <story id> [--dark] [--width N] [--height N] [--html <out.html>]
+// story-shot --list <storybook url> [words]
+//
+// A picture of one Storybook story, drawn alone as the app draws it: the repo's own components,
+// theme and fonts. At 2x, cropped to what the story draws (or the whole viewport, for a story laid
+// out fullscreen). --html also writes the story as one self-contained HTML file (its CSS and fonts
+// inlined, no scripts), for a canvas that takes HTML. --list prints the stories, id and title, whose
+// title or name has every word given.
+//
+// Run from the repo's checkout, installed: Playwright comes from the repo, as record-flow's does.
+
+import { createRequire } from "node:module";
+import { existsSync, readdirSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
+
+const args = process.argv.slice(2);
+const flag = (name) => {
+  const i = args.indexOf(name);
+  if (i < 0) return undefined;
+  const [, value] = args.splice(i, 2);
+  return value;
+};
+const has = (name) => {
+  const i = args.indexOf(name);
+  if (i < 0) return false;
+  args.splice(i, 1);
+  return true;
+};
+
+function usage() {
+  console.error(
+    "usage: story-shot <out.png> <storybook url> <story id> [--dark] [--width N] [--height N] [--html out.html]\n" +
+      "       story-shot --list <storybook url> [words]",
+  );
+  process.exit(2);
+}
+
+async function index(base) {
+  const res = await fetch(new URL("index.json", base));
+  if (!res.ok) throw new Error(`story-shot: ${base}index.json gave ${res.status}; is Storybook running there?`);
+  return Object.values((await res.json()).entries).filter((e) => e.type === "story");
+}
+
+const slash = (url) => (url.endsWith("/") ? url : url + "/");
+
+if (has("--list")) {
+  const [url, ...words] = args;
+  if (!url) usage();
+  const want = words.map((w) => w.toLowerCase());
+  for (const e of await index(slash(url))) {
+    const text = `${e.title} ${e.name}`.toLowerCase();
+    if (want.every((w) => text.includes(w))) console.log(`${e.id}\t${e.title} / ${e.name}`);
+  }
+  process.exit(0);
+}
+
+const dark = has("--dark");
+const width = Number(flag("--width") ?? 1280);
+const height = Number(flag("--height") ?? 800);
+const htmlOut = flag("--html");
+const [out, url, id] = args;
+if (!out || !url || !id) usage();
+const base = slash(url);
+
+// Playwright from the repo: its root, or a workspace package that depends on it.
+function playwright() {
+  const roots = [process.cwd()];
+  for (const dir of ["apps", "packages"]) {
+    const d = join(process.cwd(), dir);
+    if (existsSync(d)) for (const p of readdirSync(d)) roots.push(join(d, p));
+  }
+  for (const root of roots) {
+    const req = createRequire(join(root, "package.json"));
+    for (const name of ["playwright", "@playwright/test"]) {
+      try {
+        return req(name);
+      } catch {}
+    }
+  }
+  console.error("story-shot: no Playwright in this repo; run it from the repo's checkout, installed.");
+  process.exit(1);
+}
+
+const entry = (await index(base)).find((e) => e.id === id);
+if (!entry) {
+  console.error(`story-shot: no story "${id}". Find its id with: story-shot --list ${url} <words>`);
+  process.exit(1);
+}
+
+const { chromium } = playwright();
+const browser = await chromium.launch();
+const page = await browser.newPage({ viewport: { width, height }, deviceScaleFactor: 2, colorScheme: dark ? "dark" : "light" });
+const errors = [];
+page.on("pageerror", (e) => errors.push(e.message));
+const story = new URL("iframe.html", base);
+story.searchParams.set("id", id);
+story.searchParams.set("viewMode", "story");
+story.searchParams.set("globals", `theme:${dark ? "dark" : "light"}`);
+await page.goto(story.href, { waitUntil: "networkidle" });
+await page.waitForFunction(() => document.querySelector("#storybook-root")?.childElementCount > 0, null, { timeout: 15000 }).catch(() => {});
+await page.evaluate(() => document.fonts.ready);
+// Animations and transitions to their end, so the picture shows the state, not a frame of getting there.
+await page.addStyleTag({ content: "*,*::before,*::after{animation-delay:-1ms!important;animation-duration:1ms!important;animation-iteration-count:1!important;transition-duration:0s!important;transition-delay:0s!important;caret-color:transparent!important}" });
+await page.waitForTimeout(400);
+
+const shown = await page.evaluate(() => {
+  const root = document.querySelector("#storybook-root");
+  const err = document.querySelector(".sb-show-errordisplay #error-message");
+  return { empty: !root || root.childElementCount === 0, error: err?.textContent?.trim() || "" };
+});
+if (shown.error || shown.empty) {
+  console.error(`story-shot: the story didn't draw. ${shown.error || errors.join("\n") || "Nothing in #storybook-root."}`);
+  await browser.close();
+  process.exit(1);
+}
+
+// Cropped to what the story draws, unless it's laid out fullscreen (a whole screen).
+const layout = entry.parameters?.layout ?? (await page.evaluate(() => (document.body.classList.contains("sb-main-fullscreen") ? "fullscreen" : "")));
+const fullscreen = layout === "fullscreen" || (await page.evaluate(() => document.body.classList.contains("sb-main-fullscreen")));
+if (fullscreen) {
+  await page.screenshot({ path: out });
+} else {
+  const box = await page.evaluate(() => {
+    const els = [...document.querySelectorAll("#storybook-root *")];
+    let x1 = Infinity, y1 = Infinity, x2 = -Infinity, y2 = -Infinity;
+    for (const el of els) {
+      const r = el.getBoundingClientRect();
+      if (!r.width || !r.height) continue;
+      x1 = Math.min(x1, r.left); y1 = Math.min(y1, r.top); x2 = Math.max(x2, r.right); y2 = Math.max(y2, r.bottom);
+    }
+    return { x1, y1, x2, y2 };
+  });
+  const pad = 16;
+  const clip = {
+    x: Math.max(0, box.x1 - pad),
+    y: Math.max(0, box.y1 - pad),
+    width: Math.min(width, box.x2 + pad) - Math.max(0, box.x1 - pad),
+    height: box.y2 + pad - Math.max(0, box.y1 - pad),
+  };
+  await page.screenshot({ path: out, clip, fullPage: true });
+}
+
+if (htmlOut) {
+  // The page as drawn: every stylesheet's rules inlined (fonts as data URLs), scripts dropped.
+  const html = await page.evaluate(async (isDark) => {
+    const toData = async (u) => {
+      const r = await fetch(u);
+      const b = await r.blob();
+      return await new Promise((ok) => {
+        const f = new FileReader();
+        f.onload = () => ok(f.result);
+        f.readAsDataURL(b);
+      });
+    };
+    // Only the font faces the story loaded: a family's other weights and subsets are megabytes.
+    const norm = (v) => String(v || "").replace(/["']/g, "").replace(/\s+/g, "").toLowerCase();
+    const key = (family, weight, style, range) => [family, weight || "400", style || "normal", range || "u+0-10ffff"].map(norm).join("|");
+    const loaded = new Set([...document.fonts].filter((f) => f.status === "loaded").map((f) => key(f.family, f.weight, f.style, f.unicodeRange)));
+    let css = "";
+    for (const sheet of document.styleSheets) {
+      try {
+        for (const rule of sheet.cssRules) {
+          let text = rule.cssText;
+          if (rule instanceof CSSFontFaceRule) {
+            const s = rule.style;
+            const k = key(s.getPropertyValue("font-family"), s.getPropertyValue("font-weight"), s.getPropertyValue("font-style"), s.getPropertyValue("unicode-range"));
+            if (!loaded.has(k)) continue;
+            const m = [...text.matchAll(/url\("?([^")]+)"?\)/g)];
+            for (const [, u] of m) {
+              const abs = new URL(u, sheet.href || location.href).href;
+              text = text.replace(u, await toData(abs));
+            }
+          }
+          css += text + "\n";
+        }
+      } catch {}
+    }
+    // Images as data URLs (the ones drawn, at the size drawn), so the file stands alone.
+    const root = document.querySelector("#storybook-root").cloneNode(true);
+    const live = [...document.querySelectorAll("#storybook-root img")];
+    const copies = [...root.querySelectorAll("img")];
+    for (let i = 0; i < copies.length; i++) {
+      const src = live[i]?.currentSrc || live[i]?.src;
+      if (!src || src.startsWith("data:")) continue;
+      try {
+        copies[i].src = await toData(src);
+      } catch {}
+      copies[i].removeAttribute("srcset");
+      copies[i].removeAttribute("loading");
+    }
+    // An SVG's <image> (the app's icons draw a light and a dark one, the theme hides one).
+    for (const el of root.querySelectorAll("image")) {
+      const href = el.getAttribute("href") || el.getAttribute("xlink:href");
+      if (!href || href.startsWith("data:")) continue;
+      try {
+        el.setAttribute("href", await toData(new URL(href, location.href).href));
+      } catch {}
+    }
+    for (const el of root.querySelectorAll("[style*='url(']")) {
+      for (const [, u] of el.getAttribute("style").matchAll(/url\(["']?([^"')]+)["']?\)/g)) {
+        if (!u.startsWith("data:")) el.setAttribute("style", el.getAttribute("style").replace(u, await toData(new URL(u, location.href).href)));
+      }
+    }
+    const cls = document.documentElement.className;
+    return `<!doctype html><html class="${cls}${isDark && !cls.includes("dark") ? " dark" : ""}"><head><meta charset="utf-8"><style>${css}</style></head><body class="${document.body.className}" style="margin:0">${root.outerHTML}</body></html>`;
+  }, dark);
+  writeFileSync(htmlOut, html);
+  console.log(`${htmlOut}: ${(html.length / 1024).toFixed(0)} KB`);
+}
+
+if (errors.length) console.error(`story-shot: the page logged errors:\n${errors.join("\n")}`);
+await browser.close();
+console.log(out);

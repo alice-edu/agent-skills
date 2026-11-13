@@ -342,16 +342,16 @@ D["usability"] = dict(title="9. Inside usability (\"usability this\")", nodes=[
     E("q", "f", "on its own", "success"), E("q", "led", "a review"), E("f", "r"),
 ])
 
-D["sketch"] = dict(title="18. Inside sketch-it (\"sketch it\", from build-it)", nodes=[
+D["sketch"] = dict(title="18. Inside sketch-it (\"sketch it\", from build-it or review-pr)", nodes=[
     N("in", "You: \"sketch it\"\nor build-it: a new screen,\nflow or panel", "terminal"),
-    N("f", "1. Frame it\nwhat, which state, the problem;\nproduct or marketing; a picture of now"),
+    N("f", "1. Frame it\nwhat, which state, the problem;\nthe kit checked; now as a frame"),
     N("m", "2. References\nMobbin: 3-5 well-known apps,\nthe convention each shows", "external"),
-    N("s", "3. Sketch\nup to 3 options as throwaway stories,\nthe app's real components and fake data"),
-    N("u", "4. Usability\neach option judged,\nfixed within its idea", "service"),
-    N("d", "5. Show\na Doop page a round, frames beside now;\nthe card in chat, a picture each", "client"),
+    N("s", "3-4. Canvas and sketch\nup to 3 options on Doop, from the\nkit's real parts and fake data"),
+    N("u", "5. Usability\neach option judged,\nfixed within its idea", "service"),
+    N("d", "6. Show\na Doop page a round, frames beside now;\nthe card in chat, a picture each", "client"),
     N("q", "Agreed?", "decision"),
-    N("i", "6. Iterate\npicks, mixes, chat and\nDoop comments", "service"),
-    N("h", "7. Hand over\nthe agreed story, new parts, new text;\nbuild-it builds from it", "terminal"),
+    N("i", "7. Iterate\npicks, mixes, chat and\nDoop comments", "service"),
+    N("h", "8. Hand over\nthe agreed frame, ready for dev;\nbuild-it builds its parts", "terminal"),
 ], edges=[
     E("in", "f"), E("f", "m"), E("m", "s"), E("s", "u"), E("u", "d"), E("d", "q"),
     E("q", "i", "not yet"), E("i", "s", "next round"), E("q", "h", "agreed", "success"),

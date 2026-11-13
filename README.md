@@ -19,7 +19,7 @@ They're written for our repo (Alicia), our Slack and our Linear, and they're pub
 | "review loop" | [`review-loop`](skills/review-loop/SKILL.md) | Claude and Codex review a change in rounds until they agree. The other skills run it. |
 | "council" | [`council`](skills/council/SKILL.md) | Four models review instead of two, for changes that deserve it. |
 | "usability", "fix it with usability" | [`usability`](skills/usability/SKILL.md) | Judges a screen like a senior product designer, by *Don't Make Me Think* first, and fixes what a student would trip on in one pass, with before and after screenshots. Its principles are also what reviews judge UI by. |
-| "sketch it" | [`sketch-it`](skills/sketch-it/SKILL.md) | Designs a screen, flow, panel or landing section with you in rounds: references from Mobbin, options built from the app's real components in throwaway Storybook stories, a usability pass on each, shown on a Doop canvas and in chat, until you say agreed. build-it runs it for a new screen, flow or panel. |
+| "sketch it" | [`sketch-it`](skills/sketch-it/SKILL.md) | Designs a screen, flow, panel or landing section with you in rounds: references from Mobbin, options composed on a Doop canvas from the app's real components (its kit, lifted from Storybook), a usability pass on each, shown on the canvas and in chat, until you say agreed. build-it runs it for a new screen, flow or panel; review-pr suggests it when a teammate's screen is worth questioning, with the PR's screen as now. |
 | "clean Linear", "triage" | [`clean-linear`](skills/clean-linear/SKILL.md) | Sorts every waiting Linear issue into the status whose bar it meets (Ready to Build, Needs Shaping, Backlog) or cancels it with a reason, checking the code for what's already done, and asks you in batches of 10 to 15. |
 | "student test" | [`student-test`](skills/student-test/SKILL.md) | A panel of agents, each playing a student, tries a screen, a flow or some wording. |
 | "babysit" | [`babysit-pr`](skills/babysit-pr/SKILL.md) | Watches a PR through CI and review bots, fixing what's real, until it's green. |
@@ -40,7 +40,7 @@ flowchart LR
   C -->|approved| G[full send] --> H[Merged and live]
 ```
 
-`review-loop` runs inside `build-it`, `fix-comments`, `full-send`, `review-pr` and `walkthrough`. `babysit-pr` runs inside `full-send`. `sketch-it` runs inside `build-it` for a new screen, flow or panel.
+`review-loop` runs inside `build-it`, `fix-comments`, `full-send`, `review-pr` and `walkthrough`. `babysit-pr` runs inside `full-send`. `sketch-it` runs inside `build-it` for a new screen, flow or panel, and after `review-pr` when you say so.
 
 ### See inside each skill
 
@@ -91,7 +91,7 @@ Update with `git pull`: the links point at the checkout, so there's nothing to r
 - The Slack and Linear connectors in Claude Code.
 - Codex, for the second reviewer.
 - `ffmpeg`, and Playwright in the repo (its E2E tests'), for the GIFs of what moves (`pr-flow/record-flow`).
-- For `sketch-it`: Storybook in the repo (`pr-flow/story-shot` captures its stories), the Mobbin MCP for references, and the [Doop](https://doop.design) MCP for the canvas (without it, sketches are shown in chat only).
+- For `sketch-it`: Storybook in the repo, the Mobbin MCP for references, and the [Doop](https://doop.design) MCP, with a kit of the repo's components on a canvas of its own ([`pr-flow/doop-kit.md`](pr-flow/doop-kit.md) makes one).
 - Optional: the Excalidraw MCP for diagrams, and T3 Code for snoozing threads and the scheduled nudge. Without T3 Code those steps are skipped.
 
 ## Making them yours

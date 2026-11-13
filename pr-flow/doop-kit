@@ -1,0 +1,444 @@
+#!/usr/bin/env node
+// doop-kit: the app's real components and theme, made into Doop components and tokens, from its
+// Storybook. What goes in is a kit spec (JSON, kept with the app, see below); what comes out is the
+// input of Doop's MCP tools, for an agent to send: Doop has no API a script can call.
+//
+//   doop-kit tokens <spec>                                   -> create_tokens input (JSON)
+//   doop-kit base <spec>                                     -> a <style> for a sketch frame's head: what
+//                                                               the theme has that tokens can't hold (shadows,
+//                                                               sizes), light and dark, and the 4 px step
+//   doop-kit build <spec> <storybook url> <out dir> [names]  -> <out>/<Name>.json, create_component input
+//   doop-kit frame <spec> <storybook url> <story id> [--select css] [--width N] [--dark]
+//                                                            -> a frame's HTML: the story as it draws now
+//
+// Run from the app repo's checkout, installed, Storybook running: Playwright comes from the repo.
+//
+// Each component is lifted from a story as the browser draws it: the root element's HTML and every
+// CSS rule that can apply to it or inside it (layers flattened; hover, focus and dark kept), with the
+// theme's colours left as var(--token) for the canvas's tokens to fill, light and dark. A variant is
+// an enum prop: the classes that change between the stories of one prop's values become rules on
+// .ali[data-<prop>="<value>"], the attribute Doop sets. Dark is Doop's [data-doop-theme="dark"],
+// put beside the app's .dark wherever a rule reads it.
+//
+// The spec, paths from the repo's root:
+// {
+//   "playwright": "apps/web/package.json",        where Playwright resolves from
+//   "theme": "apps/web/app/globals.css",          its :root (light) and .dark blocks are the tokens
+//   "fonts": { "--font-sans": "IBM Plex Sans" },  font vars the components read -> fontFamily tokens
+//   "assets": { "/icons/": "https://…/icons/" },  local URLs rewritten to where the frame can load them
+//   "components": [{
+//     "name": "Button", "description": "When to use it",
+//     "code": { "name": "Button", "path": "apps/web/components/ui/button.tsx" },
+//     "story": "ui-button--default",
+//     "select": "css selector",            optional: one part of the story, not its root
+//     "props": { "variant": { "default": "ui-button--default", "outline": "ui-button--outline" } },
+//                                          a value is a story id, or { "story", "select", "at" }: drawn
+//                                          inside another story, or showing another prop at a value its
+//                                          root's data-<prop> doesn't say and isn't its default ("at": { "tone": "green" })
+//     "bind": { "label": "text:Button", "href:icon": "image" },  prop <- the element with that text,
+//                                          or matching that selector (several props: comma-separated)
+//     "slots": { "content": "[data-slot=card-content]" },  content each instance supplies
+//     "drop": ["selector"],                elements to take out (a story's scaffolding)
+//     "css": "extra rules",                appended, for what the story's context gave it
+//     "width": 480, "height": 240          the main's frame on the Components page
+//   }]
+// }
+
+import { createRequire } from "node:module";
+import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { join } from "node:path";
+
+const argv = process.argv.slice(2);
+const flag = (name) => {
+  const i = argv.indexOf(name);
+  return i < 0 ? undefined : argv.splice(i, 2)[1];
+};
+const has = (name) => {
+  const i = argv.indexOf(name);
+  return i < 0 ? false : (argv.splice(i, 1), true);
+};
+const DARK = '[data-doop-theme="dark"]';
+
+// --- The theme ----------------------------------------------------------------------------------
+
+function block(src, selectorTest) {
+  // The body of the first top-level rule whose selector list passes the test.
+  const re = /(^|\n)([^{}@\n][^{}]*)\{/g;
+  for (let m; (m = re.exec(src)); ) {
+    const sels = m[2].split(",").map((s) => s.trim());
+    if (!selectorTest(sels)) continue;
+    let depth = 1, i = re.lastIndex;
+    for (; i < src.length && depth; i++) depth += src[i] === "{" ? 1 : src[i] === "}" ? -1 : 0;
+    return src.slice(re.lastIndex, i - 1);
+  }
+  return "";
+}
+const declarations = (body) => Object.fromEntries([...body.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)].map((m) => [m[1], m[2].trim()]));
+
+function tokens(spec) {
+  const src = readFileSync(spec.theme, "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+  const light = declarations(block(src, (s) => s.includes(":root")));
+  const dark = declarations(block(src, (s) => s.length === 1 && s[0] === ".dark"));
+  const out = [];
+  for (const [name, value] of Object.entries(light)) {
+    if (!/^#[0-9a-f]{3,8}$/i.test(value)) continue;
+    const t = { name, type: "color", value };
+    if (dark[name] && dark[name] !== value) t.themes = { dark: dark[name] };
+    out.push(t);
+  }
+  if (light["--radius"]) out.push({ name: "--radius", type: "radius", value: light["--radius"] });
+  for (const [name, family] of Object.entries(spec.fonts ?? {})) out.push({ name, type: "fontFamily", value: `"${family}", sans-serif` });
+  return out;
+}
+
+// What a frame's own layout reads that isn't a token: the theme's other values, light and dark.
+function base(spec) {
+  const src = readFileSync(spec.theme, "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+  const names = new Set(tokens(spec).map((t) => t.name));
+  const pick = (d) => Object.entries(d).filter(([k]) => !names.has(k)).map(([k, v]) => `${k}:${v}`).join(";");
+  const light = declarations(block(src, (s) => s.includes(":root")));
+  const dark = declarations(block(src, (s) => s.length === 1 && s[0] === ".dark"));
+  const darkOwn = Object.fromEntries(Object.entries(dark).filter(([k, v]) => light[k] !== v));
+  return `<style>:root{--spacing:0.25rem;${pick(light)}}\n${DARK}{${pick(darkOwn)}}\nbody{margin:0;font-family:var(--font-sans);color:var(--foreground);background:var(--background);-webkit-font-smoothing:antialiased}</style>`;
+}
+
+// --- Lifting a story ----------------------------------------------------------------------------
+
+async function browser(spec) {
+  const req = createRequire(join(process.cwd(), spec.playwright ?? "package.json"));
+  return req("playwright").chromium.launch();
+}
+
+async function lift(b, url, id, opts = {}) {
+  const page = await b.newPage({ viewport: { width: 1280, height: 800 }, colorScheme: opts.dark ? "dark" : "light" });
+  const u = new URL("iframe.html", url.endsWith("/") ? url : url + "/");
+  u.searchParams.set("id", id);
+  u.searchParams.set("viewMode", "story");
+  u.searchParams.set("globals", `theme:${opts.dark ? "dark" : "light"}`);
+  await page.goto(u.href, { waitUntil: "networkidle" });
+  await page.waitForFunction(() => document.querySelector("#storybook-root")?.childElementCount > 0, null, { timeout: 20000 });
+  await page.evaluate(() => document.fonts.ready);
+  await page.waitForTimeout(300);
+  const out = await page.evaluate(liftInPage, { soft: opts.soft ?? false, select: opts.select ?? null, bind: opts.bind ?? {}, slots: opts.slots ?? {}, drop: opts.drop ?? [], varsOnly: opts.varsOnly ?? null });
+  await page.close();
+  if (out.error) throw new Error(`${id}: ${out.error}`);
+  return out;
+}
+
+// Runs in the story's page.
+function liftInPage({ soft, select, bind, slots, drop, varsOnly }) {
+  const cs = getComputedStyle(document.documentElement);
+  if (varsOnly) return { vars: Object.fromEntries(varsOnly.map((v) => [v, cs.getPropertyValue(v).trim()])) };
+  const sbroot = document.querySelector("#storybook-root");
+  const kids = [...sbroot.children].filter(
+    (e) => !["SCRIPT", "STYLE"].includes(e.tagName) && e.getBoundingClientRect().width > 0 && !e.hasAttribute("data-react-aria-top-layer") && (e.childElementCount > 0 || e.textContent.trim()),
+  );
+  const root = select ? sbroot.querySelector(select) : kids.length === 1 ? kids[0] : sbroot;
+  if (!root) return { error: `nothing matches ${select}` };
+  const html = root.cloneNode(true);
+  for (const s of html.querySelectorAll("script")) s.remove();
+  for (const sel of drop) for (const e of html.querySelectorAll(sel)) e.remove();
+  // The elements in the live page the clone came from, for matching rules (the clone has no layout).
+  const els = [root, ...root.querySelectorAll("*")];
+
+  // Props and slots, marked in the clone.
+  const find = (target) => {
+    if (target.startsWith("text:")) {
+      const text = target.slice(5);
+      const all = [html, ...html.querySelectorAll("*")];
+      // The innermost element whose own text is it; text beside other elements gets a span of its own.
+      for (const e of all.reverse()) {
+        for (const n of e.childNodes) {
+          if (n.nodeType !== 3 || n.textContent.trim() !== text) continue;
+          if (e.childNodes.length === 1) return e;
+          const span = document.createElement("span");
+          n.replaceWith(span);
+          span.append(n);
+          return span;
+        }
+      }
+      return null;
+    }
+    return html.matches(target) ? html : html.querySelector(target);
+  };
+  const marks = {};
+  for (const [prop, target] of Object.entries(bind)) {
+    const e = find(target);
+    if (!e) {
+      if (soft) continue;
+      return { error: `bind ${prop}: nothing matches ${target}` };
+    }
+    (marks[e.dataset.kitMark ??= String(Object.keys(marks).length)] ??= { e, props: [] }).props.push(prop);
+  }
+  for (const { e, props } of Object.values(marks)) {
+    e.setAttribute("data-doop-prop", props.join(","));
+    delete e.dataset.kitMark;
+  }
+  for (const [slot, target] of Object.entries(slots)) {
+    const e = find(target);
+    if (!e) {
+      if (soft) continue;
+      return { error: `slot ${slot}: nothing matches ${target}` };
+    }
+    e.setAttribute("data-doop-slot", slot);
+  }
+
+  // A selector with its states, pseudo-elements and dark taken off, to ask whether it could apply.
+  // A :not() only narrows it, and a state inside one would turn it inside out: it goes first.
+  const bare = (sel) =>
+    sel
+      .replace(/(?<!\\):not\((?:[^()]|\((?:[^()]|\([^()]*\))*\))*\)/g, ":is(*)")
+      .replace(/:is\(\.dark \*\)/g, ":is(*)")
+      .replace(/(?<!\\)::?(before|after|placeholder|marker|selection|file-selector-button|backdrop|-webkit-[\w-]+|-moz-[\w-]+)/g, ":is(*)")
+      .replace(
+        /(?<!\\):(hover|focus-visible|focus-within|focus|active|visited|disabled|enabled|checked|indeterminate|invalid|read-only|placeholder-shown|first-child|last-child|only-child|first-of-type|last-of-type|empty|open|popover-open|autofill|user-invalid|target)\b/g,
+        ":is(*)",
+      )
+      .replace(/(?<!\\):(nth-child|nth-last-child|nth-of-type)\([^)]*\)/g, ":is(*)")
+      .trim() || "*";
+  const applies = (selText) =>
+    selText.split(/,(?![^(]*\))/).some((s) => {
+      try {
+        return els.some((e) => e.matches(bare(s)));
+      } catch {
+        return false;
+      }
+    });
+  const kept = [], keyframes = {}, used = new Set();
+  const walk = (rules, wrap) => {
+    for (const r of rules) {
+      if (r instanceof CSSLayerBlockRule) walk(r.cssRules, wrap);
+      else if (r instanceof CSSMediaRule) walk(r.cssRules, [...wrap, `@media ${r.conditionText}`]);
+      else if (r instanceof CSSSupportsRule) walk(r.cssRules, [...wrap, `@supports ${r.conditionText}`]);
+      else if (r instanceof CSSKeyframesRule) keyframes[r.name] = r.cssText;
+      else if (r instanceof CSSStyleRule) {
+        const sel = r.selectorText;
+        if (/^(:root|:host|html|body)(\s*,\s*(:root|:host|html|body))*$/.test(sel.trim())) continue;
+        if (sel.includes("#storybook") || sel.includes(".sb-") || !applies(sel)) continue;
+        let text = r.cssText;
+        for (const w of [...wrap].reverse()) text = `${w}{${text}}`;
+        kept.push(text);
+        for (const m of r.cssText.matchAll(/var\((--[\w-]+)/g)) used.add(m[1]);
+      }
+    }
+  };
+  for (const sheet of document.styleSheets) {
+    try {
+      walk(sheet.cssRules, []);
+    } catch {}
+  }
+  const css = kept.join("\n");
+  for (const [name, text] of Object.entries(keyframes)) if (new RegExp(`animation(-name)?:[^;]*\\b${name}\\b`).test(css)) kept.push(text);
+  const vars = {};
+  const queue = [...used];
+  while (queue.length) {
+    const v = queue.pop();
+    if (v in vars) continue;
+    const val = cs.getPropertyValue(v).trim();
+    if (!val) continue;
+    vars[v] = val;
+    for (const m of val.matchAll(/var\((--[\w-]+)/g)) queue.push(m[1]);
+  }
+  return { html: html.outerHTML, rules: kept, vars };
+}
+
+// --- Into Doop's form ---------------------------------------------------------------------------
+
+const JUNK = /scrollbar-color|webkit-search|-webkit-date|calendar-picker|spin-button/;
+
+function topLevel(text) {
+  const out = [];
+  let buf = "", depth = 0;
+  for (const ch of text) {
+    buf += ch;
+    if (ch === "{") depth++;
+    else if (ch === "}" && --depth === 0) out.push(buf.trim()), (buf = "");
+  }
+  return out;
+}
+
+function cleanRules(rules) {
+  const seen = new Set(), out = [];
+  for (let r of rules.flatMap(topLevel)) {
+    if (JUNK.test(r)) continue;
+    // Tailwind's --tw-* defaults sit in an @supports only some browsers pass: always, here.
+    if (r.startsWith("@supports ((-webkit-hyphens")) r = r.slice(r.indexOf("{") + 1, r.lastIndexOf("}")).trim();
+    // A desktop with a pointer: its hover-only rules always, the touch layout's never (Doop's renderer
+    // reports no hover, which would draw a tablet).
+    if (r.startsWith("@media (hover: none)")) continue;
+    if (r.startsWith("@media (hover: hover)")) r = r.slice(r.indexOf("{") + 1, r.lastIndexOf("}")).trim();
+    // Dark: the app's .dark, and Doop's theme attribute beside it.
+    r = r.replaceAll(":is(.dark *)", `:is(.dark *, ${DARK} *)`);
+    if (!seen.has(r)) seen.add(r), out.push(r);
+  }
+  const usedTw = new Set([...out.join("\n").matchAll(/var\((--tw-[\w-]+)/g)].map((m) => m[1]));
+  return out.map((r) => {
+    if (!/^\*, ::before, ::after(, ::backdrop)? \{ --tw-/.test(r)) return r;
+    const decls = r.slice(r.indexOf("{") + 1, r.lastIndexOf("}")).split(";").map((d) => d.trim()).filter(Boolean);
+    return `*, ::before, ::after { ${decls.filter((d) => usedTw.has(d.split(":")[0].trim())).join("; ")}; }`;
+  });
+}
+
+const escCls = (c) => c.replace(/([^\w-])/g, "\\$1");
+const clsRe = (c) => new RegExp(`\\.${escCls(c).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?![\\w\\\\-])`, "g");
+const rootClasses = (h) => (h.match(/^<\w+[^>]*?\sclass="([^"]*)"/)?.[1] ?? "").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&amp;/g, "&").split(/\s+/).filter(Boolean);
+
+// Doop's CSS reader stops at some escapes and drops rules it can't match to an element, and a
+// Tailwind class is full of them ([&_svg:not([class*='size-'])]:size-4). Each such class gets a plain
+// name, the same in the HTML and the CSS.
+function plainClasses(html, css) {
+  const decode = (x) => x.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, "&");
+  const encode = (x) => x.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  const names = new Map(), taken = new Set();
+  const plain = (c) => {
+    if (!/[^\w-]/.test(c)) return c;
+    if (!names.has(c)) {
+      let n = "tw-" + c.replace(/[^\w-]+/g, "-").replace(/^-+|-+$/g, "").replace(/-{2,}/g, "-"), i = 2;
+      while (taken.has(n)) n = n.replace(/-\d+$/, "") + "-" + i++;
+      taken.add(n), names.set(c, n);
+    }
+    return names.get(c);
+  };
+  html = html.replace(/(\sclass=")([^"]*)"/g, (_, a, v) => `${a}${encode(decode(v).split(/\s+/).filter(Boolean).map(plain).join(" "))}"`);
+  for (const [c, n] of [...names].sort((x, y) => y[0].length - x[0].length)) css = css.replace(clsRe(c), `.${n}`);
+  // What's left (a class only an ancestor had): an escaped quote written as \27, the same quote,
+  // since Doop drops the rest of a stylesheet after one.
+  return { html, css: css.replace(/\\'/g, "\\27 ") };
+}
+
+function tidy(html, spec) {
+  html = html.replace(/ id="(base-ui-|radix-|:r|_r_)[^"]*"/g, "").replace(/ tabindex="-?\d+"/g, "").replace(/ aria-(controls|describedby|labelledby)="[^"]*"/g, "");
+  for (const [from, to] of Object.entries(spec.assets ?? {})) html = html.replaceAll(`="${from}`, `="${to}`).replaceAll(`url(${from}`, `url(${to}`);
+  return html;
+}
+
+// The root's own rule: what the components read that isn't a token (light, and dark where it differs),
+// and the text style a page gives everything (the body's, in the app).
+function rootRule(vars, darkVars, tokenNames) {
+  const own = (v) => !tokenNames.has(v) && !v.startsWith("--tw-");
+  const light = Object.entries(vars).filter(([k]) => own(k)).sort();
+  const dark = light.filter(([k, v]) => darkVars[k] && darkVars[k] !== v).map(([k]) => [k, darkVars[k]]);
+  let css = `.ali{${light.map(([k, v]) => `${k}:${v}`).join(";")}${light.length ? ";" : ""}font-family:var(--font-sans);color:var(--foreground);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}`;
+  if (dark.length) css += `\n.ali:is(${DARK} *, ${DARK}){${dark.map(([k, v]) => `${k}:${v}`).join(";")}}`;
+  // The app's base layer gives every border its colour (border-border); Doop doesn't keep a rule for *.
+  css += `\n.ali, .ali *{border-color:var(--border)}`;
+  return css;
+}
+
+async function component(b, spec, url, c, tokenNames) {
+  const opts = { select: c.select, bind: c.bind, slots: c.slots, drop: c.drop };
+  const base = await lift(b, url, c.story, opts);
+  // A prop's value is a story id, or { story, select } for one drawn inside another story.
+  const key = (v) => (typeof v === "string" ? v : `${v.story} ${v.select}`);
+  const props = Object.entries(c.props ?? {}).map(([p, values]) => [p, Object.fromEntries(Object.entries(values).map(([k, v]) => [k, key(v)]))]);
+  const lifted = { [key(c.select ? { story: c.story, select: c.select } : c.story)]: base, [c.story]: base };
+  const shows = {}; // story key -> { prop: value } it shows, where its root doesn't say
+  for (const values of Object.values(c.props ?? {})) for (const v of Object.values(values)) if (v.at) shows[key(v)] = v.at;
+  for (const [, values] of Object.entries(c.props ?? {}))
+    for (const v of Object.values(values))
+      lifted[key(v)] ??= await lift(b, url, typeof v === "string" ? v : v.story, { ...opts, soft: true, ...(typeof v === "string" ? {} : { select: v.select }) });
+  const all = [...new Set(Object.values(lifted))];
+  const vars = Object.assign({}, ...all.map((l) => l.vars));
+  const own = Object.keys(vars).filter((v) => !tokenNames.has(v) && !v.startsWith("--tw-"));
+  const darkVars = own.length ? (await lift(b, url, c.story, { dark: true, varsOnly: own })).vars : {};
+  let rules = cleanRules(all.flatMap((l) => l.rules));
+  let html = base.html;
+
+  // Enum props: a class some stories have and others don't belongs to the prop whose values say
+  // which: present in exactly the stories showing one of a set of its values. Each story shows a value
+  // of every prop: the one it's the story for, the spec's `at`, its root's data-<prop>, or else the
+  // prop's first (default) value.
+  const showing = (id, q) => shows[id]?.[q] ?? lifted[id].html.match(new RegExp(`^<\\w+[^>]*?\\sdata-${q}="([^"]*)"`))?.[1];
+  const ids = [...new Set(props.flatMap(([, values]) => Object.values(values)))];
+  const assign = Object.fromEntries(ids.map((id) => [id, Object.fromEntries(props.map(([q, values]) => [q, Object.keys(values).find((v) => values[v] === id) ?? showing(id, q) ?? Object.keys(values)[0]]))]));
+  const has = Object.fromEntries(ids.map((id) => [id, new Set(rootClasses(lifted[id].html))]));
+  const owned = new Map(); // class -> the selector it's rewritten to
+  const at = (prop, values) => (values.length === 1 ? `[data-${prop}="${values[0]}"]` : `:is(${values.map((v) => `[data-${prop}="${v}"]`).join(", ")})`);
+  for (const cls of new Set(ids.flatMap((id) => [...has[id]]))) {
+    if (ids.every((id) => has[id].has(cls))) continue;
+    const fits = props.flatMap(([q]) => {
+      const yes = new Set(), no = new Set();
+      for (const id of ids) if (assign[id][q] !== undefined) (has[id].has(cls) ? yes : no).add(assign[id][q]);
+      else if (has[id].has(cls)) return [];
+      return [...yes].some((v) => no.has(v)) || !yes.size ? [] : [[q, [...yes]]];
+    });
+    // Two props that both fit: the one with fewer values (an outline button's colours, not every size it's shown at).
+    fits.sort((x, y) => x[1].length - y[1].length);
+    // None fits alone: the values of each, together.
+    const sel = fits.length
+      ? at(...fits[0])
+      : props.map(([q]) => [q, [...new Set(ids.filter((id) => has[id].has(cls)).map((id) => assign[id][q]))]]).filter(([, vs]) => !vs.includes(undefined)).map(([q, vs]) => at(q, vs)).join("");
+    if (sel) owned.set(cls, `.ali${sel}`);
+  }
+  if (owned.size) {
+    const keep = rootClasses(html).filter((x) => !owned.has(x));
+    rules = rules.flatMap((r) => {
+      const hits = [...owned.keys()].filter((cls) => clsRe(cls).test(r));
+      return hits.length ? hits.map((cls) => r.replace(clsRe(cls), owned.get(cls))) : [r];
+    });
+    rules = [...new Set(rules)];
+    html = html.replace(/^(<\w+[^>]*?\sclass=")[^"]*"/, (_, a) => `${a}${keep.map((x) => x.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;")).join(" ")}"`);
+    for (const [prop] of props) html = html.replace(new RegExp(`^(<\\w+[^>]*?) data-${prop}="[^"]*"`), "$1");
+  }
+  html = /^<\w+[^>]*?\sclass="/.test(html) ? html.replace(/^(<\w+[^>]*?\sclass=")/, "$1ali ") : html.replace(/^<(\w+)/, '<$1 class="ali"');
+  html = tidy(html, spec);
+  let css = [rootRule(vars, darkVars, tokenNames), ...rules].join("\n");
+  for (const [from, to] of Object.entries(spec.assets ?? {})) css = css.replaceAll(`url(${from}`, `url(${to}`).replaceAll(`url("${from}`, `url("${to}`);
+  if (c.css) css += "\n" + c.css;
+  ({ html, css } = plainClasses(html, css));
+  const out = { name: c.name, description: c.description, html, css, width: c.width ?? 480, height: c.height ?? 240 };
+  if (c.code) out.code = c.code;
+  if (props.length) out.props = props.map(([name, values]) => ({ name, type: "enum", options: Object.keys(values), default: Object.keys(values)[0] }));
+  return out;
+}
+
+async function frame(b, spec, url, id, { select, width, dark }, tokenNames) {
+  const l = await lift(b, url, id, { select });
+  const own = Object.keys(l.vars).filter((v) => !tokenNames.has(v) && !v.startsWith("--tw-"));
+  const darkVars = own.length ? (await lift(b, url, id, { dark: true, varsOnly: own })).vars : {};
+  let css = [rootRule(l.vars, darkVars, tokenNames), ...cleanRules(l.rules)].join("\n");
+  for (const [from, to] of Object.entries(spec.assets ?? {})) css = css.replaceAll(`url(${from}`, `url(${to}`);
+  const theme = dark ? ` data-doop-theme="dark"` : "";
+  const p = plainClasses(tidy(l.html, spec), css);
+  return `<!doctype html><html${theme}><head><meta charset="utf-8"><style>${p.css}\nhtml,body{margin:0;background:var(--background)}</style></head><body><div class="ali" style="width:${width}px">${p.html}</div></body></html>`;
+}
+
+// --- Commands -----------------------------------------------------------------------------------
+
+const cmd = argv.shift();
+const spec = argv[0] ? JSON.parse(readFileSync(argv[0], "utf8")) : null;
+if (!spec || !["tokens", "base", "build", "frame"].includes(cmd)) {
+  console.error("usage: doop-kit tokens <spec> | base <spec> | build <spec> <storybook url> <out dir> [names] | frame <spec> <storybook url> <story id> [--select css] [--width N] [--dark]");
+  process.exit(2);
+}
+const toks = tokens(spec);
+const tokenNames = new Set(toks.map((t) => t.name));
+if (cmd === "tokens") {
+  console.log(JSON.stringify(toks));
+} else if (cmd === "base") {
+  console.log(base(spec));
+} else if (cmd === "build") {
+  const [, url, out, ...names] = argv;
+  mkdirSync(out, { recursive: true });
+  writeFileSync(join(out, "tokens.json"), JSON.stringify(toks));
+  const b = await browser(spec);
+  for (const c of spec.components.filter((c) => !names.length || names.includes(c.name))) {
+    let comp;
+    try {
+      comp = await component(b, spec, url, c, tokenNames);
+    } catch (e) {
+      console.log(`${c.name}\tFAILED: ${e.message}`);
+      process.exitCode = 1;
+      continue;
+    }
+    writeFileSync(join(out, `${c.name}.json`), JSON.stringify(comp));
+    console.log(`${c.name}\t${((comp.html.length + comp.css.length) / 1024).toFixed(1)} KB${comp.props ? "\t" + comp.props.map((p) => `${p.name}: ${p.options.join("|")}`).join("  ") : ""}`);
+  }
+  await b.close();
+} else {
+  const select = flag("--select"), width = Number(flag("--width") ?? 1280), dark = has("--dark");
+  const [, url, id] = argv;
+  const b = await browser(spec);
+  console.log(await frame(b, spec, url, id, { select, width, dark }, tokenNames));
+  await b.close();
+}

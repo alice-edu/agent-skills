@@ -1,6 +1,6 @@
 ---
 name: clean-linear
-description: Clean up the Linear board's waiting issues (Triage, Backlog, Needs Shaping, Ready to Build): sort each into the status whose bar it meets, cancel what won't be done, and fix what's thin, with the user deciding in quick batches. Use when the user says "clean Linear", or "triage" for the inbox alone.
+description: 'Clean up the Linear board''s waiting issues (Triage, Backlog, Needs Shaping, Ready to Build): sort each into the status whose bar it meets, cancel what won''t be done, and fix what''s thin, with the user deciding in quick batches. Use when the user says "clean Linear", or "triage" for the inbox alone.'
 ---
 
 # Clean Linear

@@ -1,6 +1,6 @@
 ---
 name: sketch-it
-description: 'Design a screen, flow, panel or landing section with the user in rounds of sketches on a Doop canvas, made from the app''s real components, after references from Mobbin and a usability pass, until the user says agreed. Use when the user says "sketch it", from build-it for a new screen, flow or panel, and from review-pr for alternatives to a teammate's screen.'
+description: 'Design a screen, flow, panel or landing section with the user in rounds of sketches on a Doop canvas, made from the app''s real components, after references from Mobbin and a usability pass, until the user says agreed. Use when the user says "sketch it", from build-it for a new screen, flow or panel, and from review-pr for alternatives to a teammate''s screen.'
 ---
 
 # Sketch it

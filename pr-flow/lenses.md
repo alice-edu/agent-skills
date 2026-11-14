@@ -40,6 +40,10 @@ The bug hunt. Look for:
 - permissions, and one student's data reaching another;
 - whether the tests actually prove the behaviour the change claims.
 
+**Read shared code from its callers.** A change to something several places use (a component, hook or helper) is reviewed from each caller, not from its diff: what each relies on it for, and whether that still holds. A clean diff hides what a rewrite lost. Name the callers read.
+
+**A test deleted or weakened** (removed, skipped, its assertion loosened) needs a replacement covering the same behaviour, or a reason in the PR body (the behaviour itself is gone). Without either it's a P1, with the deleted test as its evidence.
+
 ## Standards
 
 Does it follow the repo's own rules? The repo's docs (above) for what it touches, with the rule cited: those docs are the standard, so read them every time rather than going from memory. Each smell is named (a mysterious name, duplicated code, duplicated state, speculative generality, a middle man, shotgun surgery, a workaround flag) and comes with its fix.

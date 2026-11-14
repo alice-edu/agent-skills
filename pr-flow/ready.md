@@ -4,7 +4,9 @@ What "ready for review" means for a PR of the user's. `build-it`, `fix-comments`
 
 ## Proof
 
-Proof is evidence observed in this session on the current **head** (the PR's latest commit, with its base merged in): command output, a test that went red without the change and green with it, the running app. Green mocked tests prove the logic; for a change a student sees, proof is the change seen in the running app (`pnpm dev`, the `run` skill), used as a student would: upload the file, send the message, get the answer graded. What that bills (models, grading, reading a file) is part of testing and needs no asking; reuse an upload that already does the job. A check run on an earlier head is history, not proof: after any commit or merge of the base, rerun what the change could affect.
+Proof is evidence observed in this session on the current **head** (the PR's latest commit, with its base merged in): command output, a test that went red without the change and green with it, the running app. Green mocked tests prove the logic; for a change a student sees, proof is the change seen in the running app (`pnpm dev`, the `run` skill), used as a student would: upload the file, send the message, get the answer graded. Opening a screen once proves only the easy case. Each changed screen is tried at its **worst case**, hunting for where it breaks: the longest content, scrolled to the end; the keyboard up over a multi-line input; every expandable part open; each caller of changed shared code. The checklist names the states tried. What that bills (models, grading, reading a file) is part of testing and needs no asking; reuse an upload that already does the job. A check run on an earlier head is history, not proof: after any commit or merge of the base, rerun what the change could affect.
+
+**A platform you can't test yet.** Every platform the change runs on (web, iOS, Android) is tested. One that isn't set up here is set up in this run: the SDK, the emulator image, the tool (Android took 15 minutes). Only one that can't be (it needs hardware or an account we don't have) goes on the decision card before the PR opens, never into Test by hand.
 
 **A stack that won't come up.** Give the local stack (`pnpm dev`, the E2E stack) about 5 minutes, and every network call a timeout (`curl -m 30`). Not up by then: push, and prove it on the branch's preview deploy (`gh pr checks` names its URL; a protected one needs the bypass the repo or your notes give), and leave E2E to CI's job. The checklist says which was used and why. The stack's failure goes in the report; fixing it isn't this PR's work.
 
@@ -15,7 +17,7 @@ The PR body ends with the checklist (shape in [pr-body.md](pr-body.md)). It is t
 - `- [x]` marks a requirement that **passed** on the current head, with its evidence: the command, the result, the short SHA (`- [x] Vitest, web: 675 pass at abc1234`).
 - A check that fails is written as failing with the reason, and the PR is not ready.
 - A requirement that doesn't apply is `- N/A: <requirement>: <why>`, never a tick.
-- **Test by hand** lists, unticked, what a person should check because it couldn't be proven here: what to do, what should happen, and why it wasn't tested (needs production data, a real phone, another account). This is also what whoever checks production works from.
+- **Test by hand** lists, unticked, what a person should check because it couldn't be proven here: what to do, what should happen, and why it couldn't be tested here (needs production data, another account): never what could have been installed or set up in this run. This is also what whoever checks production works from.
 
 Every item below ends as `[x]`, `N/A` or a Test-by-hand line:
 
@@ -25,7 +27,7 @@ Every item below ends as `[x]`, `N/A` or a Test-by-hand line:
 4. Research written in the PR body ([pr-body.md](pr-body.md), "Research") for each outside package the diff uses in a new way and each solved problem it meets: the docs for the installed version read, each named (`next-intl 4.3 useTranslations`), and how others use it. The installed version is in `node_modules/<pkg>/package.json`; its bundled docs or the docs site for that version.
 5. Edge cases: the ones handled, each with its test, and the ones left on purpose, each with why.
 6. A file this PR made large or grew a lot: split considered, with the outcome. Only files the PR itself grew.
-7. Screenshots for every change a student can see, and GIFs for each that moves ([screenshots.md](screenshots.md)), shown to the user in the report.
+7. Each changed screen tried at its worst case (Proof), naming the states tried and what broke; screenshots for every change a student can see, and GIFs for each that moves ([screenshots.md](screenshots.md)), shown to the user in the report.
 8. `review-loop` agreed on this head.
 
 ## Make it ready

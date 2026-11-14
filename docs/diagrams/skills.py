@@ -276,28 +276,6 @@ edges=[
     E("pb", "li"), E("rp", "li", "then"), E("li", "sl"), E("sl", "wa"), E("wa", "nu"), E("nu", "ov", "a review landed"),
 ])
 
-D["walkthrough"] = dict(title="17. Inside walkthrough (\"human review\", \"walk me through\")", nodes=[
-    N("w1", "1. Gather\nthe PR, its build thread,\nLinear, Slack"),
-    N("w2", "2. Decisions\nlayer by layer: who made each,\nthe lines that carry it"),
-    N("sk", "Skeptic, blind\nover-built, hacky, wrong tool", "service", "j"),
-    N("ch", "Challengers, blind\none per hard-to-undo agent call,\nredesigned from the base", "service", "j"),
-    N("au", "Audit of the agents' work\ntests really test, scope,\nproof at this head", "service", "j"),
-    N("cr", "Code review\nreview-loop, or the council", "service", "j"),
-    N("cmp", "Comparer\nsame, ours better, theirs better", "service", "j"),
-    N("pg", "4. The page, private\nscreens and GIFs, diagrams,\ndecisions, findings", "client"),
-    N("q", "Anything\nfor you?", "decision"),
-    N("card", "Decision card", "client"),
-    N("mine", "Your PR\nfix, prove, push", "service"),
-    N("theirs", "A teammate's PR\npost the review", "service"),
-    N("w6", "6. Report\nthe page's link, then You:", "terminal"),
-], groups=[{"id": "j", "label": "3. Judge, all at once"}],
-edges=[
-    E("w1", "w2"), E("w2", "sk"), E("w2", "ch"), E("w2", "au"), E("w2", "cr"), E("ch", "cmp"),
-    E("sk", "pg"), E("cmp", "pg"), E("au", "pg"), E("cr", "pg"), E("pg", "q"),
-    E("q", "card", "yes"), E("q", "w6", "no", "success"),
-    E("card", "mine", "go"), E("card", "theirs", "go"), E("mine", "w6"), E("theirs", "w6"),
-])
-
 D["excalidraw"] = dict(title="17. Inside diagrams (Excalidraw), used by build-it, review-pr, the overview", nodes=[
     N("q", "Hard to follow\nin prose?", "decision"),
     N("no", "Skip it\nUI-only, one file, a rename", "terminal"),
@@ -342,7 +320,7 @@ D["usability"] = dict(title="9. Inside usability (\"usability this\")", nodes=[
     E("q", "f", "on its own", "success"), E("q", "led", "a review"), E("f", "r"),
 ])
 
-D["sketch"] = dict(title="18. Inside sketch-it (\"sketch it\", from build-it or review-pr)", nodes=[
+D["sketch"] = dict(title="17. Inside sketch-it (\"sketch it\", from build-it or review-pr)", nodes=[
     N("in", "You: \"sketch it\"\nor build-it: a new screen,\nflow or panel", "terminal"),
     N("f", "1. Frame it\nwhat, which state, the problem;\nthe kit checked; now as a frame"),
     N("m", "2. References\nMobbin: 3-5 well-known apps,\nthe convention each shows", "external"),
@@ -369,7 +347,7 @@ AT = {
     "catch": (4310, 2700), "review": (5194, 2700),
     # Commands you say: on their own
     "grill": (150, 6350), "usability": (994, 6350), "student": (1868, 6350),
-    "council": (2820, 6350), "clean": (3880, 6350), "walkthrough": (4900, 6230), "sketch": (6300, 6350),
+    "council": (2820, 6350), "clean": (3880, 6350), "sketch": (6300, 6350),
     # Run by other skills
     "loop": (150, 8550), "babysit": (1076, 8550), "ltrack": (2693, 8550),
     # Shared rules

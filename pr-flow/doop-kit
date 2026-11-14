@@ -51,6 +51,8 @@
 //     "bind": { "label": "text:Button", "href:icon": "image" },  prop <- the element with that text,
 //                                          or matching that selector (several props: comma-separated)
 //     "slots": { "content": "[data-slot=card-content]" },  content each instance supplies
+//     "unstyle": ["selector"],             elements whose inline style is left out (a slot's icon,
+//                                          coloured by the spec's css per variant instead)
 //     "drop": ["selector"],                elements to take out (a story's scaffolding)
 //     "css": "extra rules",                appended, for what the story's context gave it
 //     "width": 480, "height": 240          the main's frame on the Components page
@@ -158,14 +160,14 @@ async function lift(b, url, id, opts = {}) {
   await page.waitForFunction((root) => document.querySelector(root)?.childElementCount > 0, opts.root ?? "#storybook-root", { timeout: 20000 });
   await page.evaluate(() => document.fonts.ready);
   await page.waitForTimeout(300);
-  const out = await page.evaluate(liftInPage, { root: opts.root ?? null, ink: opts.ink ?? null, soft: opts.soft ?? false, select: opts.select ?? null, bind: opts.bind ?? {}, slots: opts.slots ?? {}, drop: opts.drop ?? [], varsOnly: opts.varsOnly ?? null });
+  const out = await page.evaluate(liftInPage, { root: opts.root ?? null, ink: opts.ink ?? null, soft: opts.soft ?? false, select: opts.select ?? null, bind: opts.bind ?? {}, slots: opts.slots ?? {}, drop: opts.drop ?? [], unstyle: opts.unstyle ?? [], varsOnly: opts.varsOnly ?? null });
   await page.close();
   if (out.error) throw new Error(`${id}: ${out.error}`);
   return out;
 }
 
 // Runs in the story's page.
-function liftInPage({ root: rootSel, ink, soft, select, bind, slots, drop, varsOnly }) {
+function liftInPage({ root: rootSel, ink, soft, select, bind, slots, drop, unstyle, varsOnly }) {
   const cs = getComputedStyle(document.documentElement);
   if (varsOnly) return { vars: Object.fromEntries(varsOnly.map((v) => [v, cs.getPropertyValue(v).trim()])) };
   const sbroot = document.querySelector(rootSel ?? "#storybook-root");
@@ -207,6 +209,9 @@ function liftInPage({ root: rootSel, ink, soft, select, bind, slots, drop, varsO
     }
     probe.remove();
   }
+
+  // After ink, which writes colours as styles: an element unstyled takes its colour from the css.
+  for (const sel of unstyle) for (const e of html.querySelectorAll(sel)) e.removeAttribute("style");
 
   // Props and slots, marked in the clone.
   const find = (target) => {
@@ -401,23 +406,35 @@ function assets(text, spec) {
 // Inline styles that differ between a light and a dark drawing of the same markup: taken off the
 // element and put in rules, light by default and dark under Doop's theme. Elements are matched by
 // their place; drawings of a different shape are left alone.
-function darkStyles(html, darkHtml) {
+// A tag's inline style, property to value.
+const inlineStyles = (t) =>
+  Object.fromEntries(
+    (t?.match(/\sstyle="([^"]*)"/)?.[1] ?? "").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&")
+      .split(/;(?![^(]*\))/).map((d) => d.trim()).filter(Boolean).map((d) => [d.slice(0, d.indexOf(":")).trim(), d.slice(d.indexOf(":") + 1).trim()]),
+  );
+// A tag with its inline style set to these properties (none: no style attribute).
+const withStyles = (t, m) => {
+  const v = Object.entries(m).map(([p, x]) => `${p}: ${x};`).join(" ").replace(/&/g, "&amp;").replace(/"/g, "&quot;");
+  t = t.replace(/\sstyle="[^"]*"/, "");
+  return v ? t.replace(/^<(\w+)/, `<$1 style="${v}"`) : t;
+};
+
+function darkStyles(html, darkHtml, lightHtml = html) {
   const TAG = /<\w+(?:\s[^>]*)?>/g;
-  const decode = (x) => x.replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&");
-  const styles = (t) => Object.fromEntries(decode(t.match(/\sstyle="([^"]*)"/)?.[1] ?? "").split(/;(?![^(]*\))/).map((d) => d.trim()).filter(Boolean).map((d) => [d.slice(0, d.indexOf(":")).trim(), d.slice(d.indexOf(":") + 1).trim()]));
-  const light = [...html.matchAll(TAG)].map((m) => m[0]), dark = [...darkHtml.matchAll(TAG)].map((m) => m[0]);
+  const styles = inlineStyles;
+  const light = [...lightHtml.matchAll(TAG)].map((m) => m[0]), dark = [...darkHtml.matchAll(TAG)].map((m) => m[0]);
   if (light.length !== dark.length) return { html, rules: [] };
   const rules = [];
   let i = 0;
   html = html.replace(TAG, (t) => {
-    const n = i++, l = styles(t), d = styles(dark[n]);
-    const differ = [...new Set([...Object.keys(l), ...Object.keys(d)])].filter((p) => l[p] !== d[p]);
+    // Compared as first drawn (light), but only what's still inline: a variant's style is its rule's.
+    const n = i++, now = styles(t), l = styles(light[n]), d = styles(dark[n]);
+    const differ = [...new Set([...Object.keys(l), ...Object.keys(d)])].filter((p) => l[p] !== d[p] && (p in now || !(p in l)));
     if (!differ.length) return t;
     const cls = `ali-s${n}`;
     const decl = (m) => differ.filter((p) => m[p] !== undefined).map((p) => `${p}:${m[p]}`).join(";");
     rules.push(`.${cls}{${decl(l)}}`, `.${cls}:is(${DARK} *, ${DARK}){${decl(d)}}`);
-    const rest = Object.entries(l).filter(([p]) => !differ.includes(p)).map(([p, v]) => `${p}: ${v};`).join(" ").replace(/&/g, "&amp;").replace(/"/g, "&quot;");
-    t = t.replace(/\sstyle="[^"]*"/, rest ? ` style="${rest}"` : "");
+    t = withStyles(t, Object.fromEntries(Object.entries(now).filter(([p]) => !differ.includes(p))));
     return /\sclass="/.test(t) ? t.replace(/(\sclass=")/, `$1${cls} `) : t.replace(/^<(\w+)/, `<$1 class="${cls}"`);
   });
   return { html, rules };
@@ -442,7 +459,7 @@ function rootRule(vars, darkVars, tokenNames, page) {
 }
 
 async function component(b, spec, url, c, tokenNames) {
-  const opts = { root: c.root ?? spec.root, ink: inkOf(spec), select: c.select, bind: c.bind, slots: c.slots, drop: c.drop };
+  const opts = { root: c.root ?? spec.root, ink: inkOf(spec), select: c.select, bind: c.bind, slots: c.slots, drop: c.drop, unstyle: c.unstyle };
   const base = await lift(b, url, c.story, opts);
   // A prop's value is a story id, or { story, select } for one drawn inside another story.
   const key = (v) => (typeof v === "string" ? v : `${v.story} ${v.select}`);
@@ -476,9 +493,14 @@ async function component(b, spec, url, c, tokenNames) {
   const places = counts.size === 1 ? [...counts][0] : 1;
   const owned = new Map(); // class -> the selectors it's rewritten to
   const ownedAt = Array.from({ length: places }, () => new Set());
+  const styledAt = Array.from({ length: places }, () => new Set()), styleRules = [];
   const at = (prop, values) => (values.length === 1 ? `[data-${prop}="${values[0]}"]` : `:is(${values.map((v) => `[data-${prop}="${v}"]`).join(", ")})`);
   for (let i = 0; i < places; i++) {
-    const has = Object.fromEntries(ids.map((id) => [id, new Set(classesOf(tags(lifted[id].html)[i]))]));
+    // A style is compared as a class is: "\u0001<property>:<value>".
+    const has = Object.fromEntries(ids.map((id) => {
+      const t = tags(lifted[id].html)[i];
+      return [id, new Set([...classesOf(t), ...Object.entries(inlineStyles(t)).map(([p, v]) => `\u0001${p}:${v}`)])];
+    }));
     for (const cls of new Set(ids.flatMap((id) => [...has[id]]))) {
       if (ids.every((id) => has[id].has(cls))) continue;
       const fits = props.flatMap(([q]) => {
@@ -494,17 +516,26 @@ async function component(b, spec, url, c, tokenNames) {
         ? at(...fits[0])
         : props.map(([q]) => [q, [...new Set(ids.filter((id) => has[id].has(cls)).map((id) => assign[id][q]))]]).filter(([, vs]) => !vs.includes(undefined)).map(([q, vs]) => at(q, vs)).join("");
       if (!sel) continue;
+      const where = i === 0 ? `.ali${sel}` : `.ali${sel} .ali-${i}`;
+      if (cls.startsWith("\u0001")) {
+        // A variant's inline style: off the element, into a rule of the variant's.
+        const decl = cls.slice(1);
+        styledAt[i].add(decl.slice(0, decl.indexOf(":")));
+        styleRules.push(`${where}{${decl}}`);
+        continue;
+      }
       ownedAt[i].add(cls);
-      owned.set(cls, [...(owned.get(cls) ?? []), i === 0 ? `.ali${sel}` : `.ali${sel} .ali-${i}`]);
+      owned.set(cls, [...(owned.get(cls) ?? []), where]);
     }
   }
-  if (owned.size) {
+  if (owned.size || styleRules.length) {
     const encode = (x) => x.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
     let i = 0;
     const left = new Set();
     html = html.replace(/<\w+(?:\s[^>]*)?>/g, (t) => {
       const n = i++;
-      if (n >= places || !ownedAt[n].size) return (classesOf(t).forEach((x) => left.add(x)), t);
+      if (n >= places || (!ownedAt[n].size && !styledAt[n].size)) return (classesOf(t).forEach((x) => left.add(x)), t);
+      if (styledAt[n].size) t = withStyles(t, Object.fromEntries(Object.entries(inlineStyles(t)).filter(([p]) => !styledAt[n].has(p))));
       const keep = [...classesOf(t).filter((x) => !ownedAt[n].has(x)), ...(n ? [`ali-${n}`] : [])];
       keep.forEach((x) => left.add(x));
       const value = keep.map(encode).join(" ");
@@ -517,14 +548,14 @@ async function component(b, spec, url, c, tokenNames) {
       const out = hits.flatMap((cls) => owned.get(cls).map((sel) => r.replace(clsRe(cls), sel)));
       return hits.some((cls) => left.has(cls)) ? [r, ...out] : out;
     });
-    rules = [...new Set(rules)];
+    rules = [...new Set([...rules, ...styleRules])];
     for (const [prop] of props) html = html.replace(new RegExp(`^(<\\w+[^>]*?) data-${prop}="[^"]*"`), "$1");
   }
   if (spec.inlineDark) {
     // React Native's styles are inline, set for the theme it drew in (a shadow, Glass's tint, artwork
     // by the scheme): each that's different in dark goes in a rule of its own, light and dark.
     const dark = await lift(b, url, c.story, { ...opts, ink: inkOf(spec, true), dark: true });
-    const styled = darkStyles(html, dark.html);
+    const styled = darkStyles(html, dark.html, base.html);
     html = styled.html;
     rules.push(...styled.rules);
   }

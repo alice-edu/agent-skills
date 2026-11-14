@@ -47,9 +47,9 @@ Done when one issue identifier is named in your reply to the user.
 
 First check whether someone else has it. The issue is **taken** when it is assigned to another person and already started, or when it has an open PR by another author (read its attachments, and search the repo's open PRs for its identifier). On a taken issue, stop before editing code: tell the user who has it, its status and the PR, and wait for their answer.
 
-Otherwise set the issue to In Progress. Assign it to the user when it has no assignee. When it is assigned to someone else but not started, leave the assignee and tell the user whose it is.
+Otherwise set the issue to In Progress, and add this thread's T3 link to it ([links.md](~/.agents/pr-flow/links.md), "The T3 link on Linear"). Assign it to the user when it has no assignee. When it is assigned to someone else but not started, leave the assignee and tell the user whose it is.
 
-Done when the issue reads In Progress, or the user has answered on a taken one.
+Done when the issue reads In Progress with the T3 link attached (in T3 Code), or the user has answered on a taken one.
 
 ### 3. Link the PR
 

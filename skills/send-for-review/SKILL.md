@@ -13,6 +13,8 @@ Shared files: [slack.md](~/.agents/pr-flow/slack.md), [ready.md](~/.agents/pr-fl
 
 The PR (from the link, or the current branch's), its head, `additions`, `deletions`, title and URL (`gh pr view --json`), its Linear issue, and its thread in `#pr-review-channel` (slack.md). No thread: **first round**. A thread: **another round**, and its reviewer is whoever reviewed on GitHub or in the thread.
 
+Its **stack**: the open PRs it builds on (its base, down to `main`) and that build on it (`gh pr list --base <its branch>`). A stack is sent as one: every layer goes through step 2, and step 3 posts once for all of them.
+
 ## 2. Make it ready
 
 [ready.md](~/.agents/pr-flow/ready.md), "Make it ready", on the current head: anything committed since `review-loop` last agreed is reviewed with the whole PR, proven again, and written into the PR body; the base is merged in; CI is green or running on this head. A check that failed or timed out on an earlier head of this PR, and hasn't passed since, is red until it passes: fix it, or wait for it as [waiting.md](~/.agents/pr-flow/waiting.md), "Waiting on CI" says. Push what it changes.
@@ -25,11 +27,11 @@ Done when every checklist item is true for the head being announced.
 
 ## 3. Post
 
-**First round**: the **Up for review** post (slack.md), top-level in `#pr-review-channel`. When the user named a reviewer, also request them on GitHub (github.md).
+**First round**: the **Up for review** post (slack.md), top-level in `#pr-review-channel`, or for a stack the **Up for review, a stack** post. When the user named a reviewer, also request them on GitHub (github.md). For a stack, each layer's PR body then links the post's permalink as its review thread.
 
 **Another round**: the **Ready for another round** reply in the thread, @mentioning the reviewer, built from the fixes and replies on the PR since their last review. Re-request them on GitHub.
 
-Either way, add the T3 link in the thread ([links.md](~/.agents/pr-flow/links.md), "The T3 link in Slack"): on the first round, a reply under the post. Then set the Linear issue to **In Review**, and set up the nudge ([nudge.md](~/.agents/pr-flow/nudge.md), "Setting it up").
+Either way, add the T3 link in the thread ([links.md](~/.agents/pr-flow/links.md), "The T3 link in Slack"): on the first round, a reply under the post. Then set each Linear issue to **In Review** and add the T3 link to it ([links.md](~/.agents/pr-flow/links.md), "The T3 link on Linear"), and set up the nudge ([nudge.md](~/.agents/pr-flow/nudge.md), "Setting it up").
 
 **Checks still running** (in T3 Code): `watch_pull_request`, so a red check gets fixed the same day rather than at the next morning's nudge. Each wake, then snooze again until 10:30 on the next working day:
 
@@ -37,7 +39,7 @@ Either way, add the T3 link in the thread ([links.md](~/.agents/pr-flow/links.md
 - the checks finished green: `unwatch_pull_request`;
 - a review or comment: `unwatch_pull_request`, then nudge.md's "The check", now.
 
-Done when the message is in Slack once, exactly one `Nudge PR #<n>` task is scheduled with its own id in its prompt (in T3 Code), the thread has a `T3 thread:` reply linking this thread (in T3 Code), the reviewer is requested on GitHub where there is one, and Linear reads In Review.
+Done when the message is in Slack once (once for a whole stack), exactly one `Nudge PR #<n>` task is scheduled with its own id in its prompt (in T3 Code; for a stack, `<n>` is the bottom PR), the thread has a `T3 thread:` reply linking this thread and each issue a T3 link (in T3 Code), the reviewer is requested on GitHub where there is one, and every layer's Linear issue reads In Review.
 
 ## 4. Snooze, then report
 

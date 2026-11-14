@@ -6,7 +6,7 @@ Every message is posted as the user, so write each in their voice: short and pla
 
 | Channel | ID | What's in it |
 | --- | --- | --- |
-| `#pr-review-channel` | `C09BGLX8JCF` | One top-level post a PR up for review; the rounds happen in its thread. |
+| `#pr-review-channel` | `C09BGLX8JCF` | One top-level post a PR, or a stack, up for review; the rounds happen in its thread. |
 | `#alice-labs-feedback` | `C0C7AB9PMQD` | PostHog survey replies from students (often Danish; `For:` names the teammate who owns that student), Kim's relayed feedback, Linear's "Created issue". |
 | `#alice-labs-errors` | `C0C65T6G37T` | PostHog error-tracking alerts (each critical crash posts twice: "New issue" and "Critical"), slowness and usage-limit alerts, diagnoses in threads. |
 
@@ -19,16 +19,24 @@ The thread is the top-level post in `#pr-review-channel` whose text holds the PR
 **Up for review** (top-level, `send-for-review`):
 
 ```
-<One or two sentences, plain: what a student can do or no longer hits. Mention screenshots when the PR has them.>
-+<additions>/-<deletions>
-<PR title>
-<PR url>
-
-<Linear issue title>
-<Linear issue url>
+<One or two sentences, plain: what a student can do or no longer hits. Mention screenshots or a GIF when the PR has them.>
+<<PR url>|<PR title>> · +<additions>/-<deletions>
+<<Linear issue url>|ALI-123>
 ```
 
+The Linear issue is its identifier, linked, never its title: the PR's title already says it.
+
 A named reviewer gets `<@id>` after the first line, with a reason when the user gave one ("fairly easy review", "would love this today").
+
+**Up for review, a stack** (top-level, `send-for-review`, for PRs that build on each other): one post for the whole stack, bottom first, and one thread for all its rounds.
+
+```
+Stack of <n> on <what they add up to, a few words>. Review in order, each builds on the one before:
+1. <<PR url>|<short title>> · +<additions>/-<deletions> · <<Linear issue url>|ALI-123>
+2. …
+```
+
+A named reviewer as above. In the thread, a **Ready for another round** names the layer each fix is in.
 
 **Ready for another round** (in the thread, `send-for-review`): `<@reviewer> ready for another round.` then what changed, one bullet a comment or group of comments: `Fixed in <sha>: …`, and `Kept <what>, reasons in its thread` for any declined. End with the state: replied on every comment, base merged in, CI's actual state on the head (green, or running), screenshots updated where they changed.
 

@@ -10,6 +10,8 @@ When the user's PR waits on review, a scheduled check looks in each working morn
 2. `schedule_task`, bound to this thread, titled `Nudge PR #<n>`, at 09:30 Monday to Friday (`fixed_time`, `weekdays: [1,2,3,4,5]`), with a placeholder prompt.
 3. `update_scheduled_task` with the returned id, setting the prompt to `Nudge check for <PR url>, task <scheduledTaskId>: follow ~/.agents/pr-flow/nudge.md, "The check".` A scheduled run can't look its own task up, so the id rides in the prompt.
 
+**A stack** gets one task, keyed on its bottom PR (`Nudge PR #<bottom>`), its prompt listing every layer's URL, bottom first. The check reads the stack as one PR: **Over** when every layer is merged or closed, **Reviewed** or **Fix first** when any layer is, and one bump for the stack.
+
 The thread's snooze is the outer skill's, as waiting.md says: until 10:30 on the next working day, an hour after the check, so a missed run (T3 closed at 09:30) shows the thread rather than hiding it.
 
 **Stopping it.** Whatever ends the wait deletes the task: `full-send` and a merge or close by hand (`list_scheduled_tasks`, then `delete_scheduled_task`), and the check itself, by the id in its prompt.

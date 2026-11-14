@@ -4,9 +4,9 @@ For any change a student can see: rendered UI, copy, layout, styling, an interac
 
 ## Capture
 
-- From the running app (`pnpm dev` prints the URL; the `run` skill, or the browser tools the harness has), on the current head.
+- From the running app on the current head. Web: `pnpm dev` prints the URL; the `run` skill, or the browser tools the harness has. The phone app: its dev client on an iOS simulator **and** an Android emulator, through the harness's device tools (in T3 Code, `device_open` and `device_screenshot`), each state from both, shown side by side.
 - **Before** from `main`: a checkout of main, or production when it shows the same state. For a bug, the bug as it was.
-- **After** for every state the change touches. Light and dark when colours or surfaces changed. Desktop and tablet widths only: the repo doesn't support phones (`AGENTS.md`).
+- **After** for every state the change touches. Light and dark when colours or surfaces changed. Web at desktop and tablet widths only: the web app doesn't support phone browsers (`AGENTS.md`); phones are the phone app's.
 - Crop to the part that changed, with enough around it to place it. No real student's name, email, course or files: use the test account.
 - PNG, named for what it shows: `before.png`, `after-light.png`, `after-dark.png`, `after-retry.png`.
 
@@ -25,6 +25,8 @@ A GIF, before and after, for a change that **moves**: a new flow or a changed on
 
    It drives a real browser through the steps, slowed down, with a cursor and a ring where it clicks, and prints the GIF's length and size. **Before** is the same steps file on the base's app (as in Capture), with only the steps the old screen has; a flow that's new has no before GIF, and its before screenshot is the screen it's reached from on the base. On a failed step it writes `<name>-failed.png`: fix the step, not the screenshot.
 3. **Look** at it: the sheet of its frames and its last frame at full size, which record-flow writes beside it (`<name>-sheet.png`, `<name>-last.png`). Every step is in it, the moving part is visible, the cursor lands where it clicks, and nothing in it is a real student's.
+
+**The phone app**: the same flow done on each device through the device tools, recorded with their recording, then made a GIF at 400 px wide (`ffmpeg`), one per platform.
 
 Done when each flow's GIF is under 30 s and 10 MB (record-flow warns past either), and you've looked at it. Longer: split the flow into two GIFs.
 

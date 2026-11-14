@@ -78,11 +78,11 @@ Applies when the change affects the backend: its data model, queries, workflows,
 
 ## UI and UX
 
-Applies when the change affects what a user sees or does. Look before judging: the PR's screenshots, or the running app on this head. Judged from the diff alone, this lens is **not verified**.
+Applies when the change affects what a user sees or does. Look before judging: the PR's screenshots, or the running app on this head (for the phone app, both platforms'). Judged from the diff alone, this lens is **not verified**.
 
 - **Usability first.** Judge it by the principles in the [`usability`](~/.agents/skills/usability/SKILL.md) skill, in their order (its "From review-loop"): self-evident first, then what's clickable, the hierarchy, conventions, and on to easy by default, powerful when you look. Keep only what a student would hit on the screens this change touches; a finding names the principle it breaks.
 - **The repo's rules.** Hold it to the `AGENTS.md` sections for what it touches (in Alicia: Components, Where state goes, Text and translations, Panel headers, Row menus, The tour), and cite them.
-- **Reuse.** For each new piece of markup, name the existing component that should draw it, or a suitable shadcn one, and say why it fits. A shadcn component the app hasn't added yet is a candidate, not a requirement.
+- **Reuse.** For each new piece of markup, name the existing component that should draw it, or a suitable shadcn one, and say why it fits. A shadcn component the app hasn't added yet is a candidate, not a requirement. The phone app has its own components (in Alicia, `apps/mobile/src/`), and React Native Reusables is its shadcn; web's components are never the answer for it.
 - **States.** Empty, loading, error, long text, dark mode, and a slow or failed action: is there feedback while it's pending, and a way to recover?
 - **Confusion.** Write it as what the user does and what then confuses them. The usual cases of the principles:
   - a label that doesn't say what will happen;

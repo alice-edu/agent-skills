@@ -45,11 +45,13 @@ Compare `get_component` with the story in the browser. What's been seen:
 - **Paragraph gaps missing**: `bare()` must replace a whole `:not(...)` with `:is(*)` before relaxing its inner states. Removing it leaves a bare combinator; relaxing only its contents makes `:not(:is(*))` match nothing. Check the stored CSS still contains the original `:not(:last-child)` spacing rule.
 - **Wrong font**: a font var the components read isn't in the spec's `fonts`.
 
-A React Native app's Storybook (react-native-web) draws differently from web's; its spec sets what `doop-kit`'s header lists for it (`root`, `vars`, `inkVars`, `inlineDark`). What's been seen there:
+A React Native app's Storybook (react-native-web) draws differently from web's; its spec sets what `doop-kit`'s header lists for it (`root`, `vars`, `inkVars`, `inlineDark`, `unstyle`). What's been seen there:
 
 - **Icons all ink, or gone in dark**: native icons take a resolved colour (`stroke="#232222"`), not a class. `inkVars` turns each colour equal to a theme token into that token's var.
 - **Shadows, a tint or artwork the same in dark**: React Native's styles are inline, for the theme it drew in. `inlineDark` draws the story dark too and turns each inline style that differs into a light rule and a dark one.
-- **A variant changes only the root**: React Native puts a variant's classes on the elements inside (a button's label colour). Classes are compared at each element's place, where the stories draw the same number of elements: a variant whose story draws more or fewer is its own part.
+- **A variant changes only the root**: React Native puts a variant's classes and inline styles on the elements inside (a button's label colour, the open tab's opacity). Both are compared at each element's place, where the stories draw the same number of elements: a variant whose story draws more or fewer is its own part.
+- **A variant's colour lost under an inline one**: an inline style beats the variant's rules. Where the stories draw different children (an icon button's X, plus or mic), `unstyle` names the selectors whose inline style goes, and the part's `css` draws it per variant.
+- **A part a fixed width that overflows its card**: the story fixed it (`w-[358px]`) and the kit lifted the number. Give the story `w-full` (and, in the app's decorator, `parameters: { fill: true }`), so the part is lifted 100 % wide.
 - **A row's menu pushed out of the row**: a button inside a button, which HTML can't hold. The outer one becomes a div with the button's role.
 - **No borders**: Tailwind's `--tw-*` defaults sat in an `@supports` only Safari passes; `cleanRules()` keeps their contents always.
 - **Drawn bigger than the part, with the story's padding**: the story's wrapper was lifted. `select` the part itself (`:scope > div > div`).

@@ -97,6 +97,6 @@ Done when the user says agreed (or picks `Agreed: …`), on one option.
 1. Rename the agreed frame `Agreed: <convention>` (and its dark one), and mark it ready for dev with `set_frame_approval`: the user's agreed is the ask. The rounds stay as they are.
 2. Report, shaped by [report.md](~/.agents/pr-flow/report.md): the agreed picture beside now, the frame's link (`/c/<canvas>?frame=<id>`), and the lists: the **parts** it uses with their code paths (`get_frame`'s instances; each component's `code`), **new parts**, **new text**, and the questions it leaves open (where a moved control goes).
 
-From build-it, its step 6 builds the agreed frame in React: each part from its code path, the layout from the frame's, and the PR shows the agreed frame's picture beside the built screen. On its own, the report ends by asking whether to build it.
+From build-it, its step 6 builds the agreed frame in React: each part from its code path, the layout from the frame's. The PR's pictures are the built app's, before and after, never the frame's; the PR links the agreed frame in one line, for anyone curious how it was designed ([pr-body.md](~/.agents/pr-flow/pr-body.md), "Where it was made"). On its own, the report ends by asking whether to build it.
 
 Done when the report is sent and the agreed frame is marked ready for dev.

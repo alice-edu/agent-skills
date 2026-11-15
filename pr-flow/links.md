@@ -32,6 +32,10 @@ T3 thread: [<this thread's title>](t3code://threads/<environmentId>/<threadId>)
 
 Outside T3 Code there is no thread to link: skip it.
 
+## The T3 link on a PR
+
+So a reader can open the thread where the work happened, the PR body names each T3 thread that built or changed it, once ([pr-body.md](pr-body.md), "Where it was made"): `T3 thread: <title>, ` then the deep link (ids as above) as inline code. GitHub doesn't make a `t3code://` link clickable, so it's there to copy. Whoever writes or updates the body (build-it, fix-comments, catch-up, full-send) checks for a line with this `threadId` first and adds one only when it's missing. Outside T3 Code: skip it.
+
 ## The T3 link on Linear
 
 So the user can go from a Linear issue to the T3 thread working on it, the issue gets this thread's deep link (`t3code://threads/<environmentId>/<threadId>`, ids as above) as a link attachment titled `T3 thread: <this thread's title>`, once. `linear-track` adds it when work starts, and `send-for-review` on each issue it posts. Read the issue's attachments first: when one already links this `threadId`, add nothing; one linking another thread stays, and this one is added beside it.

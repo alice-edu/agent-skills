@@ -19,6 +19,15 @@ Started from review-pr, the sketch questions a teammate's screen, so three thing
 - **PR parts**: a part the PR adds isn't in the kit and may never merge. Options take it from now's frame, labelled **PR part**; it joins the kit once merged.
 - **Hand over** goes to the user only: no ready-for-dev mark, no build. The report ends asking whether the round's page goes in the review, as an optional comment.
 
+## A phone screen
+
+The phone app (in Alicia, `apps/mobile`) has no kit: its parts are copied from its Storybook (`pnpm storybook:mobile`), so these change:
+
+- **The kit is ready** (1.3) is that Storybook running, from a checkout of the base branch. **Now** (1.4) is its story of the screen in that state, copied with `~/.agents/pr-flow/story-shot <out.png> <storybook url> <story id> --width 390 --height 844 --inline <out.html>`: the story's drawing (`[data-testid="story"]`) with each element's computed styles written on it, since React Native web's classes are hashed. `--dark` makes the dark copy. A story's `screen`, `edge` and `fill` parameters say how it sits on the phone.
+- **The canvas** (3) has no tokens and no imported parts. The fonts and images `--inline` lists go in first: each font with `upload_font`, each image with `upload_asset`, its URL swapped in the copy.
+- **Parts** (4) are copies, by `--inline`, of the stories that draw them, pasted into the option's frame and never restyled: a part that should look different is a **new part**. Layout between them is plain HTML with inline styles at the app's spacing, read off the copies. Frames are 390 × 844. A dark option is a second frame built from the `--dark` copies.
+- **What a copy can't show**: it's the browser's drawing, not the phone's. Glass has no blur behind it, a sheet or modal is drawn open with no slide, and nothing responds to a gesture. Say so under a frame where that's the question; the finished look is judged on the devices ([ready.md](~/.agents/pr-flow/ready.md), "Proof").
+
 ## 1. Frame it
 
 1. **What's sketched**: the screen, flow, panel or section, the problem the user wants solved in a line, and the **state** the problem lives in (a new chat, a course under way, a long name). From build-it, the issue says it.

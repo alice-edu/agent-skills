@@ -4,6 +4,7 @@
 # Puts screenshots on the orphan branch assets/<slug> under <slug>/ (the repo's
 # convention), keeping what is already there, and prints one raw URL per file
 # for the PR body. Run from inside the repo's checkout. Touches no working tree.
+# A name already there with other content is refused: name a retake with shot-name.
 set -euo pipefail
 [ $# -ge 2 ] || { echo "usage: upload-screenshots <slug> <file>..." >&2; exit 2; }
 slug=$1; shift
@@ -24,6 +25,11 @@ fi
 for f in "$@"; do
   name=$(basename "$f")
   blob=$(git hash-object -w "$f")
+  old=$(awk -F'\t' -v n="$name" '$2 == n { split($1, a, " "); print a[3] }' "$entries")
+  if [ -n "$old" ] && [ "$old" != "$blob" ]; then
+    echo "upload-screenshots: $name is already on $branch with other content. GitHub and T3 Code keep showing the old one under that name: name it with `shot-name <slug> <what>.png`, which knows the PR's names." >&2
+    exit 1
+  fi
   grep -v "	$name\$" "$entries" > "$entries.new" || true
   printf '100644 blob %s\t%s\n' "$blob" "$name" >> "$entries.new"
   mv "$entries.new" "$entries"

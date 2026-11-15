@@ -44,13 +44,13 @@ A **complex** merge also gets:
 
 - `review-loop` in **author** mode, on the resolution: `git show --remerge-diff <merge sha>` shows what was decided beyond the automatic merge, together with the branch's whole diff against the new base;
 - a diagram ([diagrams.md](~/.agents/pr-flow/diagrams.md)) when both sides reshaped the same thing: each side, then how the merge put them together, shown with the card or in the report;
-- the change seen working in the running app, when it's something a student sees (ready.md, "Proof"), with screenshots and GIFs updated where the screen changed.
+- the change seen working in the running app, when it's something a student sees (ready.md, "Proof"), with screenshots and GIFs updated where the screen changed, until `screenshots-stale` says current.
 
-Done when every check is green on the merged head, and for a complex merge, `review-loop` agreed, the app shows the change working, and a merge where both sides reshaped the same thing has its diagram.
+Done when every check is green on the merged head, `screenshots-stale` says current, and for a complex merge, `review-loop` agreed, the app shows the change working, and a merge where both sides reshaped the same thing has its diagram.
 
 ## 4. Push and settle
 
-Push to the branch. When the PR is open, `watch_pull_request` ([waiting.md](~/.agents/pr-flow/waiting.md), "Waiting on CI") and go on to step 5 without waiting. Each wake: a red check the merge caused gets fixed, proven and pushed; the checks green, unwatch; anything else is the user's, for the next skill they run.
+Push to the branch. When the PR is open, `watch_pull_request` ([waiting.md](~/.agents/pr-flow/waiting.md), "Waiting on CI") and go on to step 5 without waiting. Each wake: a red check the merge caused gets fixed, proven (its pictures retaken where it changes the screen) and pushed; the checks green, unwatch; anything else is the user's, for the next skill they run.
 
 An approved PR whose merge was complex no longer has what was approved: say so on the card, with sending it back for review (`send-for-review`) as the default.
 

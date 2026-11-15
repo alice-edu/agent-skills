@@ -38,7 +38,7 @@ A skill that explains a change or a review to the user goes through what it's sh
 7. Put it where people read about the change:
    - the Links line (links.md), and beside the diagram's screenshot in the report;
    - the PR's own body for the user's PR (pr-body.md, "Diagram"), and the GitHub review for someone else's (`review-pr`);
-   - its screenshot there too, when the diagram reads at PR width (a few boxes, labels legible at 800 px): save the `take_screenshot` image as `diagram-<what>.png` and upload it with the PR's screenshots (screenshots.md, "Upload"). A big one gets the link alone.
+   - its screenshot there too, when the diagram reads at PR width (a few boxes, labels legible at 800 px): save the `take_screenshot` image under `shot-name`'s name for `diagram-<what>.png` and upload it with the PR's screenshots (screenshots.md, "Upload"). A big one gets the link alone.
 
 Done when the screenshot reads cleanly, link sharing is on, and it's on the Links line and in the PR or the review.
 
@@ -49,7 +49,7 @@ A decision card's question shows its diagram, not only its link: the user decide
 - One row for each option, left to right, stacked: `create_mermaid_diagram` with `flowchart TB`, a `direction LR` subgraph a row, joined by `~~~`. Each row named as the card names its option ("Keep (this PR): per page", "Adam's ask: whole course"), the recommended one first. At most four nodes a row: only the part the question turns on.
 - The edge that differs coloured in every row (`linkStyle`: green for the recommended, red where it goes wrong), its label saying what differs: the count, the index, which runs first.
 - Each row drawn from the code it stands for (the diff, or the planned change read against the files it touches).
-- `take_screenshot` with the subgraphs' `elementIds` at full size (no `maxWidth` below 960, or it's blurred at 480 px), saved as a PNG, and put in the question as `![<row>: the options](/absolute/path.png)`, the public link (step 6) on the line under it.
+- `take_screenshot` with the subgraphs' `elementIds` at full size (no `maxWidth` below 960, or it's blurred at 480 px), saved as a PNG under `shot-name`'s name (a redrawn one under a new one), and put in the question as `![<row>: the options](/absolute/path.png)`, the public link (step 6) on the line under it.
 
 Done when the PNG, opened, reads at 480 px wide: every label legible.
 

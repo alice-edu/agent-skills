@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+# screenshots-stale [<pr>]
+#
+# Says whether the PR body's pictures (screenshots, GIFs) still show its head. Each picture's
+# name carries the SHA it was taken on (shot-name). Each one, "before" and "diagram" ones aside,
+# is checked on its own: a commit since its SHA that changed what the PR does to a file which
+# draws the screen (components, styles, icons, messages/) makes it stale. A base merge that
+# touched the same file doesn't. "Screenshots current at <sha>: <why>" in the body stands for a
+# retake at that SHA of every picture taken before it. A PR that changes such files and has no
+# pictures is stale too, unless the body says "N/A: Screenshots: <why>".
+# The head is the checkout's HEAD when it's the PR's head or ahead of it (run it before pushing
+# too), otherwise the PR's head on GitHub.
+# Exit 0 current, 1 stale (retake them, screenshots.md), 2 usage, 3 couldn't check (gh, git).
+set -euo pipefail
+trap 'echo "screenshots-stale: could not check (line $LINENO)" >&2; exit 3' ERR
+case ${1:-} in -*) echo "usage: screenshots-stale [<pr>]" >&2; exit 2;; esac
+[ $# -le 1 ] || { echo "usage: screenshots-stale [<pr>]" >&2; exit 2; }
+json=$(gh pr view ${1:+"$1"} --json body,headRefOid,baseRefName)
+body=$(jq -r .body <<<"$json"); head=$(jq -r .headRefOid <<<"$json"); base=$(jq -r .baseRefName <<<"$json")
+git fetch -q origin "$head" "$base"
+local_head=$(git rev-parse HEAD)
+if [ "$local_head" != "$head" ] && git merge-base --is-ancestor "$head" "$local_head"; then head=$local_head; fi
+
+drawn() { grep -E '\.(tsx|jsx|css|scss|svg|png|gif)$|(^|/)messages/[^/]+\.json$' \
+  | grep -Ev '\.(test|spec|stories)\.|(^|/)(e2e|__tests__|docs)/|(^|/)[^/]*-e2e/' || true; }
+pr_drawn=$(git diff --name-only "origin/$base...$head" | drawn)
+
+# The body's pictures: the .png and .gif targets of ![..](url) and <img src="url">, by file name.
+# (A drag-and-drop upload or a badge has no such name and isn't one of ours.)
+urls=$( { grep -oE '!\[[^]]*\]\([^) ]+' <<<"$body" | sed -E 's/.*\(//';
+          grep -oiE '<img[^>]* src="[^"]+"' <<<"$body" | sed -E 's/.* src="//I; s/"$//'; } || true)
+pics=$(sed -E 's/[?#].*//; s#.*/##' <<<"$urls" | grep -iE '\.(png|gif)$' | sort -u || true)
+named='-[0-9a-f]{7,12}(-[0-9]+)?\.(png|gif)$'
+
+if [ -z "$pics" ]; then
+  [ -z "$pr_drawn" ] && { echo "current: no pictures, and nothing the PR changes draws the screen"; exit 0; }
+  grep -qiE 'N/A:? *\**screenshots' <<<"$body" && { echo "current: no pictures, the body says why"; exit 0; }
+  echo "stale: no pictures, yet the PR changes what draws the screen:"; sed 's/^/  /' <<<"$pr_drawn"; exit 1
+fi
+unnamed=$(grep -vE -- "$named" <<<"$pics" || true)
+[ -z "$unnamed" ] || { echo "stale: not named for the head they show (retake with shot-name):"; sed 's/^/  /' <<<"$unnamed"; exit 1; }
+
+full() { git rev-parse -q --verify "$1^{commit}" 2>/dev/null || true; }
+# Retakes noted in the body, as full SHAs in this PR's history.
+current=()
+while IFS= read -r s; do
+  [ -n "$s" ] || continue; f=$(full "$s")
+  [ -n "$f" ] && git merge-base --is-ancestor "$f" "$head" && current+=("$f")
+done < <(grep -oiE 'screenshots current at `?[0-9a-f]{7,40}' <<<"$body" | grep -oE '[0-9a-f]{7,40}$' || true)
+
+# What the PR itself does to a file as of a commit: its added and removed lines against where it
+# left the base.
+own() { git diff -U0 "$(git merge-base "origin/$base" "$1")" "$1" -- "$2" | grep -E '^[+-]' | grep -vE '^(\+\+\+|---) ' || true; }
+changed_since() {  # files that draw the screen whose PR change differs between $1 and the head
+  local f
+  while IFS= read -r f; do
+    [ -n "$f" ] && [ "$(own "$1" "$f")" != "$(own "$head" "$f")" ] && echo "$f"
+  done < <(comm -12 <(git diff --name-only "$1" "$head" | sort) <(sort <<<"$pr_drawn"))
+  return 0
+}
+
+stale=0
+while IFS= read -r pic; do
+  case $pic in before*|diagram*) continue;; esac
+  sha=$(sed -E 's/.*-([0-9a-f]{7,12})(-[0-9]+)?\.(png|gif)$/\1/' <<<"$pic"); at=$(full "$sha")
+  if [ -z "$at" ] || ! git merge-base --is-ancestor "$at" "$head"; then
+    echo "stale: $pic was taken on $sha, which isn't in this head's history"; stale=1; continue
+  fi
+  for c in "${current[@]+"${current[@]}"}"; do git merge-base --is-ancestor "$at" "$c" && at=$c; done
+  since=$(changed_since "$at")
+  [ -z "$since" ] && continue
+  echo "stale: $pic (as of ${at:0:7}); since then these changed:"; sed 's/^/  /' <<<"$since"; stale=1
+done <<<"$pics"
+if [ "$stale" = 1 ]; then
+  echo "retake those pictures (screenshots.md), or when a retake shows nothing changed, write \"Screenshots current at ${head:0:7}: <why>\" in the checklist"
+  exit 1
+fi
+echo "current: every picture shows head ${head:0:7}'s screen"

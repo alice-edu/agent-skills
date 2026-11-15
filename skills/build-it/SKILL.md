@@ -109,7 +109,7 @@ Done when, on one final head: the loop agrees with no open P1; each P2 is fixed,
 
 Screenshots, and GIFs of what moves, per [screenshots.md](~/.agents/pr-flow/screenshots.md), made without asking; the body per [pr-body.md](~/.agents/pr-flow/pr-body.md), its checklist from step 7. A title in the style of the repo's recent PRs: what's different now, not "Fix bug". Push, open it ready for review (or update the existing one), and finish `linear-track`'s step 3.
 
-Done when the PR shows the current head, every image loads, and every checklist item is `[x]`, `N/A` or Test by hand.
+Done when the PR shows the current head, every image loads, `screenshots-stale` says current, and every checklist item is `[x]`, `N/A` or Test by hand.
 
 ## 10. Settle, then report
 

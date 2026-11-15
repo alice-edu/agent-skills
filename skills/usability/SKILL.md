@@ -54,7 +54,7 @@ Fix the findings, most important first, with the app's own parts: the repo's com
 
 Some findings are a real product choice rather than a fix: removing a feature from the main path, changing what a flow asks for, renaming something students already know. Those are the user's ([decision card](~/.agents/pr-flow/decision-card.md)): fix everything else first, then ask them all on one card as its "How to ask" says (read it first: each with the screen now beside each option), the recommended choice first, and apply the answers. With no answer, leave those changes unmade and start the report with the card.
 
-Prove it per the repo's checks for what you touched, then take the after screenshots in the same states as before.
+Prove it per the repo's checks for what you touched, then take the after screenshots in the same states as before, each under a new name (screenshots.md, Capture: never a path already shown).
 
 Done when every finding is fixed or listed as left, with a reason, each product choice is answered and applied or waiting on the card, and each fixed one has its after screenshot.
 

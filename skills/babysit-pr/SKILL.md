@@ -13,7 +13,7 @@ On CI and reviews, as [waiting.md](~/.agents/pr-flow/waiting.md), "Waiting on CI
 
 ## Each wake
 
-- **A check failed**: read its log. Ours: fix it, prove the fix, push. A flake (a timeout, a runner or network error the same commit passed before): rerun it once and say so.
+- **A check failed**: read its log. Ours: fix it, prove the fix, push; a fix that changes what a student sees retakes its pictures (screenshots.md, "Keep them current"). A flake (a timeout, a runner or network error the same commit passed before): rerun it once and say so.
 - **A comment or review**: every finding still outstanding, whenever it was posted, until each is fixed or answered; a push doesn't settle one. Check each bot finding against the code; fix a real one, and answer a wrong one with a reason in its thread. A human reviewer's comment is `fix-comments`' work: hand it there.
 - **Behind or conflicting**: merge the base in, resolve, rerun the checks it touches. `watch_pull_request` reports conflicts only, so check for behind yourself before calling the PR ready.
 
@@ -23,4 +23,4 @@ Keep the PR the size its goal needs: a bot's nit on a rare path is answered, not
 
 ## Done
 
-The required checks are green on the latest head, every bot finding is fixed or answered, the branch is up to date, and GitHub reports it mergeable. Merging is `full-send`'s call, or the user's: report the PR ready ([report.md](~/.agents/pr-flow/report.md)), unwatched, ending with the Links line ([links.md](~/.agents/pr-flow/links.md)) and, run on its own, `In sight: ready to merge.` A stop that's blocked or asking ends the same way, `In sight: <why>.` Run from `full-send`, it hands back and `full-send` reports.
+The required checks are green on the latest head, `screenshots-stale` says current, every bot finding is fixed or answered, the branch is up to date, and GitHub reports it mergeable. Merging is `full-send`'s call, or the user's: report the PR ready ([report.md](~/.agents/pr-flow/report.md)), unwatched, ending with the Links line ([links.md](~/.agents/pr-flow/links.md)) and, run on its own, `In sight: ready to merge.` A stop that's blocked or asking ends the same way, `In sight: <why>.` Run from `full-send`, it hands back and `full-send` reports.

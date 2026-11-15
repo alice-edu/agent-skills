@@ -9,6 +9,7 @@
 set -euo pipefail
 [ $# -ge 3 ] || { echo "usage: compare-image <out.png> <Label=image.png> <Label=image.png>..." >&2; exit 2; }
 out=$1; shift
+[ -e "$out" ] && { echo "compare-image: $out is taken; a picture is never written over (shot-name gives a new name)" >&2; exit 1; }
 chrome="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 [ -x "$chrome" ] || { echo "compare-image: Google Chrome not found at $chrome" >&2; exit 1; }
 

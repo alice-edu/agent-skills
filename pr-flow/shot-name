@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+# shot-name <slug|dir> <what>.<ext>
+#
+# Prints a path for a new screenshot, GIF or comparison that no earlier picture has had:
+# <dir>/<what>-<sha>.<ext>, the short SHA of the checkout's HEAD (the head it shows), or
+# <what>-<sha>-2.<ext>, -3 … when that name is taken (a retake on the same head).
+# A slug (the PR's assets slug, <ali-id>-<slug>) puts it in .git/shots/<slug> of the repo, which
+# every worktree and later session shares, so a name already uploaded for the PR is seen as taken.
+# A directory (one with a /) is used as given: for pictures outside a PR (a sketch round).
+# A picture is never written over: T3 Code and GitHub keep showing the old one under its old
+# name, and the SHA in the name is how screenshots-stale tells which head a picture shows.
+# Run from the repo's checkout:  out=$(~/.agents/pr-flow/shot-name ALI-123-dark-mode after-light.png)
+set -euo pipefail
+[ $# -eq 2 ] || { echo "usage: shot-name <slug|dir> <what>.<ext>" >&2; exit 2; }
+dir=$1 file=$2
+case $dir in */*) ;; *) dir="$(cd "$(git rev-parse --git-common-dir)" && pwd)/shots/$dir";; esac
+what=${file%.*} ext=${file##*.}
+case $file in */*) echo "shot-name: give the bare name (after-light.png), not a path" >&2; exit 2;; esac
+case $ext in png|gif) ;; *) echo "shot-name: pictures are .png or .gif" >&2; exit 2;; esac
+[ -n "$what" ] && [ "$what" != "$file" ] || { echo "shot-name: '$file' needs a name and an extension" >&2; exit 2; }
+if grep -qE -- '-[0-9a-f]{7,12}(-[0-9]+)?$' <<<"$what"; then echo "shot-name: give the name without a SHA (after-light.png)" >&2; exit 2; fi
+sha=$(git rev-parse --short=7 HEAD)
+mkdir -p "$dir"
+path="$dir/$what-$sha.$ext" n=2
+while [ -e "$path" ]; do path="$dir/$what-$sha-$n.$ext"; n=$((n + 1)); done
+echo "$path"

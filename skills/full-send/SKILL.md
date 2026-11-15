@@ -40,7 +40,7 @@ Hold the head to [ready.md](~/.agents/pr-flow/ready.md), reusing what's still va
 
 Push, then `babysit-pr`. The **merge gate**, all true on the latest head:
 
-- proof covers every change in the diff;
+- proof covers every change in the diff, and `screenshots-stale` says current;
 - everything since the approval is in "What still counts as approved";
 - required checks are green;
 - every bot finding posted so far is fixed or answered with a reason (`babysit-pr`, "Bots": advisory ones aren't waited for);

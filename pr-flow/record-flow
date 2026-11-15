@@ -51,6 +51,10 @@ const crop = flag("--crop", null)?.split(",").map(Number);
 const fps = Number(flag("--fps", "12"));
 const [out, a1, a2] = args;
 const [stepsFile, url] = look ? [a2, a1] : [a1, a2];
+if (!look && out && existsSync(out)) {
+  console.error(`record-flow: ${out} is taken; a GIF is never written over (shot-name gives a new name)`);
+  process.exit(1);
+}
 if (!out || !url || (!look && !stepsFile)) {
   console.error("usage: record-flow <out.gif> <steps.mjs> <url> [--dark] [--size WxH] [--width N] [--crop x,y,w,h] [--fps N]");
   process.exit(2);

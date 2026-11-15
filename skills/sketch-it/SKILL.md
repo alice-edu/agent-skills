@@ -73,7 +73,7 @@ Done when every option has a verdict: clear, or its findings.
 
 ## 6. Show
 
-Read [decision-card.md](~/.agents/pr-flow/decision-card.md) now, whole, and ask as its "How to ask" says, with one difference: each frame is its own picture, not joined with now. A frame's picture is its `image_url` (`export_frame`), saved with `curl -sL -o <scratchpad>/<name>.png "<url>"`. One question for the round:
+Read [decision-card.md](~/.agents/pr-flow/decision-card.md) now, whole, and ask as its "How to ask" says, with one difference: each frame is its own picture, not joined with now. A frame's picture is its `image_url` (`export_frame`), saved under a new name each round, `curl -sL -o "$(~/.agents/pr-flow/shot-name <scratchpad>/shots <option>.png)" "<url>"`: a path shown before shows the old frame. One question for the round:
 
 - the problem in a line, and where the brief and the screen differ;
 - **now**, then each option, as `![A: <convention>](/absolute/path.png)` with its line under it: the convention and its references' links, what changes, its usability verdict, its new parts and new text;

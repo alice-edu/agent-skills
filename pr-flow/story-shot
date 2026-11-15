@@ -8,12 +8,14 @@
 // inlined, no scripts), for a canvas that takes HTML. --list prints the stories, id and title, whose
 // title or name has every word given.
 // --inline writes the story's drawing alone (its [data-testid="story"] element, else what
-// #storybook-root holds) with each element's computed styles written on it as style="…" and
-// classes dropped: markup to paste into a canvas frame, for a Storybook whose classes are hashed
-// (React Native web). Only what differs from the browser's default, and from the parent for what
+// #storybook-root holds that draws) with each element's computed styles written on it as style="…"
+// and classes dropped: markup to paste into a canvas frame, from any Storybook (web, or React
+// Native web, whose classes are hashed). Drawn ::before/::after become spans; four like sides are
+// one shorthand; what draws nothing is left out; a hashed font family gets its file's name. Only what differs from the browser's default, and from the parent for what
 // inherits, is written; a width or height the content gives is left out. No data: URLs (a canvas
 // may refuse them): it lists the images and fonts the copy needs, for the canvas's own uploads.
-// --dark copies it dark.
+// --dark copies it dark. --public <url>: the site that serves the app's own files (its icons and
+// images), where the copy's images at Storybook's address are pointed instead, so a canvas loads them.
 //
 // Run from the repo's checkout, installed: Playwright comes from the repo, as record-flow's does.
 
@@ -37,7 +39,7 @@ const has = (name) => {
 
 function usage() {
   console.error(
-    "usage: story-shot <out.png> <storybook url> <story id> [--dark] [--width N] [--height N] [--html out.html] [--inline out.html]\n" +
+    "usage: story-shot <out.png> <storybook url> <story id> [--dark] [--width N] [--height N] [--html out.html] [--inline out.html [--public <url>]]\n" +
       "       story-shot --list <storybook url> [words]",
   );
   process.exit(2);
@@ -67,6 +69,7 @@ const width = Number(flag("--width") ?? 1280);
 const height = Number(flag("--height") ?? 800);
 const htmlOut = flag("--html");
 const inlineOut = flag("--inline");
+const publicUrl = flag("--public")?.replace(/\/$/, "");
 const [out, url, id] = args;
 if (!out || !url || !id) usage();
 const base = slash(url);
@@ -221,7 +224,11 @@ if (inlineOut) {
   // The story's own parameters: `screen` marks one drawn as the phone's whole screen.
   const screen = await page.evaluate(() => !!window.__STORYBOOK_PREVIEW__?.currentRender?.story?.parameters?.screen);
   const { html, images, fonts } = await page.evaluate((screen) => {
-    const live = document.querySelector('[data-testid="story"]') ?? document.querySelector("#storybook-root > *");
+    // The story's drawing: its [data-testid="story"], else what the root holds that draws (a web
+    // Storybook's root also holds a theme script and an empty toaster), else the root itself.
+    const drawn = [...document.querySelector("#storybook-root").children].filter((e) =>
+      !/^(script|style|link|template|noscript)$/.test(e.localName) && e.getBoundingClientRect().width * e.getBoundingClientRect().height > 0);
+    const live = document.querySelector('[data-testid="story"]') ?? (drawn.length === 1 ? drawn[0] : document.querySelector("#storybook-root"));
     // The browser's defaults, per tag, from a blank document.
     const frame = document.createElement("iframe");
     document.body.append(frame);
@@ -241,12 +248,18 @@ if (inlineOut) {
       }
       return defaults.get(tag);
     };
-    const INHERITS = /^(color|font|line-height|letter-spacing|word-spacing|text-(align|transform|indent|shadow|rendering)|white-space|visibility|cursor|direction|list-style|fill|stroke|-webkit-font-smoothing|-webkit-text-fill-color|-moz-osx-font-smoothing|word-break|overflow-wrap|hyphens|quotes|tab-size)/;
+    const INHERITS = /^(color|font|line-height|letter-spacing|word-spacing|text-(align|transform|indent|shadow|rendering)|white-space|visibility|cursor|direction|list-style|fill|stroke|-webkit-font-smoothing|-webkit-text-fill-color|-moz-osx-font-smoothing|word-break|overflow-wrap|hyphens|quotes|tab-size|text-wrap|color-scheme)/;
     // Logical properties repeat the physical ones (border-inline-start-style is border-left-style
     // here), and one written without its pair draws wrong: only the physical ones are copied.
-    const LOGICAL = /^(border|margin|padding|inset|scroll-margin|scroll-padding|overscroll-behavior|contain-intrinsic)-(block|inline)/;
-    // A form control takes the browser's font, colour and alignment, not its parent's: everything is written on it.
+    const LOGICAL = /^(border|margin|padding|inset|scroll-margin|scroll-padding|overscroll-behavior|contain-intrinsic)-(block|inline)|^border-(start|end)-(start|end)-radius|^overflow-(block|inline)/;
+    // What draws nothing in a still picture, however it's set (a reset's scrollbar or locale), or is
+    // the initial value written out (min-height: auto).
+    const DEAD = /^(scrollbar-|text-size-adjust|-webkit-locale|column-rule-color|row-rule-color|text-emphasis-color|-webkit-text-stroke-color|user-select|-webkit-user-select|touch-action|pointer-events|cursor|interpolate-size)/;
+    // A form control takes the browser's font, colour and alignment, not its parent's: those are written on it.
     const CONTROL = /^(button|input|textarea|select)$/;
+    const RESET_ON_CONTROL = /^(color$|font|line-height|letter-spacing|word-spacing|text-(align|transform|indent|shadow))/;
+    // An SVG shape's geometry is its attributes; the computed copy (`d: path(…)`) only repeats them.
+    const GEOMETRY = /^(d|cx|cy|r|rx|ry|x|y|width|height|points|x1|x2|y1|y2)$/;
     const SKIP = /^(transition|animation|will-change|caret-color|-webkit-tap-highlight|outline|inline-size|block-size|min-inline-size|min-block-size|max-inline-size|max-block-size|perspective-origin|transform-origin)/;
     // A size the content gives (text, a row) is left to the copy's own layout; one the styles set is kept.
     const sizedByContent = (el, prop) => {
@@ -268,19 +281,38 @@ if (inlineOut) {
       const out = new Map();
       for (const p of cs) {
         const v = cs.getPropertyValue(p);
-        if (p.startsWith("--") || SKIP.test(p) || LOGICAL.test(p) || v === d[p]) continue;
-        if (parent && !CONTROL.test(el.localName) && INHERITS.test(p) && parent.getPropertyValue(p) === v) continue;
+        // The frame's reset zeroes margins, so a margin is compared with 0, not the browser's (a <p>'s 1em).
+        const base = /^margin-(top|right|bottom|left)$/.test(p) ? "0px" : d[p];
+        if (p.startsWith("--") || SKIP.test(p) || LOGICAL.test(p) || DEAD.test(p) || v === base) continue;
+        if ((p === "min-height" || p === "min-width") && v === "auto") continue;
+        // The frame's reset (`* { margin: 0; box-sizing: border-box }`, which Doop asks of every frame) says it.
+        if (p === "box-sizing" && v === "border-box") continue;
+        if (p === "text-decoration-color" && cs.textDecorationLine === "none") continue;
+        if (p === "-webkit-text-fill-color" && v === cs.color) continue;
+        // A side with no border (a reset's `0 solid`) draws nothing: its style and colour go too.
+        const side = p.match(/^border-(top|right|bottom|left)-(style|color|width)$/)?.[1];
+        // Unless the tag draws one by default (a fieldset's groove): then `none` is written.
+        const none = (st) => st.getPropertyValue?.(`border-${side}-style`) === "none" || st.getPropertyValue?.(`border-${side}-width`) === "0px";
+        if (side && none(cs)) {
+          if (d[`border-${side}-style`] !== "none" && d[`border-${side}-width`] !== "0px") out.set(`border-${side}-style`, "none");
+          continue;
+        }
+        if (parent && INHERITS.test(p) && parent.getPropertyValue(p) === v && !(CONTROL.test(el.localName) && RESET_ON_CONTROL.test(p))) continue;
+        if (el.namespaceURI === SVG && el.localName !== "svg" && GEOMETRY.test(p) && el.hasAttribute(p)) continue;
+        // An inset moves only a positioned box, and 0 moves a relative one nowhere.
+        if (/^(top|right|bottom|left)$/.test(p) && (cs.position === "static" || (cs.position === "relative" && v === "0px"))) continue;
         if ((p === "width" || p === "height") && holdsText(el) && sizedByContent(el, p)) continue;
         out.set(p, v);
       }
       // Text drawn on one line stays on one line, however the copy measures it.
       if (holdsText(el) && el.namespaceURI !== SVG) {
         const lh = parseFloat(cs.lineHeight) || parseFloat(cs.fontSize) * 1.3;
-        if (el.getBoundingClientRect().height < lh * 1.5) out.set("white-space", "nowrap");
+        // Only the wrap mode: the `white-space` shorthand would also undo a preserved space (` notes`).
+        if (el.getBoundingClientRect().height < lh * 1.5) out.set("text-wrap-mode", "nowrap");
       }
       // A border's style and width go together: a style alone draws at the default width.
       for (const side of ["top", "right", "bottom", "left"]) {
-        if (out.has(`border-${side}-style`)) out.set(`border-${side}-width`, cs.getPropertyValue(`border-${side}-width`));
+        if (out.has(`border-${side}-style`) && out.get(`border-${side}-style`) !== "none") out.set(`border-${side}-width`, cs.getPropertyValue(`border-${side}-width`));
       }
       if (el === live) {
         out.set("font-family", cs.getPropertyValue("font-family"));
@@ -311,8 +343,96 @@ if (inlineOut) {
         c.setAttribute("style", c.getAttribute("style").replace(u, abs));
         images.add(abs);
       }
+      // A ::before or ::after that draws (a running bar's stripes, an editor's placeholder) becomes a
+      // span: a copy carries no stylesheet for it to come from.
+      if (el.namespaceURI !== SVG && !/^(img|input|br|hr)$/.test(el.localName)) {
+        for (const pseudo of ["::before", "::after"]) {
+          const ps = getComputedStyle(el, pseudo);
+          if (!ps.content || ps.content === "none" || ps.content === "normal" || ps.display === "none") continue;
+          const sd = def(document.createElement("span")), st = [];
+          for (const p of ps) {
+            const v = ps.getPropertyValue(p);
+            if (p === "content" || p.startsWith("--") || SKIP.test(p) || LOGICAL.test(p) || DEAD.test(p)) continue;
+            if (v === (/^margin-(top|right|bottom|left)$/.test(p) ? "0px" : sd[p])) continue;
+            if (INHERITS.test(p) && cs.getPropertyValue(p) === v) continue;
+            const side = p.match(/^border-(top|right|bottom|left)-(style|color|width)$/)?.[1];
+            if (side && (ps.getPropertyValue(`border-${side}-style`) === "none" || ps.getPropertyValue(`border-${side}-width`) === "0px")) continue;
+            if (/^(top|right|bottom|left)$/.test(p) && ps.position === "static") continue;
+            if ((p === "box-sizing" && v === "border-box") || (p === "text-decoration-color" && ps.textDecorationLine === "none")) continue;
+            if ((p === "min-height" || p === "min-width") && v === "auto") continue;
+            st.push(`${p}:${v}`);
+          }
+          const text = ps.content.match(/^attr\(([\w-]+)\)$/) ? el.getAttribute(ps.content.slice(5, -1)) ?? "" : ps.content.replace(/^["']|["']$/g, "");
+          // One with nothing to see (a button's larger hit area) is left out.
+          if (!text && !st.some((d) => /^(background|border-\w+-width|box-shadow)/.test(d) && !/rgba\(0, 0, 0, 0\)|:none$/.test(d))) continue;
+          const span = document.createElement("span");
+          span.setAttribute("aria-hidden", "true");
+          span.setAttribute("style", st.join(";").replace(/"/g, "'"));
+          span.textContent = text;
+          if (pseudo === "::before") c.prepend(span); else c.append(span);
+        }
+      }
     }
     frame.remove();
+    for (const s of copy.querySelectorAll("script, style, template, noscript")) s.remove();
+    // What isn't drawn (the dark icon in a light copy, a form's hidden input) is left out: the dark copy is made on its own.
+    lives.forEach((el, i) => {
+      if (el === live) return;
+      const r = el.getBoundingClientRect();
+      if (getComputedStyle(el).display === "none" || (!el.children.length && !el.textContent.trim() && r.width <= 1 && r.height <= 1)) copies[i].remove();
+    });
+    for (const c of copy.querySelectorAll("[id], [tabindex]")) { c.removeAttribute("id"); c.removeAttribute("tabindex"); }
+    copy.removeAttribute("id");
+    // Four sides alike are written once (`padding: 8px 12px`, `border: 1px solid …`), so a copy reads like CSS someone wrote.
+    for (const c of [copy, ...copy.querySelectorAll("[style]")]) {
+      const st = c.getAttribute("style");
+      if (!st) continue;
+      const m = new Map(st.split(/;(?![^(]*\))/).filter(Boolean).map((d) => { const k = d.indexOf(":"); return [d.slice(0, k), d.slice(k + 1)]; }));
+      const sides = (f) => ["top", "right", "bottom", "left"].map((s) => m.get(f(s)));
+      const box = (name, f) => {
+        const v = sides(f);
+        if (v.some((x) => x === undefined)) return;
+        ["top", "right", "bottom", "left"].forEach((s) => m.delete(f(s)));
+        const [t, r, b, l] = v;
+        m.set(name, l === r ? (t === b ? (t === r ? t : `${t} ${r}`) : `${t} ${r} ${b}`) : `${t} ${r} ${b} ${l}`);
+      };
+      box("padding", (s) => `padding-${s}`);
+      box("margin", (s) => `margin-${s}`);
+      const radii = ["top-left", "top-right", "bottom-right", "bottom-left"].map((s) => m.get(`border-${s}-radius`));
+      if (radii.every((x) => x !== undefined)) {
+        ["top-left", "top-right", "bottom-right", "bottom-left"].forEach((s) => m.delete(`border-${s}-radius`));
+        m.set("border-radius", radii.every((x) => x === radii[0]) ? radii[0] : radii.join(" "));
+      }
+      const bw = sides((s) => `border-${s}-width`), bs = sides((s) => `border-${s}-style`), bc = sides((s) => `border-${s}-color`);
+      if ([bw, bs, bc].every((a) => a.every((x) => x !== undefined && x === a[0]))) {
+        for (const s of ["top", "right", "bottom", "left"]) for (const k of ["width", "style", "color"]) m.delete(`border-${s}-${k}`);
+        m.set("border", `${bw[0]} ${bs[0]} ${bc[0]}`);
+      }
+      if (m.has("row-gap") && m.get("row-gap") === m.get("column-gap")) { m.set("gap", m.get("row-gap")); m.delete("row-gap"); m.delete("column-gap"); }
+      if (m.has("overflow-x") && m.get("overflow-x") === m.get("overflow-y")) { m.set("overflow", m.get("overflow-x")); m.delete("overflow-x"); m.delete("overflow-y"); }
+      if (m.get("text-wrap-mode") === "nowrap" && m.get("white-space") === "nowrap") m.delete("text-wrap-mode");
+      // Tailwind's empty ring and shadow layers draw nothing.
+      if (m.has("box-shadow")) {
+        const layers = m.get("box-shadow").split(/,(?![^(]*\))/).map((x) => x.trim()).filter((x) => !/^rgba\(0, 0, 0, 0\) 0px 0px 0px 0px$/.test(x));
+        if (layers.length) m.set("box-shadow", layers.join(", "));
+        else m.delete("box-shadow");
+      }
+      c.setAttribute("style", [...m].map(([k, v]) => `${k}:${v}`).join(";"));
+    }
+    // A family bundlers hash (next/font's `font-5b2b10`, `__Inter_abc123`) is no name a canvas's
+    // font library knows: it becomes the name its file gives (IBMPlexSans-Variable.woff2 is IBM Plex Sans).
+    const renamed = new Map();
+    for (const sheet of document.styleSheets) {
+      let rules; try { rules = sheet.cssRules; } catch { continue; }
+      for (const r of rules) {
+        if (!(r instanceof CSSFontFaceRule)) continue;
+        const fam = r.style.getPropertyValue("font-family").replace(/["']/g, "").trim();
+        const file = r.style.getPropertyValue("src").match(/url\(["']?[^"')]*\/([^/"')?]+)\.(woff2?|ttf|otf)/)?.[1];
+        if (!file || renamed.has(fam) || !/^(font-[0-9a-f]{6}|__\w+_[0-9a-f]{6})$/.test(fam)) continue;
+        const name = file.split(/[-_]/)[0].replace(/([a-z])([A-Z])/g, "$1 $2").replace(/([A-Z]+)([A-Z][a-z])/g, "$1 $2");
+        renamed.set(fam, { name, file: `${file}` });
+      }
+    }
     // A button inside a button (a row with its menu) is markup HTML can't hold: the outer one becomes a div with the button's role.
     for (const b of [...copy.querySelectorAll("button")].filter((b) => b.querySelector("button"))) {
       const div = document.createElement("div");
@@ -321,11 +441,25 @@ if (inlineOut) {
       div.append(...b.childNodes);
       b.replaceWith(div);
     }
-    return { html: copy.outerHTML, images: [...images].filter((u) => !u.startsWith("data:")), fonts: [...fonts] };
+    const html = copy.outerHTML.replace(/font-family:([^;"]*)/g, (_, v) =>
+      "font-family:" + v.split(",").map((f) => f.trim().replace(/'/g, ""))
+        .filter((f) => !(f.endsWith(" Fallback") && renamed.has(f.slice(0, -9))))
+        .map((f) => (renamed.has(f) ? `'${renamed.get(f).name}'` : /\s/.test(f) ? `'${f}'` : f)).join(", "));
+    return {
+      html,
+      images: [...images].filter((u) => !u.startsWith("data:")),
+      fonts: [...fonts].map((f) => (renamed.has(f) ? `${renamed.get(f).name} (${renamed.get(f).file})` : f)),
+    };
   }, screen);
-  writeFileSync(inlineOut, html);
-  console.log(`${inlineOut}: ${(html.length / 1024).toFixed(0)} KB`);
-  if (images.length) console.log(`images it points at (Storybook's, local: upload each and swap its URL):\n  ${images.join("\n  ")}`);
+  let copy = html, rest = images;
+  if (publicUrl) {
+    const origin = new URL(url).origin;
+    copy = html.replaceAll(`${origin}/`, `${publicUrl}/`);
+    rest = images.filter((u) => !u.startsWith(`${origin}/`));
+  }
+  writeFileSync(inlineOut, copy);
+  console.log(`${inlineOut}: ${(copy.length / 1024).toFixed(0)} KB`);
+  if (rest.length) console.log(`images it points at that a canvas can't load (upload each and swap its URL, or pass --public):\n  ${rest.join("\n  ")}`);
   console.log(`fonts it names (a canvas needs each in its library): ${fonts.join(", ")}`);
 }
 

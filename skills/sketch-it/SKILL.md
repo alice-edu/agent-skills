@@ -52,7 +52,7 @@ Done when the canvas has the tokens, the parts, and a page with now's frame.
 
 ## 4. Sketch
 
-Each option is a frame beside now, named `A: <convention>`, `B: …`, at most three, at the same width (1280 for a screen), 80 px apart, its height fitted to what it holds. A phone screen is sketched from the phone app's kit (me.md, "Doop kits"), at a phone's width (390 × 844):
+Each option is a frame beside now, named `A: <convention>`, `B: …`, at most three, at the same width (1280 for a screen), 80 px apart, its height fitted to what it holds:
 
 - **Parts** are `<doop-use component="StudyRow" label="Podcast" icon="…">` (`list_components` gives each one's props and slots, its description says when to use it). A part is never redrawn, restyled from outside, or copied out of a component.
 - **Layout** between parts is plain HTML with inline styles, in a frame whose `<head>` holds `doop-kit base <spec>`'s `<style>` (the theme's shadows and sizes, which tokens can't hold): flex and grid, gaps and padding on the 4 px grid (`calc(var(--spacing) * 4)` is the app's `p-4`), surfaces from tokens (`background: var(--card)`, `border-radius: calc(var(--radius) * 1.4)` for a panel, the app's `rounded-xl`; `var(--radius)` for a row or control, its `rounded-lg`), shadows by name (`box-shadow: var(--panel-shadow)`), text at the app's sizes (14 px body, 12 px labels).

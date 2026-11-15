@@ -6,7 +6,7 @@ Each kit is listed in [me.md](me.md), "Doop kits": its canvas and its **spec**, 
 
 Doop has no API for a script, so `doop-kit` writes the input of Doop's MCP tools, and an agent sends it: one `create_component` (or `update_component`) per part, its fields copied as they are. A whole kit is about 30 calls: hand them to agents in parallel, a third each, told to copy `html` and `css` verbatim and to report Doop's notes.
 
-Run `doop-kit` from the root of a checkout of the repo's base branch (`git worktree add --detach <scratchpad>/kit-main origin/main`, installed), with the kit's Storybook running (`PORT=<free> pnpm storybook --ci --no-open` in its app: `apps/web`, or `apps/mobile` for the phone's). Close both when done.
+Run `doop-kit` from a checkout of the repo's base branch (`git worktree add --detach <scratchpad>/kit-main origin/main`, installed), with its Storybook running (`PORT=<free> pnpm storybook --ci --no-open` in `apps/web`). Close both when done.
 
 ## Before a sketch
 
@@ -44,14 +44,5 @@ Compare `get_component` with the story in the browser. What's been seen:
 - **Variant leaks into another, or a size is missing**: a class goes to the prop whose values say where it appears, and a story that doesn't say which value of another prop it shows (its root has no `data-<prop>`) counts as that prop's default. A story showing another value (the ghost icon button in a card, at `icon-sm`) needs `"at": { "size": "icon-sm" }`. Or `select` the story's own instance.
 - **Paragraph gaps missing**: `bare()` must replace a whole `:not(...)` with `:is(*)` before relaxing its inner states. Removing it leaves a bare combinator; relaxing only its contents makes `:not(:is(*))` match nothing. Check the stored CSS still contains the original `:not(:last-child)` spacing rule.
 - **Wrong font**: a font var the components read isn't in the spec's `fonts`.
-
-A React Native app's Storybook (react-native-web) draws differently from web's; its spec sets what `doop-kit`'s header lists for it (`root`, `vars`, `inkVars`, `inlineDark`). What's been seen there:
-
-- **Icons all ink, or gone in dark**: native icons take a resolved colour (`stroke="#232222"`), not a class. `inkVars` turns each colour equal to a theme token into that token's var.
-- **Shadows, a tint or artwork the same in dark**: React Native's styles are inline, for the theme it drew in. `inlineDark` draws the story dark too and turns each inline style that differs into a light rule and a dark one.
-- **A variant changes only the root**: React Native puts a variant's classes on the elements inside (a button's label colour). Classes are compared at each element's place, where the stories draw the same number of elements: a variant whose story draws more or fewer is its own part.
-- **A row's menu pushed out of the row**: a button inside a button, which HTML can't hold. The outer one becomes a div with the button's role.
-- **No borders**: Tailwind's `--tw-*` defaults sat in an `@supports` only Safari passes; `cleanRules()` keeps their contents always.
-- **Drawn bigger than the part, with the story's padding**: the story's wrapper was lifted. `select` the part itself (`:scope > div > div`).
 
 Fix `doop-kit`, not the part by hand: the next build would undo a hand fix.

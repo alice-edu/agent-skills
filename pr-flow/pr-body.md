@@ -46,7 +46,7 @@ Reviewed by Claude and Codex (`review-loop`, <N> rounds); <what its findings cha
 
 ### Test by hand
 
-- [ ] <What to do>. <What should happen>. (<Why it couldn't be tested here.>)
+- [ ] <What to do>. <What should happen>. (<body|account|deploy|taste>: <why>. Tried: <command or step> → <result>.)
 
 Designed in Doop: [<what>](<the agreed round's page>)
 T3 thread: <this thread's title>, `t3code://threads/<environmentId>/<threadId>`

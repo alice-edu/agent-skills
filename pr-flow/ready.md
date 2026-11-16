@@ -4,11 +4,43 @@ What "ready for review" means for a PR of the user's. `build-it`, `fix-comments`
 
 ## Proof
 
-Proof is evidence observed in this session on the current **head** (the PR's latest commit, with its base merged in): command output, a test that went red without the change and green with it, the running app. Green mocked tests prove the logic; for a change a student sees, proof is the change seen in the running app (`pnpm dev`, the `run` skill), used as a student would: upload the file, send the message, get the answer graded. For the phone app, that's its dev client on both an iOS simulator and an Android emulator (the app's `AGENTS.md` and README say how): its tests run its web build, which shows neither native layout, gestures nor the keyboard. Opening a screen once proves only the easy case. Each changed screen is tried at its **worst case**, hunting for where it breaks: the longest content, scrolled to the end; the keyboard up over a multi-line input; every expandable part open; each caller of changed shared code. The checklist names the states tried. What that bills (models, grading, reading a file) is part of testing and needs no asking; reuse an upload that already does the job. A check run on an earlier head is history, not proof: after any commit or merge of the base, rerun what the change could affect.
+Proof is evidence observed in this session on the current **head** (the PR's latest commit, with its base merged in): command output, a test that went red without the change and green with it, the running app. Green mocked tests prove the logic; for a change a student sees, proof is the change seen in the running app (`pnpm dev`, the `run` skill), used as a student would: upload the file, send the message, get the answer graded. For the phone app, that's its dev client on both an iOS simulator and an Android emulator (the app's `AGENTS.md` and README say how): its tests run its web build, which shows neither native layout, gestures nor the keyboard. A story stands in for the app only when the change is inside one component's drawing and a story renders each caller's props (how it looks in another engine, a theme); what the change does with the screen around it (a dialog over another, data, a flow) is seen in the app. Opening a screen once proves only the easy case. Each changed screen is tried at its **worst case**, hunting for where it breaks: the longest content, scrolled to the end; the keyboard up over a multi-line input; every expandable part open; each caller of changed shared code. The checklist names the states tried. What that bills (models, grading, reading a file) is part of testing and needs no asking; reuse an upload that already does the job. A check run on an earlier head is history, not proof: after any commit or merge of the base, rerun what the change could affect.
 
 **A platform you can't test yet.** Every platform the change runs on (web, iOS, Android) is tested. One that isn't set up here is set up in this run: the SDK, the emulator image, the tool (Android took 15 minutes). Only one that can't be (it needs hardware or an account we don't have) goes on the decision card before the PR opens, never into Test by hand.
 
 **A stack that won't come up.** Give the local stack (`pnpm dev`, the E2E stack) about 5 minutes, and every network call a timeout (`curl -m 30`). Not up by then: push, and prove it on the branch's preview deploy (`gh pr checks` names its URL; a protected one needs the bypass the repo or your notes give), and leave E2E to CI's job. The checklist says which was used and why. The stack's failure goes in the report; fixing it isn't this PR's work.
+
+## Test by hand
+
+Every line on this list is time the user spends, so it holds only what no agent here can prove. A line earns its place by one of four **reasons**, named in it (two when both hold: body and taste for a haptic's feel):
+
+- **body**: a person's senses, or what only a real device does: a finger on glass (an edge swipe, how a drag feels), haptics, sound out of real headphones or speakers, Bluetooth audio routes, the lock screen, the OS suspending an app in the background, a GPU or OS no machine here has;
+- **account**: an account, credential or app this run can't use: a store build, the EAS account, a mail client's rendering (Gmail, Outlook);
+- **deploy**: what only production has: its data at full size, its domain (app links, cookies), the live deployment's crons. A migration's logic is still proven locally on old data; only its run over production's data is left;
+- **taste**: how it feels to a person (is the haptic light, does the motion read as smooth), when whether it works is already proven.
+
+Everything else is proven in this run. What looks untestable usually isn't:
+
+| It seems to need | Prove it here with |
+| --- | --- |
+| Data the test account lacks (a podcast, 30 history rows, a shared item) | Make it: in the app as a student would, or a seed script. What that bills is part of testing |
+| Safari or Firefox | `npx playwright install webkit firefox` in the package whose Playwright drives them (the browsers match its version), then the same steps in each. Screenshot the changed part (`locator.screenshot()`) in each engine and diff it against Chromium's: `ffmpeg -i chromium.png -i webkit.png -filter_complex "[1][0]scale2ref[b][a];[a][b]blend=all_mode=difference,format=gray,geq=lum='255*gt(lum(X\,Y)\,24)',signalstats,metadata=print:key=lavfi.signalstats.YAVG" -f null - 2>&1`, whose `YAVG=` is 0 when identical (text anti-aliasing alone gives about 2.5) |
+| Android or iOS | The emulator or simulator, set up in this run ([Proof](#proof), "A platform you can't test yet") |
+| The preview deploy | Open it with the Vercel bypass (your notes say where the secret is) |
+| A screen that's hard to reach (a call, a lesson's end, an error) | Drive the app there, or render it in a story with that state (story ids from Storybook's `/index.json`) |
+| A microphone | Chromium launched with `--use-fake-device-for-media-stream --use-file-for-fake-audio-capture=<file.wav>`, the file spoken by `say -o x.aiff "<words>"` and `ffmpeg -i x.aiff -ar 48000 x.wav` |
+| A slow or dropped connection | Playwright's `context.setOffline(true)`, or CDP's `Network.emulateNetworkConditions` for a slow one |
+| Dark mode, another language, a long name | Switch to it and look |
+| A screen reader | The accessibility tree (Playwright's `ariaSnapshot()`, the simulator's tree): names, roles, order. Only listening to it is left |
+| What a migration does to old data | Run it locally on data made the old way (a snapshot saved before the change) |
+| A flaky eval or test | Run it enough times to give a rate, and report the rate |
+| An email | Render its HTML in each browser engine. Only the mail clients themselves are left |
+
+**Do the part you can.** A line that needs a person for one part has every other part proven first, and asks only for what's left: "the tree reads *Close sheet, button*; listening with VoiceOver is left". A faked event (a remote pause, a headphone unplug sent to the code) proves the code's answer to it, not that the real device sends it, so the line keeps the real delivery.
+
+**Each line shows its attempt**: the reason, then the closest stand-in that was run and what it gave (`Tried: <command or step> → <result>`): the simulator run beside a haptic, the injected unplug beside AirPods. What should happen is something a person can check: a number where it's about speed ("connects within 3 s, as main does"), not "as quickly as before". A line names what to do, never who does it: the user picks who. A line with nothing tried has no reason yet: "not run here", "not opened", "seen in Storybook only" and "no data" each name an attempt still to make, so make it. A local stack that won't come up sends you to the preview ([Proof](#proof), "A stack that won't come up"), not to this list.
+
+`review-loop` checks the list before the PR opens (lenses.md, "Spec"): a line this run could have proven is a P1, fixed by proving it.
 
 ## The checklist
 
@@ -17,7 +49,7 @@ The PR body ends with the checklist (shape in [pr-body.md](pr-body.md)). It is t
 - `- [x]` marks a requirement that **passed** on the current head, with its evidence: the command, the result, the short SHA (`- [x] Vitest, web: 675 pass at abc1234`).
 - A check that fails is written as failing with the reason, and the PR is not ready.
 - A requirement that doesn't apply is `- N/A: <requirement>: <why>`, never a tick.
-- **Test by hand** lists, unticked, what a person should check because it couldn't be proven here: what to do, what should happen, and why it couldn't be tested here (needs production data, another account): never what could have been installed or set up in this run. This is also what whoever checks production works from.
+- **Test by hand** lists, unticked, only what this run can't prove: [Test by hand](#test-by-hand) says what qualifies. This is also what whoever checks production works from.
 
 Every item below ends as `[x]`, `N/A` or a Test-by-hand line:
 

@@ -44,7 +44,7 @@ The report names every seat with its model and effort, and for each P1, the seat
 
 ### 1. Scope
 
-Find the base (`git merge-base HEAD origin/<base branch>`, or the PR's `baseRefName`) and the head SHA. Write the **intent** in one or two sentences (from the PR, the Linear issue, or the user), quoting its source, and what is out of scope. Pick the lenses that apply (lenses.md). Note the checks already run on this head and their results.
+Find the base (`git merge-base HEAD origin/<base branch>`, or the PR's `baseRefName`) and the head SHA. Write the **intent** in one or two sentences (from the PR, the Linear issue, or the user), quoting its source, and what is out of scope. Pick the lenses that apply (lenses.md). Note the checks already run on this head and their results, and in author mode the draft Test by hand lines (ready.md).
 
 In author mode, commit first, so the head names exactly what is reviewed; review a clean tree only. When this thread already holds an agreed ledger for this base and head, with the same mode, lenses and seats (a council asked for after a two-reviewer loop isn't one), and the tree is clean, the loop is done: return it, unless the caller asks for a fresh review (fix-comments does).
 
@@ -64,6 +64,7 @@ Brief, the same every round:
 Review only. Edit nothing, post nothing, start no subagents.
 Repo: <abs path>  Base: <sha>  Head: <sha>
 Intent: <intent> (source: <issue/PR/words>)  Out of scope: <scope>  Checks: <results>
+Test by hand (author mode): <draft lines, or none>
 Diff: git diff <base>..<head> (plus `git status --short` for uncommitted files)
 Read the surrounding code and callers. Review through these lenses: <lenses>, as
 ~/.agents/pr-flow/lenses.md describes (read it, then the repo's docs as its "The repo's docs"

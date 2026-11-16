@@ -32,6 +32,8 @@ Does it do what was asked? The **intent** is the Linear issue, the PR body, the 
 
 Scope creep alone is a P2, or the user's call when it changes what a student sees. When nothing about it is written down, say "no written intent" and review the code against what the PR says it does.
 
+**Test by hand**, in author mode: each draft line against [ready.md](ready.md), "Test by hand". A line without one of its four reasons, or one this run could have proven (its table, or any other way you can name), is a P1 whose fix is the way to prove it. A line that asks for more than is left after the provable parts is a P1 too.
+
 ## Correctness
 
 The bug hunt. Look for:

@@ -1,6 +1,6 @@
 # Review digest
 
-One post in `#pr-review-channel` listing the user's PRs that were sent for review and that nobody has picked up, so reviewers get one message instead of a bump per PR. A scheduled task (`Review digest`) runs it Monday and Thursday at 10:00; the user can also say "send the digest". The per-PR nudge (nudge.md) still checks each PR and fixes conflicts and red checks; it never bumps on its own.
+One post in `#pr-review-channel` listing the user's PRs that were sent for review and that nobody has picked up, so reviewers get one message instead of a bump per PR. A scheduled task (`Review digest`) runs it every working day at 10:00; the user can also say "send the digest". The per-PR nudge (nudge.md) still checks each PR and fixes conflicts and red checks; it never bumps on its own.
 
 ## Which PRs
 

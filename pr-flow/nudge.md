@@ -1,6 +1,6 @@
 # Nudge
 
-When the user's PR waits on review, a scheduled check looks in each working morning: it hands what came back to the user, and fixes a conflict or red check before a reviewer meets it. A PR plainly forgotten isn't bumped here: the twice-weekly [digest](digest.md) lists every one of them in one post. Meanwhile the thread stays snoozed, so the user sees it again only when there's a review or a decision for them.
+When the user's PR waits on review, a scheduled check looks in each working morning: it hands what came back to the user, and fixes a conflict or red check before a reviewer meets it. A PR plainly forgotten isn't bumped here: the daily [digest](digest.md) lists every one of them in one post. Meanwhile the thread stays snoozed, so the user sees it again only when there's a review or a decision for them.
 
 ## Setting it up
 

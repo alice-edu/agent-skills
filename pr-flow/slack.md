@@ -12,7 +12,7 @@ Every message is posted as the user, so write each in their voice: short and pla
 
 ## Finding a PR's thread
 
-The thread is the top-level post in `#pr-review-channel` whose text holds the PR's URL. Search for `pull/<n>` in the channel (`slack_search_public_and_private`, `in:<#C09BGLX8JCF>`), or read its recent history. When a PR was folded into another (a stack collapsed), the thread may live under the other PR's post: read the replies. Done when one thread is found, or it's certain there is none.
+The thread is the top-level post in `#pr-review-channel` whose text holds the PR's URL. Read the channel's history back to when the PR was opened (`slack_read_channel` with `oldest`) and match `alicia/pull/<n>` in each post: Slack's search misses these links, and the bare number is noisy. When a PR was folded into another (a stack collapsed), the thread may live under the other PR's post: read the replies. Done when one thread is found, or it's certain there is none.
 
 ## Messages
 

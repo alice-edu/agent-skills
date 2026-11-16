@@ -1,6 +1,6 @@
 # Nudge
 
-When the user's PR waits on review, a scheduled check looks in each working morning and bumps the reviewers once when they've plainly forgotten. A **smart bump**: it reads the whole conversation first, and bumps only on evidence that nothing is in the way. Meanwhile the thread stays snoozed, so the user sees it again only when there's a review or a decision for them.
+When the user's PR waits on review, a scheduled check looks in each working morning: it hands what came back to the user, and fixes a conflict or red check before a reviewer meets it. A PR plainly forgotten isn't bumped here: the twice-weekly [digest](digest.md) lists every one of them in one post. Meanwhile the thread stays snoozed, so the user sees it again only when there's a review or a decision for them.
 
 ## Setting it up
 
@@ -10,7 +10,7 @@ When the user's PR waits on review, a scheduled check looks in each working morn
 2. `schedule_task`, bound to this thread, titled `Nudge PR #<n>`, at 09:30 Monday to Friday (`fixed_time`, `weekdays: [1,2,3,4,5]`), with a placeholder prompt.
 3. `update_scheduled_task` with the returned id, setting the prompt to `Nudge check for <PR url>, task <scheduledTaskId>: follow ~/.agents/pr-flow/nudge.md, "The check".` A scheduled run can't look its own task up, so the id rides in the prompt.
 
-**A stack** gets one task, keyed on its bottom PR (`Nudge PR #<bottom>`), its prompt listing every layer's URL, bottom first. The check reads the stack as one PR: **Over** when every layer is merged or closed, **Reviewed** or **Fix first** when any layer is, and one bump for the stack.
+**A stack** gets one task, keyed on its bottom PR (`Nudge PR #<bottom>`), its prompt listing every layer's URL, bottom first. The check reads the stack as one PR: **Over** when every layer is merged or closed, **Reviewed** or **Fix first** when any layer is, and one line on the digest for the stack.
 
 The thread's snooze is the outer skill's, as waiting.md says: until 10:30 on the next working day, an hour after the check, so a missed run (T3 closed at 09:30) shows the thread rather than hiding it.
 
@@ -25,7 +25,7 @@ Each run starts cold, so it reads everything again, **since the round started**:
 - Each reviewer's Slack profile, for an away status.
 - This T3 thread, for anything the user said about the PR's timing.
 
-The **reviewers** are everyone the round's message @mentions and everyone requested on GitHub.
+The **reviewers** are everyone the round's message @mentions and everyone requested on GitHub. Often there are none: the post is open to whoever picks it up, and nobody is appointed unless the user named them.
 
 The first of these that's true decides:
 
@@ -37,18 +37,17 @@ The first of these that's true decides:
 3. **Fix first**: a check is red or the base conflicts. Nobody has started reviewing, so make it ready yourself, then go on to rule 4 in this same run:
    - **A conflict**: merge the base in as `catch-up` does (its steps 2 and 3), and push.
    - **A red check this PR didn't cause** (main fails it too, its test is in files the PR doesn't touch, or it passed on an earlier head of this PR): rerun it once (`gh run rerun <id> --failed`), and go on without waiting for it.
-   - **A red check this PR caused**: fix it as `babysit-pr` does ("Each wake"): read its log, fix the whole cause, prove it, push. Rule 8's bump then says in a line what changed.
+   - **A red check this PR caused**: fix it as `babysit-pr` does ("Each wake"): read its log, fix the whole cause, prove it, push, and say in one line in the PR's thread what changed ("fixed a load test that timed out in CI").
 
-   After a push, bump in this run without waiting for CI on it: the reviewer reads the code while it runs. `watch_pull_request`, so a check that goes red on it is fixed the same day, as `send-for-review` does after posting.
+   After a push, `watch_pull_request`, so a check that goes red on it is fixed the same day, as `send-for-review` does after posting.
 
    Find the cause before deciding the fix is the user's: a slow test, a slow query or a flaky assertion is fixed in the code or the test, and that's technical (the agents' call). It goes to the user only when the fix found would change what a student sees or the PR's scope, the merge is complex (both sides reshaped the same thing), an earlier run already pushed a fix for the same red check, or the PR is a draft again: delete the task, unsnooze, and say what's wrong on a card ([decision-card.md](decision-card.md)).
 4. **Waiting, with a reason**: since the round started, someone said why the review is waiting (the reviewer will look later, is busy, is waiting on something; someone asked to hold it), a reviewer reacted 👀 to the round's message, or a reviewer's status says away. Read a named time against the message it was said in: "Thursday" in a Tuesday message is two days later. Keep waiting until one working day after that time. A reason with no time (👀, "soon", an away status) keeps waiting for two working days from when it appeared; after that, delete the task, unsnooze, and ask the user on a decision card ([decision-card.md](decision-card.md)): bump, ask someone else, or leave it.
 5. **Too soon**: the round started less than one working day ago.
-6. **No reviewer**: nobody was @mentioned or requested. Delete the task, unsnooze, and ask the user who should review, suggesting whoever reviewed these files last (`gh pr list --state merged --search <path>`).
-7. **Already bumped**: since the round's message, the user has posted a message that @mentions a reviewer, and no reviewer replied after it. Delete the task, unsnooze, and ask on a decision card: bump again, ask someone else, or leave it. Bump again: post it, then set up a new task ("Setting it up").
-8. **Bump**: one reply in the Slack thread, @mentioning each reviewer still requested, in the user's voice (slack.md), fitting what the thread last said and the PR's size: "any chance you could take a look today? it's a small one". When rule 3 pushed a fix, one more line says what changed: "fixed a load test that timed out in CI since".
+6. **Already bumped**: since the round's message, the user has posted a message that @mentions a reviewer, and no reviewer replied after it. Delete the task, unsnooze, and ask on a decision card: bump again, ask someone else, or leave it. Bump again: post it, then set up a new task ("Setting it up").
+7. **Forgotten**: nothing above holds. Post nothing: the next [digest](digest.md) lists it.
 
-A **working day** is Monday to Friday, except Danish public holidays. While waiting (3 once fixed, 4, 5, 8), snooze until 10:30 on the next working day.
+A **working day** is Monday to Friday, except Danish public holidays. While waiting (3 once fixed, 4, 5, 7), snooze until 10:30 on the next working day.
 
 Every run ends with one line in this thread: the date, which rule decided and why, and what it did. `Tue 29 Oct: waiting, Adam said Thursday. Snoozed till Fri 10:30.`
 

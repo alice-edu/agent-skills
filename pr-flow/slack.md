@@ -42,6 +42,8 @@ A named reviewer as above. In the thread, a **Ready for another round** names th
 
 **Review done** (in the thread, `review-pr`): `<@author>` and the verdict first ("approved", "changes requested"). Then the P1s, one line each, what goes wrong for whom. The P2s as a count ("plus 3 optional nits inline"). Then the review's link. On a re-review, first what checked out from last time.
 
+**Waiting for review** (top-level, the review digest): shape and rules in [digest.md](digest.md).
+
 **Looking into it** (in the report's own thread, `build-it` started from Slack): one line, `Looking into this: <Linear url>`. No promise of a fix.
 
 **Live** (in the issue's own thread, `full-send`, after the production deploy): what's different for the student now, in one or two sentences, the PR link, and `<@owner>` from the report's `For:` so they can tell the student.

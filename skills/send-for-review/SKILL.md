@@ -35,7 +35,7 @@ Either way, add the T3 link in the thread ([links.md](~/.agents/pr-flow/links.md
 
 **Checks still running** (in T3 Code): `watch_pull_request`, so a red check gets fixed the same day rather than at the next morning's nudge. Each wake, then snooze again until 10:30 on the next working day:
 
-- a check failed: as nudge.md's rule 3, without the bump (it was just posted);
+- a check failed: as nudge.md's rule 3;
 - the checks finished green: `unwatch_pull_request`;
 - a review or comment: `unwatch_pull_request`, then nudge.md's "The check", now.
 

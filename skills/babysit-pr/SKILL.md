@@ -14,10 +14,11 @@ On CI and reviews, as [waiting.md](~/.agents/pr-flow/waiting.md), "Waiting on CI
 ## Each wake
 
 - **A check failed**: read its log. Ours: fix it, prove the fix, push; a fix that changes what a student sees retakes its pictures (screenshots.md, "Keep them current"). A flake (a timeout, a runner or network error the same commit passed before): rerun it once and say so.
+- **A test that fails on the base too**: before fixing or rerunning a failure in something the PR didn't touch, look at the same check on the base's latest runs (`gh run list --workflow <file> --branch <base>`, its failed log). Failing there with the same test is the base's, not this PR's: don't fix, rerun or wait on it here. Say which test and the base's run in the report, and go on as if it passed when it isn't required; when it is, that's `In sight: <check> red on <base> too`.
 - **A comment or review**: every finding still outstanding, whenever it was posted, until each is fixed or answered; a push doesn't settle one. Check each bot finding against the code; fix a real one, and answer a wrong one with a reason in its thread. A human reviewer's comment is `fix-comments`' work: hand it there.
 - **Behind or conflicting**: merge the base in, resolve, rerun the checks it touches. `watch_pull_request` reports conflicts only, so check for behind yourself before calling the PR ready.
 
-**Bots**: the checks branch protection requires are **required**, and the PR waits for them. Review bots (CodeRabbit, Copilot, any other) are **advisory**: answer what they post, never wait for one to start or finish.
+**Bots**: the checks branch protection requires are **required**, and the PR waits for them. Review bots (CodeRabbit, Copilot, any other) are **advisory**: answer what they post, never wait for one to start or finish. Deploy bots' comments (Vercel's and Expo's preview links, posted again on each push) ask nothing: they're no finding and need no answer.
 
 Keep the PR the size its goal needs: a bot's nit on a rare path is answered, not built.
 

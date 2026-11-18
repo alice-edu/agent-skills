@@ -11,6 +11,8 @@ Shared files: [overview.md](~/.agents/pr-flow/overview.md) (how it's shown to th
 
 ## 1. Resolve the round
 
+**First, on round 1: is someone else already on it?** Before anything else, read the reactions on the PR's thread post (`slack_get_reactions`) and its GitHub reviews and review comments. A 👀 from anyone but the user, or a review or comment by another teammate, means they're reviewing or have reviewed it: stop there, before any reaction, reply or review of ours, and tell the user who, since when, and what they've posted. Go on only when the user says so. A re-review ("another look") skips this: the user is already the reviewer.
+
 - The PR: from the link, or the Slack thread the user pointed at. Its head SHA, base branch, author.
 - Its thread in `#pr-review-channel` (slack.md, "Finding a PR's thread"), and everything said in it.
 - The linked Linear issue, read for intent only. Its status and owner stay as they are.

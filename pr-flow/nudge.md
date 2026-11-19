@@ -36,6 +36,7 @@ The first of these that's true decides:
    - **No points** (an approval and nothing else): unsnooze and say who approved: "say *full send* to merge".
 3. **Fix first**: a check is red or the base conflicts. Nobody has started reviewing, so make it ready yourself, then go on to rule 4 in this same run:
    - **A conflict**: merge the base in as `catch-up` does (its steps 2 and 3), and push.
+   - **`phone-native` red**: the PR's base, not a check to rerun ([branches.md](branches.md), "phone-native red").
    - **A red check this PR didn't cause** (main fails it too, its test is in files the PR doesn't touch, or it passed on an earlier head of this PR): rerun it once (`gh run rerun <id> --failed`), and go on without waiting for it.
    - **A red check this PR caused**: fix it as `babysit-pr` does ("Each wake"): read its log, fix the whole cause, prove it, push, and say in one line in the PR's thread what changed ("fixed a load test that timed out in CI").
 

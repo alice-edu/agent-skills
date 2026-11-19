@@ -13,13 +13,15 @@ Shared files: [slack.md](~/.agents/pr-flow/slack.md), [ready.md](~/.agents/pr-fl
 
 The PR (from the link, or the current branch's), its head, `additions`, `deletions`, title and URL (`gh pr view --json`), its Linear issue, and its thread in `#pr-review-channel` (slack.md). No thread: **first round**. A thread: **another round**, and its reviewer is whoever reviewed on GitHub or in the thread.
 
-Its **stack**: the open PRs it builds on (its base, down to `main`) and that build on it (`gh pr list --base <its branch>`). A stack is sent as one: every layer goes through step 2, and step 3 posts once for all of them.
+Its **stack**: the open PRs it builds on (its base, down to `main` or `release/next`) and that build on it (`gh pr list --base <its branch>`). A stack is sent as one: every layer goes through step 2, and step 3 posts once for all of them.
 
 ## 2. Make it ready
 
 [ready.md](~/.agents/pr-flow/ready.md), "Make it ready", on the current head: anything committed since `review-loop` last agreed is reviewed with the whole PR, proven again, and written into the PR body; the base is merged in; CI is green or running on this head. A check that failed or timed out on an earlier head of this PR, and hasn't passed since, is red until it passes: fix it, or wait for it as [waiting.md](~/.agents/pr-flow/waiting.md), "Waiting on CI" says. Push what it changes.
 
 A red check this PR didn't cause (main fails it too, or its test is in files the PR doesn't touch): rerun it once and send, saying so in the post. What else can't be made ready (a P1 the loop can't settle, a test that needs something we don't have) goes on the decision card: send it saying so, or wait.
+
+A red `phone-native` is the PR's base, not a check to rerun: [branches.md](~/.agents/pr-flow/branches.md), "phone-native red".
 
 Asked only "is it ready?": post nothing, and go to step 4 with the verdict, what the review fixed, and what's left.
 

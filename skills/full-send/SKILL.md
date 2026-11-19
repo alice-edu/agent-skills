@@ -5,9 +5,9 @@ description: 'Take the user''s approved PR the rest of the way: settle the last 
 
 # Full send
 
-The PR is approved, with perhaps a few nits or a conflict left. The user isn't watching: this run owns it from here to merged and live, and merges only when confident. Every update goes unread until the end, so the report carries everything.
+The PR is approved, with perhaps a few nits or a conflict left. The user isn't watching: this run owns it from here to merged and live (on `release/next`, merged: branches.md), and merges only when confident. Every update goes unread until the end, so the report carries everything.
 
-Shared files: [ready.md](~/.agents/pr-flow/ready.md), [github.md](~/.agents/pr-flow/github.md), [slack.md](~/.agents/pr-flow/slack.md), [decision-card.md](~/.agents/pr-flow/decision-card.md).
+Shared files: [ready.md](~/.agents/pr-flow/ready.md), [github.md](~/.agents/pr-flow/github.md), [slack.md](~/.agents/pr-flow/slack.md), [decision-card.md](~/.agents/pr-flow/decision-card.md), [branches.md](~/.agents/pr-flow/branches.md).
 
 ## The grant
 
@@ -42,7 +42,7 @@ Push, then `babysit-pr`. The **merge gate**, all true on the latest head:
 
 - proof covers every change in the diff, and `screenshots-stale` says current;
 - everything since the approval is in "What still counts as approved";
-- required checks are green;
+- required checks are green (`phone-native` red: branches.md, "phone-native red");
 - every bot finding posted so far is fixed or answered with a reason (`babysit-pr`, "Bots": advisory ones aren't waited for);
 - an approval stands, and no review still requests changes;
 - the branch is up to date with its base, and GitHub reports it mergeable.
@@ -51,15 +51,18 @@ Merge with a merge commit (`gh pr merge <n> --merge`), the repo's habit, through
 
 ## 5. Close the loop when it's live
 
-Wait for the production deploy of the merge commit:
+Merged into `release/next`: it isn't live yet (branches.md, "Merged and live"). Skip to step 6 and settle.
+
+Merged into main: wait for the production deploy of the merge commit, and the phone's update when the PR changed what the phone bundles (branches.md):
 
 ```bash
 id=$(gh api "repos/<o>/<r>/deployments?sha=<merge sha>&environment=Production" --jq '.[0].id')
 gh api repos/<o>/<r>/deployments/$id/statuses --jq '.[0].state'   # success | failure | in_progress …
 ```
 
-- **success**: when the Linear issue holds the Slack permalink of the report the work started from (slack-report.md), post the **Live** message in that thread (slack.md) and resolve its PostHog issue, if any, with the PR link.
+- **success** (and the phone's update, when there is one): when the Linear issue holds the Slack permalink of the report the work started from (slack-report.md), post the **Live** message in that thread (slack.md) and resolve its PostHog issue, if any, with the PR link.
 - **failure**: post nothing in that thread; main's deploy is broken, and the user hears about it first in the report.
+- **The phone's update red** (deploy success): post nothing in that thread; the report says the web is live and the phone's update failed, with its run.
 - Still deploying when the run must end: post nothing, and say it's merged but not live yet.
 
 ## 6. Settle, then report
@@ -68,7 +71,7 @@ Once merged, delete its `Nudge PR #<n>` task, if any (`list_scheduled_tasks`, `d
 
 Two actions, in this order, because the report is your last message and the turn ends with it:
 
-1. **Put the thread away.** Merged and live, with the Slack thread told when there was one: `t3_thread_organize` with `action: "settle"`. Sent back for review (step 2): `action: "snooze"` and `snoozedUntil` 10:30 on the next working day, with the local offset. Anything else (stopped before merging, merged but not live): the thread stays in sight, no call.
+1. **Put the thread away.** Merged and live, with the Slack thread told when there was one, or merged into `release/next`: `t3_thread_organize` with `action: "settle"`. Sent back for review (step 2): `action: "snooze"` and `snoozedUntil` 10:30 on the next working day, with the local offset. Anything else (stopped before merging, merged but not live): the thread stays in sight, no call.
 2. **Write the report**, shaped by [report.md](~/.agents/pr-flow/report.md). Merged or not, the merge commit, the deploy's state, the proof, what was posted where, and **Decided**: every call made on the user's behalf. When the run stops before merging, `unwatch_pull_request` first, and start the report with why. Then the Links line ([links.md](~/.agents/pr-flow/links.md)), and last, where the thread went: `Settled.`, `Snoozed until Wed 10:30.` or `In sight: <why>.`
 
 Done when `t3_thread_organize` has answered (or the thread is in sight for a reason) and the report's last line says which ([waiting.md](~/.agents/pr-flow/waiting.md)).

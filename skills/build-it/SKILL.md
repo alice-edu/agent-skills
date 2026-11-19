@@ -7,7 +7,7 @@ description: 'Take a bug or feature from wherever it starts (the user''s own wor
 
 Takes a piece of work from wherever it stands to a PR a reviewer can approve on first read: what it really is found out first, nobody else's work redone, the cause or design thought through, proven, reviewed by Claude and Codex, with screenshots and a checklist of everything checked. It stops at an open PR, or earlier when the work turns out not to need building; posting the PR for review is `send-for-review`'s.
 
-Shared files: [ready.md](~/.agents/pr-flow/ready.md), [pr-body.md](~/.agents/pr-flow/pr-body.md), [screenshots.md](~/.agents/pr-flow/screenshots.md), [decision-card.md](~/.agents/pr-flow/decision-card.md), [slack-report.md](~/.agents/pr-flow/slack-report.md) (only when it starts from Slack).
+Shared files: [ready.md](~/.agents/pr-flow/ready.md), [pr-body.md](~/.agents/pr-flow/pr-body.md), [screenshots.md](~/.agents/pr-flow/screenshots.md), [decision-card.md](~/.agents/pr-flow/decision-card.md), [slack-report.md](~/.agents/pr-flow/slack-report.md) (only when it starts from Slack), [branches.md](~/.agents/pr-flow/branches.md).
 
 ## 1. Read where it starts
 
@@ -22,7 +22,7 @@ Done when the problem or the feature is written in one sentence, with its eviden
 
 - Linear: `linear-track` step 1 as a search only, creating nothing yet, then its "taken" check on what it finds. More than one issue fits: keep going, and put the choice on the card (step 5);
 - an open PR for it (`gh pr list --search`), linked to an issue or not, other than the one this run updates;
-- a commit on `main` that already does it (`git log` on main, and the code itself);
+- a commit on `main` or `release/next` that already does it (`git log` on each, and the code itself);
 - from Slack, slack-report.md, "Taken".
 
 - **Taken**: stop, and tell the user who has it, its status and its PR; the thread stays in sight for their answer.
@@ -65,6 +65,8 @@ It ends as one verdict:
 | **Unconfirmed** | noise, the student's network, a one-off, or not reproducible | park it |
 | **Big feature** | a wish the user hasn't asked to build yet, needing design or a product call | park it |
 
+Then pick **the base** by branches.md, "The base", for a fix or a build. Native work that needs any backend change is two PRs, the backend's to main first (branches.md, "Both"): that's decided, not asked.
+
 Done when the verdict has its evidence: a red test, numbers, a repro, the place in the app, or the design in a few lines, with its diagram when it matches diagrams.md's "When".
 
 ## 5. Ask the user, once
@@ -75,7 +77,7 @@ Read [decision-card.md](~/.agents/pr-flow/decision-card.md) now, whole, and ask 
 - the verdict, when it's anything but a **Bug** or a **Build**;
 - a fix whose scope grew;
 - each choice that's the user's by [decision-card.md](~/.agents/pr-flow/decision-card.md), "Who decides" (a UX or product choice, a Simplify? question), the recommended one first. A UX choice comes with its picture: the screen now beside a mockup of each option (decision-card.md, "a picture"), made before asking, even for a dialog nothing has drawn yet;
-- **slices**, when the design spans the data model, the backend and the UI together: split it into PRs that each branch from and merge to main on their own (the schema and backend first, then the UI on top), each its own thread, PR and Linear issue, the first built in this thread. A stack of PRs on each other isn't offered: every merge would mean updating the ones above it;
+- **slices**, when the design spans the data model, the backend and the UI together (a native change's backend PR isn't asked: it's decided in step 4, and built first): split it into PRs that each branch from and merge to their base on their own (the schema and backend first, then the UI on top; a native slice goes to `release/next` once the backend's is merged, branches.md), each its own thread, PR and Linear issue, the first built in this thread. A stack of PRs on each other isn't offered: every merge would mean updating the ones above it;
 - a council review (the `council` skill), when the user hasn't asked for one and the change reaches the data model, a workflow, auth or a migration;
 - a student test (`student-test`), when they haven't asked for one and the change adds or reworks a flow a student goes through;
 - for a parked report, the reply to post;
@@ -107,7 +109,7 @@ Done when, on one final head: the loop agrees with no open P1; each P2 is fixed,
 
 ## 9. Open the PR
 
-Screenshots, and GIFs of what moves, per [screenshots.md](~/.agents/pr-flow/screenshots.md), made without asking; the body per [pr-body.md](~/.agents/pr-flow/pr-body.md), its checklist from step 7. A title in the style of the repo's recent PRs: what's different now, not "Fix bug". Push, open it ready for review (or update the existing one), and finish `linear-track`'s step 3.
+Screenshots, and GIFs of what moves, per [screenshots.md](~/.agents/pr-flow/screenshots.md), made without asking; the body per [pr-body.md](~/.agents/pr-flow/pr-body.md), its checklist from step 7. A title in the style of the repo's recent PRs: what's different now, not "Fix bug". Push, open it ready for review against its base (`--base`, branches.md) (or update the existing one), and finish `linear-track`'s step 3.
 
 Done when the PR shows the current head, its body has the T3 thread line (and Designed in Doop, after a sketch), every image loads, `screenshots-stale` says current, and every checklist item is `[x]`, `N/A` or Test by hand.
 

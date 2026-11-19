@@ -13,6 +13,7 @@ On CI and reviews, as [waiting.md](~/.agents/pr-flow/waiting.md), "Waiting on CI
 
 ## Each wake
 
+- **`phone-native` failed**: the PR's base, not its code: [branches.md](~/.agents/pr-flow/branches.md), "phone-native red".
 - **A check failed**: read its log. Ours: fix it, prove the fix, push; a fix that changes what a student sees retakes its pictures (screenshots.md, "Keep them current"). A flake (a timeout, a runner or network error the same commit passed before): rerun it once and say so.
 - **A test that fails on the base too**: before fixing or rerunning a failure in something the PR didn't touch, look at the same check on the base's latest runs (`gh run list --workflow <file> --branch <base>`, its failed log). Failing there with the same test is the base's, not this PR's: don't fix, rerun or wait on it here. Say which test and the base's run in the report, and go on as if it passed when it isn't required; when it is, that's `In sight: <check> red on <base> too`.
 - **A comment or review**: every finding still outstanding, whenever it was posted, until each is fixed or answered; a push doesn't settle one. Check each bot finding against the code; fix a real one, and answer a wrong one with a reason in its thread. A human reviewer's comment is `fix-comments`' work: hand it there.

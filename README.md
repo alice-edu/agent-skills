@@ -22,6 +22,7 @@ They're written for our repo (Alicia), our Slack and our Linear, and they're pub
 | "clean Linear", "triage" | [`clean-linear`](skills/clean-linear/SKILL.md) | Sorts every waiting Linear issue into the status whose bar it meets (Ready to Build, Needs Shaping, Backlog) or cancels it with a reason, checking the code for what's already done, and asks you in batches of 10 to 15. |
 | "student test" | [`student-test`](skills/student-test/SKILL.md) | A panel of agents, each playing a student, tries a screen, a flow or some wording. |
 | "babysit" | [`babysit-pr`](skills/babysit-pr/SKILL.md) | Watches a PR through CI and review bots, fixing what's real, until it's green. |
+| "running out of RAM", "the Mac is slow" | [`resource-check`](skills/resource-check/SKILL.md) | Finds what's eating memory and CPU across worktrees, agents, dev servers and simulators, says what's safe to stop with the evidence, stops it once you say so, and names what in the setup would keep it from building up again. |
 | (automatic) | [`linear-track`](skills/linear-track/SKILL.md) | Keeps the thread's Linear issue in step with the work. |
 | "grill me" | [`grill-me`](skills/grill-me/SKILL.md), [`grilling`](skills/grilling/SKILL.md) | Interviews you about a plan or design in rounds, each question with a recommended answer, until nothing is left assumed. |
 
@@ -69,6 +70,7 @@ The shared rules live in [`pr-flow/`](pr-flow), and every skill points at them r
 - **The right way, the first time** ([lenses.md](pr-flow/lenses.md)). A change leaves the code it touches in the shape it should have. Old debt is no excuse for new debt, and "follow-up PR" isn't a way to skip the work.
 - **Two reviewers who have to agree** ([review-loop](skills/review-loop/SKILL.md)). Claude and Codex review independently through the same lenses (Spec, Correctness, Standards, Backend, UI and UX), then argue it out.
 - **Overviews you can read at a glance** ([overview.md](pr-flow/overview.md)). A review is one bold line, your table, then ours, with confidence and the evidence behind it.
+- **The right branch** ([branches.md](pr-flow/branches.md)). A change with new native phone code goes to `release/next`, everything else to main, and "live" means what it does on each.
 - **Proof, not claims** ([ready.md](pr-flow/ready.md)). A PR is ready when its checks pass and the change has been seen working in the app.
 - **Reports you can act on from two lines** ([report.md](pr-flow/report.md)). Every report opens on the verdict and ends on a **You:** line with the exact words to reply, so coming back to a thread cold takes a glance.
 - **Out of sight while waiting** ([waiting.md](pr-flow/waiting.md), [nudge.md](pr-flow/nudge.md)). In [T3 Code](https://github.com/pingdotgg/t3code), a thread snoozes while it waits on someone else, and comes back when there's something for you.

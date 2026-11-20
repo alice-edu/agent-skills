@@ -91,7 +91,7 @@ Done when the card is asked, and each question about what a student sees has its
 
 ## 6. Do it
 
-Write the change the repo's way, and the right way ([lenses.md](~/.agents/pr-flow/lenses.md), "The right way"): what it adds is clean, and the debt it leans on is fixed in this PR rather than worked around. A fix: the change that removes the whole cause, its red test now green. A build: what the design says, with the tests `AGENTS.md` asks for. A file this change grows past easy reading gets the split considered.
+Write the change the repo's way, and the right way ([lenses.md](~/.agents/pr-flow/lenses.md), "The right way"): what it adds is clean, and the debt it leans on is fixed in this PR rather than worked around. A fix: the change that removes the whole cause, its red test now green. Two fixes that leave it red share a **premise** about the cause: write it down and test it directly (a log, a probe, a script) before a third; a wrong premise sends it back to step 4's Cause. A build: what the design says, with the tests `AGENTS.md` asks for. A file this change grows past easy reading gets the split considered.
 
 ## 7. Prove it
 

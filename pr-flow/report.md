@@ -15,4 +15,6 @@ The user comes back to a thread cold, between many others, and reads its report'
 
 3. **Shows what changed on screen**: each screenshot and recording it made, inline ([screenshots.md](screenshots.md), "Show them").
 
+4. **Keeps the story short**: what happened in under 100 words outside pictures, one line per thing the user asked for (what came of it; done, running, failed or not checked), and every call still waiting on them, also one raised earlier and not answered, each with the pick, its evidence and its risk.
+
 Done when someone reading only the first line and the **You:** line knows what happened and what to type, and every screenshot or GIF it made is on screen.

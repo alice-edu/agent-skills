@@ -44,6 +44,8 @@ The bug hunt. Look for:
 
 **Read shared code from its callers.** A change to something several places use (a component, hook or helper) is reviewed from each caller, not from its diff: what each relies on it for, and whether that still holds. A clean diff hides what a rewrite lost. Name the callers read.
 
+**The fact it's safe because of.** A change that looks risky is usually safe because of one fact ("this only drops cache entries that are already dead"). Name it and prove it as far as is cheap: pointed at a line, walked through step by step, or run (a script or test calling the real code, its output pasted). Say how far it got; one only claimed is `unproven`. A change to the data model, auth, concurrency or a migration needs it run before Correctness is clear.
+
 **A test deleted or weakened** (removed, skipped, its assertion loosened) needs a replacement covering the same behaviour, or a reason in the PR body (the behaviour itself is gone). Without either it's a P1, with the deleted test as its evidence.
 
 ## Standards

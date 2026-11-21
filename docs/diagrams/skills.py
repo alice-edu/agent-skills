@@ -241,6 +241,20 @@ D["student"] = dict(title="10. Inside student-test (\"student test\")", nodes=[
     E("q", "b"), E("q", "v"), E("q", "o"),
 ])
 
+D["playtest"] = dict(title="12. Inside playtest (\"playtest\", \"QA it\")", nodes=[
+    N("w", "What and where\nwhat you name, this thread's change,\nor the whole app; local, or prod if asked"),
+    N("c", "One player, in a child\nnewest main or this branch", "external"),
+    N("m", "1. The map\nAlice's platform pages, one a feature"),
+    N("p", "2. The main path\nas a new student, checked\nagainst what each page promises"),
+    N("b", "3. Break it\ndouble clicks, Back, reload,\nodd files, two tabs"),
+    N("n", "Notes for the next run\nwhat lost it time", "note"),
+    N("r", "Report\nBroken, Confusing, Couldn't test,\neach with steps and a screenshot", "client"),
+    N("f", "build-it for the Broken ones,\nonce you say go", "service"),
+], edges=[
+    E("w", "c"), E("c", "m"), E("m", "p"), E("p", "b"), E("b", "r"),
+    E("n", "c", "read first"), E("b", "n", "adds to"), E("r", "f"),
+])
+
 D["ltrack"] = dict(title="15. Inside linear-track (every PR has one issue)", nodes=[
     N("f", "1. Find the issue\nALI-123 in the prompt or branch,\na search, or a new one"),
     N("q", "Someone\nelse has it?", "decision"),
@@ -334,7 +348,7 @@ AT = {
     "catch": (4310, 2700), "review": (5194, 2700),
     # Commands you say: on their own
     "grill": (150, 6350), "usability": (994, 6350), "student": (1868, 6350),
-    "council": (2820, 6350), "sketch": (6300, 6350),
+    "council": (2820, 6350), "playtest": (3880, 6350), "sketch": (6300, 6350),
     # Run by other skills
     "loop": (150, 8550), "babysit": (1076, 8550), "ltrack": (2693, 8550),
     # Shared rules

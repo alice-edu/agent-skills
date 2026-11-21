@@ -1,6 +1,6 @@
 # Decision log
 
-An **unattended run** is one the user has left: they said so ("I'm off", "overnight", "keep going without me"), or the skill says they leave (full-send, catch-up). It keeps moving instead of stopping on a question, and leaves a **trail** the user audits when back.
+An **unattended run**, **away mode**, is one the user has left: they said "away" (or "I'm off", "overnight", "keep going without me"), in a new thread or mid-thread, or the skill says they leave (full-send, catch-up). It holds till the user writes again. Nothing is asked mid-run: what waits for them (below) goes at the top of the report, and everything else is finished. It keeps moving instead of stopping on a question, and leaves a **trail** the user audits when back.
 
 ## Deciding alone
 

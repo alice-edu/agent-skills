@@ -4,6 +4,8 @@ the user runs many threads at once, by voice. The **decision card** is every cho
 
 ## Who decides
 
+**Agents figure it out first.** Before anything goes on the card, ask: can an agent do it, find it or verify it itself? Then it does, and the result goes in the report. Running a test, a simulator, an emulator, a browser or a check, reading the code, the docs or the logs, measuring, trying access: all the agent's. Only what's truly the user's (below) is asked, and a hand test only when ready.md, "A hand test blocks on the user", says no agent can do it.
+
 Every choice and every finding has an **owner**, apart from its severity:
 
 - **The user's call**: the product. What a student sees or does (a screen, a flow, wording, what's shown when), scope (what's in or out, a fix that grew), a report's triage verdict (`build-it`: bug or not, which item of a bundle), and anything said for the user in public (a reply that disagrees with a human reviewer or declines what they asked, quoted in full). On the card always, even when every reviewer agrees: the agreed answer is the default.
@@ -29,6 +31,19 @@ Read this file again right before asking, whenever the last read is from an earl
    - options that each say what happens if picked, for the student and for the work, the recommended one first and marked;
    - text to be posted (a reply to a reviewer), quoted in full as a blockquote after the story: the reply is written for the reviewer, the story for the user;
    - the Links line last ([links.md](~/.agents/pr-flow/links.md)).
+
+   Every question has this shape, the picture or diagram after the story:
+
+   ```
+   **Decision: <short title>**
+
+   <the story: 2–3 plain sentences>
+
+   1. **<option> (recommended)**: what happens, for the student and for the work
+   2. **<option>**: what happens
+
+   Reply 1 or 2.
+   ```
 
    Done with a question when the user could say, from it alone, why the recommended option is right, and a question about what a student sees shows its picture. A question that needs the code to follow gets rewritten.
 3. When the user answers "explain" or "I don't get it", that's no pick: explain that question at more length, with a diagram ([diagrams.md](diagrams.md)) when a flow or an order is involved, then ask the same card again.

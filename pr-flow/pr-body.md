@@ -51,7 +51,7 @@ Reviewed by Claude and Codex (`review-loop`, <N> rounds); <what its findings cha
 - [ ] Skipped by <user>: <what>
 
 Designed in Doop: [<what>](<the agreed round's page>)
-T3 thread: <this thread's title>, `t3code://threads/<environmentId>/<threadId>`
+T3 thread: <this thread's title>, `t3code://threads/<environmentId>/<threadId>`   ← GitHub only; Slack's form is links.md's
 
 Fixes ALI-123
 ```

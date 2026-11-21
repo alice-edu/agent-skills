@@ -29,6 +29,8 @@ So the user can go from a Slack thread to the T3 Code thread doing the work, eac
 T3 thread: [<this thread's title>](t3code://threads/<environmentId>/<threadId>)
 ```
 
+Slack shows that as the title, linked. Copy it from here each time: the PR body's form (title, comma, the link as inline code) is for GitHub, and in Slack it shows as a raw link nobody can click.
+
 - `environmentId`: `t3_environment_read`. `threadId`: `currentThreadId` from `t3_thread_list`.
 - Before posting, read the Slack thread: when a `T3 thread:` reply already links this `threadId`, post nothing. One that links another thread (the work moved) gets a new reply.
 - For a top-level post (`send-for-review`'s first round), the reply goes in that post's thread.

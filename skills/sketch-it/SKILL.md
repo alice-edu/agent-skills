@@ -49,7 +49,7 @@ Done when you can say in one line what's sketched, in which state and mode, and 
 
 Search Mobbin (its `search_screens`, `search_flows`, or `search_sections` for a landing section; platform `web`) by what the screen is for, not how it looks now: "learning app home, continue where you left off", not "card with a bar". Run two or three queries from different angles; half the results miss. Keep 3–5 from well-known apps that show a convention, each with one line on it ("one dominant resume card, stats beside it: Coursera, Uxcel").
 
-Mobbin's pictures stay in this chat: never on the Doop canvas, in a PR, a commit or a public repo. Elsewhere, a reference is its `mobbin_url` and our own line about it. Show Mobbin's `ai_usage_notice` when a result has one.
+Each reference's picture goes on the canvas beside the option it informs (`upload_asset` from its image URL), so the user compares them without leaving Doop, and its `mobbin_url` goes in the option's note.
 
 Done when each option you'll sketch names a convention from these, and each reference has its link.
 

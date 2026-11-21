@@ -7,7 +7,7 @@ description: 'Design a screen, component, flow, panel or landing section with th
 
 A **sketch** is the real thing drawn early, on a Doop canvas: frames composed from **copies** of the app's own components, each taken on demand from the story that draws it in its Storybook (`~/.agents/pr-flow/story-shot --inline`: the story's drawing with each element's computed styles written on it). Only the layout between parts is written by hand, so what's agreed is what gets built, and each part names the story and file it's copied from.
 
-Each **round** is a **row** on the canvas: **Before** (the screen now), then at most three options, each following a **convention** seen in well-known apps and checked for usability before the user sees it, then the references they borrow from. Over each design sits its **note**, a frame of its own; the recommended option's note is outlined in orange. The user comments on the canvas and types **next** in chat; the next round is a new row below. It ends when the user says **agreed**.
+Each **round** is a **row** on the canvas: **Before** (the screen now), then at most three options, each following a **convention** seen in well-known apps or marked an own idea, and checked for usability before the user sees it, then the references they borrow from. Over each design sits its **note**, a frame of its own; the recommended option's note is outlined in orange. The user comments on the canvas and types **next** in chat; the next round is a new row below. It ends when the user says **agreed**.
 
 What's sketched sets the row's shape (step 4): a **screen**, a **component** (its variants and states), or a **flow** (a **lane** of screens in step order).
 
@@ -49,11 +49,15 @@ Done when you can say in one line what's sketched, in which state and mode, and 
 
 ## 2. References
 
-Search Mobbin (its `search_screens`, `search_flows` for a flow, or `search_sections` for a landing section; platform `web`, or `ios` for a phone screen) by what the screen is for, not how it looks now: "learning app home, continue where you left off", not "card with a bar". Run two or three queries from different angles; half the results miss. Keep 3–5 from well-known apps that show a convention, each with one line on it ("one dominant resume card, stats beside it: Coursera, Uxcel").
+A reference earns its place by what an option **borrows** from it: a part, an order, a way of grouping, that the option wouldn't have without it. A reference found to back up an option already decided borrows nothing, and goes.
 
-Each reference is a **reference frame** at the end of its row (step 4), so the user compares without leaving Doop: the whole screenshot at a size that reads (`upload_asset` from its image URL), an orange box (`#e5683a`) on the part borrowed, and under it one line on what to look at and its `mobbin_url`. For a flow, the two or three screens of its flow that show the convention, side by side. Decide the box when you upload, from the screenshot you have: a reference is drawn once. The option's note names the app and links it.
+Search Mobbin (its `search_screens`, `search_flows` for a flow, or `search_sections` for a landing section; platform `web`, or `ios` for a phone screen) by the problem, as specifically as it can be said: "results screen, extra study material for only what you missed", not "lesson complete screen", and never by how the screen looks now ("card with a bar"). Run two or three queries from different angles; half the results miss. Look at what each result does about the problem before keeping it.
 
-Done when each option you'll sketch names a convention from these, and each reference has its link.
+Keep only the references an option borrows from: one or two strong ones beat four loose ones, and an option no app shows is an **own idea**, said so in its note. What every app does (one main button, a quiet way out, a back arrow) is the app's own convention and needs no reference.
+
+Each reference kept is a **reference frame** at the end of its row (step 4), so the user compares without leaving Doop: the whole screenshot at a size that reads (`upload_asset` from its image URL), an orange box (`#e5683a`) on exactly the part borrowed, and under it the borrow in one line, `A takes <what> from it`, with its `mobbin_url`. For a flow, the two or three screens of its flow that show it, side by side. Decide the box when you upload, from the screenshot you have: a reference is drawn once.
+
+Done when every reference kept has its borrow line naming an option and the boxed part, and every option has its references or is marked an own idea.
 
 ## 3. The canvas
 
@@ -69,7 +73,7 @@ Done when the canvas has the fonts and images, and a page with the banner and Be
 
 Each option is a frame beside Before, named `A: <convention>`, `B: …`, at most three, at the same width, 80 px apart, its height fitted to what it holds, with its note above it. A row holds, left to right: Before, the options, then the reference frames.
 
-- **Notes** are their own frames, never written into a design: the option's name and convention, then a few short lines: what changes, its usability verdict (step 5), its cost to build, and the reference it's like with its link. Every note in a row is one height. The recommended option's note has a 3 px orange border (`#e5683a`), a pale orange fill (`#fff6f1`) and a `★ Recommended` badge; the others a dashed grey border on off-white.
+- **Notes** are their own frames, never written into a design: the option's name and convention, then a few short lines: what changes, its usability verdict (step 5), its cost to build, and what it borrows from which reference, with its link, or "own idea". Every note in a row is one height. The recommended option's note has a 3 px orange border (`#e5683a`), a pale orange fill (`#fff6f1`) and a `★ Recommended` badge; the others a dashed grey border on off-white.
 - **One template a round**: write the note and the frame's wrapper once and fill them in for each option, so a row is drawn in a few calls and its frames line up.
 - **Before carries over**: from round 2, Before is the earlier round's frame unchanged, so its note says `Same as Round <n> ↑` and the frame isn't drawn again.
 

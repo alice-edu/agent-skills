@@ -123,7 +123,7 @@ Done when the user says agreed (or picks `Agreed: …`), on one option.
 ## 8. Hand over
 
 1. Rename the agreed frame `Agreed: <convention>` (and its dark one), and mark it ready for dev with `set_frame_approval`: the user's agreed is the ask. The rounds stay as they are.
-2. Report, shaped by [report.md](~/.agents/pr-flow/report.md): the agreed picture beside Before, the frame's link (`/c/<canvas>?frame=<id>`), and the lists: the **parts** it uses with their stories and code paths, **new parts**, **new text**, and the questions it leaves open (where a moved control goes).
+2. Report, shaped by [report.md](~/.agents/pr-flow/report.md): the agreed picture beside Before, the frame's link (`/c/<canvas>?frame=<id>`), and the lists: the **parts** it uses with their stories and code paths, **new parts**, **new text**, and **Decided**: each call the design left that you settled (where a moved control goes, what shows when a list is empty), one line each with its reason. A call that's truly the user's (what a student sees, the scope) is asked as one decision with the recommended answer marked ([decision-card.md](~/.agents/pr-flow/decision-card.md)); work the build will do (a story's assertions to update) goes to the build, not the report.
 
 From build-it, its step 6 builds the agreed frame in React: each part from its code path, the layout from the frame's. The PR's pictures are the built app's, before and after, never the frame's; the PR links the agreed frame in one line, for anyone curious how it was designed ([pr-body.md](~/.agents/pr-flow/pr-body.md), "Where it was made"). On its own, the report ends by asking whether to build it.
 

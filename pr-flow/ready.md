@@ -6,9 +6,11 @@ What "ready for review" means for a PR of the user's. `build-it`, `fix-comments`
 
 Proof is evidence observed in this session on the current **head** (the PR's latest commit, with its base merged in): command output, a test that went red without the change and green with it, the running app. Green mocked tests prove the logic; for a change a student sees, proof is the change seen in the running app (`pnpm dev`, the `run` skill), used as a student would: upload the file, send the message, get the answer graded. For the phone app, that's its dev client on both an iOS simulator and an Android emulator (the app's `AGENTS.md` and README say how): its tests run its web build, which shows neither native layout, gestures nor the keyboard. A story stands in for the app only when the change is inside one component's drawing and a story renders each caller's props (how it looks in another engine, a theme); what the change does with the screen around it (a dialog over another, data, a flow) is seen in the app. Opening a screen once proves only the easy case. Each changed screen is tried at its **worst case**, hunting for where it breaks: the longest content, scrolled to the end; the keyboard up over a multi-line input; every expandable part open; each caller of changed shared code. The checklist names the states tried. What that bills (models, grading, reading a file) is part of testing and needs no asking; reuse an upload that already does the job. A check run on an earlier head is history, not proof: after any commit or merge of the base, rerun what the change could affect.
 
+**Leave nothing running.** Once a proof is done, close what the run opened for it (browsers, simulators, extra servers), except what the report links for the user to try. Start one dev stack and reuse it.
+
 **A platform you can't test yet.** Every platform the change runs on (web, iOS, Android) is tested. One that isn't set up here is set up in this run: the SDK, the emulator image, the tool (Android took 15 minutes). Only one that can't be (it needs hardware or an account we don't have) goes on the decision card before the PR opens, never into Test by hand.
 
-**A stack that won't come up.** Give the local stack (`pnpm dev`, the E2E stack) about 5 minutes, and every network call a timeout (`curl -m 30`). Not up by then: push, and prove it on the branch's preview deploy (`gh pr checks` names its URL; a protected one needs the bypass the repo or your notes give), and leave E2E to CI's job. The checklist says which was used and why. The stack's failure goes in the report; fixing it isn't this PR's work.
+**A stack that won't come up.** Give the local stack (`pnpm dev`, the E2E stack) about 10 minutes, every network call a timeout (`curl -m 30`), and fix the known causes (your notes, the repo's README). Still down: the proof it needed is missing, so the PR isn't ready; report it blocked with the error. The preview deploy is what the user is handed to try, never the agent's proof, unless the user says to prove it there.
 
 ## Test by hand
 
@@ -38,9 +40,20 @@ Everything else is proven in this run. What looks untestable usually isn't:
 
 **Do the part you can.** A line that needs a person for one part has every other part proven first, and asks only for what's left: "the tree reads *Close sheet, button*; listening with VoiceOver is left". A faked event (a remote pause, a headphone unplug sent to the code) proves the code's answer to it, not that the real device sends it, so the line keeps the real delivery.
 
-**Each line shows its attempt**: the reason, then the closest stand-in that was run and what it gave (`Tried: <command or step> → <result>`): the simulator run beside a haptic, the injected unplug beside AirPods. What should happen is something a person can check: a number where it's about speed ("connects within 3 s, as main does"), not "as quickly as before". A line names what to do, never who does it: the user picks who. A line with nothing tried has no reason yet: "not run here", "not opened", "seen in Storybook only" and "no data" each name an attempt still to make, so make it. A local stack that won't come up sends you to the preview ([Proof](#proof), "A stack that won't come up"), not to this list.
+**Each line shows its attempt**: the reason, then the closest stand-in that was run and what it gave (`Tried: <command or step> → <result>`): the simulator run beside a haptic, the injected unplug beside AirPods. What should happen is something a person can check: a number where it's about speed ("connects within 3 s, as main does"), not "as quickly as before". A line names what to do, never who does it: the user picks who. A line with nothing tried has no reason yet: "not run here", "not opened", "seen in Storybook only" and "no data" each name an attempt still to make, so make it. A local stack that won't come up is a blocker ([Proof](#proof), "A stack that won't come up"), never a line on this list.
 
-`review-loop` checks the list before the PR opens (lenses.md, "Spec"): a line this run could have proven is a P1, fixed by proving it.
+`review-loop` checks the list before the PR opens (lenses.md, "Spec"): a line this run could have proven is housekeeping, fixed by proving it.
+
+### A hand test blocks on the user
+
+A line that keeps its reason is a **hand test**, and it waits for the user: the PR isn't sent for review until they've done it or said to skip it (a deploy line: once it's live, in `full-send`). Ask for it in one message, like a decision ([decision-card.md](decision-card.md)), with everything ready so it takes them a minute:
+
+- **why you**: its reason, and what was tried (`Tried: … → …`), in one line;
+- **set up**: whatever it needs is already running and loaded, on the newest head: the dev stack or the preview up, the build on their phone and signed in, the account seeded with the data, the screen opened at the right state. Links ready to click;
+- **steps**: numbered, one action each, ending in what they should see (a number where it's about speed);
+- **answer**: "works", or what they saw.
+
+Their answer goes into the checklist: `- [x] Tested by hand by <user>: <what>, at <sha>`.
 
 ## The checklist
 
@@ -49,7 +62,7 @@ The PR body ends with the checklist (shape in [pr-body.md](pr-body.md)). It is t
 - `- [x]` marks a requirement that **passed** on the current head, with its evidence: the command, the result, the short SHA (`- [x] Vitest, web: 675 pass at abc1234`).
 - A check that fails is written as failing with the reason, and the PR is not ready.
 - A requirement that doesn't apply is `- N/A: <requirement>: <why>`, never a tick.
-- **Test by hand** lists, unticked, only what this run can't prove: [Test by hand](#test-by-hand) says what qualifies. This is also what whoever checks production works from.
+- **Test by hand** lists only what this run can't prove ([Test by hand](#test-by-hand) says what qualifies), ticked once the user has done it; a deploy line stays unticked till it's live. This is also what whoever checks production works from.
 
 Every item below ends as `[x]`, `N/A` or a Test-by-hand line:
 
@@ -66,8 +79,8 @@ Every item below ends as `[x]`, `N/A` or a Test-by-hand line:
 
 The gate before a reviewer sees the PR: `send-for-review` runs it before posting, and it runs alone when the user asks "is it ready?". The user often keeps changing a PR in its thread after `build-it` opened it, and those commits get no review of their own; this is where they get one.
 
-1. **What changed**: the head `review-loop` last agreed on is in the checklist's item 8 (`review-loop agreed at <sha>`). The current head is that one, with nothing new on the base: reuse it all and go to 4.
-2. **Review it**: merge the base in, then review until it would pass, as `build-it`'s step 8 ([its loop and its Done when](~/.agents/skills/build-it/SKILL.md)), on the **whole PR**, not only the new commits: a later change can undo why an earlier one was made, and the reviewer reads it whole.
+1. **What changed**: the head `review-loop` last agreed on is in the checklist's item 8 (`review-loop agreed at <sha>`). The same change (`review-loop`'s step 1, "The agreed head": the same patch id, so a merge of the base alone counts as no change): reuse it all and go to 4.
+2. **Review it**: merge the base in, then `review-loop` on the delta since the agreed head, through its callers, as `build-it`'s step 8 ([its Done when](~/.agents/skills/build-it/SKILL.md)).
 3. **Prove it again** on the new head: the checks above, the change seen in the running app when a student can see it, and screenshots and GIFs retaken where the screen changed, until `screenshots-stale` says current.
 4. **Rewrite the PR body** for where the PR ended up, not where it started ([pr-body.md](pr-body.md)): what changed, the behaviour table, the checklist with this head's SHA, the screenshots and GIFs.
 

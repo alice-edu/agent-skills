@@ -36,6 +36,8 @@ Anything else was never approved: a P1 from `review-loop` (step 3) or a bot (ste
 
 Hold the head to [ready.md](~/.agents/pr-flow/ready.md), reusing what's still valid for it. When code changed since the approval, `review-loop` in **author** mode on the diff since the approved commit. Its fixes are held to "What still counts as approved".
 
+Then a **verdict from an agent that didn't write it**, when a student can see the change: a fresh subagent, told to read `~/.agents/pr-flow/worker.md` first and given only the PR's intent, its behaviour table, the running app's link and ready.md's "Proof", which uses the change as a student would and answers PASS or FAIL with what it saw (screenshots). FAIL is fixed like a P1. The verdict holds while the change's patch id does (review-loop, "The agreed head").
+
 ## 4. Babysit to the gate
 
 Push, then `babysit-pr`. The **merge gate**, all true on the latest head:
@@ -64,6 +66,7 @@ gh api repos/<o>/<r>/deployments/$id/statuses --jq '.[0].state'   # success | fa
 - **failure**: post nothing in that thread; main's deploy is broken, and the user hears about it first in the report.
 - **The phone's update red** (deploy success): post nothing in that thread; the report says the web is live and the phone's update failed, with its run.
 - Still deploying when the run must end: post nothing, and say it's merged but not live yet.
+- **A deploy hand test** in the PR's Test by hand (only production has it): once live, ask it of the user (ready.md, "A hand test blocks on the user"), set up on production, and tick it with their answer.
 
 ## 6. Settle, then report
 

@@ -8,7 +8,7 @@ The user comes back to a thread cold, between many others, and reads its report'
    ```
    **You:** reply "last card" (recommended) or "keep card 1", then "send it".
    **You:** answer the card above; "go" takes every recommended answer.
-   **You:** nothing, it's with Adam.
+   **You:** nothing, it's with <reviewer>.
    ```
 
    It points at what the report already holds (the card, its rows, the next skill to say); every question it names is asked in full above it.

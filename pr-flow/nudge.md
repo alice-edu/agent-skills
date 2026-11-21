@@ -50,6 +50,6 @@ The first of these that's true decides:
 
 A **working day** is Monday to Friday, except Danish public holidays. While waiting (3 once fixed, 4, 5, 7), snooze until 10:30 on the next working day.
 
-Every run ends with one line in this thread: the date, which rule decided and why, and what it did. `Tue 29 Oct: waiting, Adam said Thursday. Snoozed till Fri 10:30.`
+Every run ends with one line in this thread: the date, which rule decided and why, and what it did. `Tue 29 Oct: waiting, <reviewer> said Thursday. Snoozed till Fri 10:30.`
 
 Done when the line is posted, and either the task is deleted or the thread is snoozed until 10:30 on the next working day.

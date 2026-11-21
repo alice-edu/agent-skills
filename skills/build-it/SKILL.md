@@ -53,6 +53,8 @@ Done when each check is answered.
 - For UI: what the student sees in each state (empty, loading, error, long text, dark), where it lives on screen, what it says, and how it fits what's around it, following the repo's component and state rules.
 - A new screen, flow or panel, or a rework of one: run `sketch-it` here, before the card. The agreed sketch, a Doop frame of the app's real parts, is the design: step 6 builds it from those parts' files. A smaller UI choice (a control, a label, where one thing sits) keeps the card's mockup.
 - For backend work, the repo's backend review doc, the one `AGENTS.md` points to (in Alicia, `docs/backend-review.md`): design to every section of it, and write down what each new query and workflow step costs at the largest size it supports.
+- **The worst case**, when the design adds or changes a workflow, a fan-out, a scheduled job, a model call or a backfill: a table, shown with the design before any code, a number in each row, from production where it can give one and labelled an estimate otherwise: the largest user it supports (the most files, the longest file, the most goals); every user, and the backfill of what exists today; model calls and dollars at that size; how long a student waits; whether one user can hold others up on a shared queue. A row that comes out bad changes the design here (generate on demand rather than ahead, batch, cap), not after review.
+- **Size and prior art**, in a line each: the diff size you expect, and the existing solution looked at (lenses.md, "A solved problem"), taken or not and why.
 - When the design matches [diagrams.md](~/.agents/pr-flow/diagrams.md)'s "When" (in doubt, draw it), draw it, so the user sees it before any code is written: with the card when there is one, otherwise in the report. A diagram alone asks nothing.
 
 It ends as one verdict:
@@ -77,7 +79,7 @@ Read [decision-card.md](~/.agents/pr-flow/decision-card.md) now, whole, and ask 
 - the verdict, when it's anything but a **Bug** or a **Build**;
 - a fix whose scope grew;
 - each choice that's the user's by [decision-card.md](~/.agents/pr-flow/decision-card.md), "Who decides" (a UX or product choice, a Simplify? question), the recommended one first. A UX choice comes with its picture: the screen now beside a mockup of each option (decision-card.md, "a picture"), made before asking, even for a dialog nothing has drawn yet;
-- **slices**, when the design spans the data model, the backend and the UI together (a native change's backend PR isn't asked: it's decided in step 4, and built first): split it into PRs that each branch from and merge to their base on their own (the schema and backend first, then the UI on top; a native slice goes to `release/next` once the backend's is merged, branches.md), each its own thread, PR and Linear issue, the first built in this thread. A stack of PRs on each other isn't offered: every merge would mean updating the ones above it;
+- **slices**, when the design spans the data model, the backend and the UI together (a native change's backend PR isn't asked: it's decided in step 4, and built first): split it into PRs that each branch from and merge to their base on their own (the schema and backend first, then the UI on top; a native slice goes to `release/next` once the backend's is merged, branches.md), each its own PR and Linear issue, every one built in this run, in dependency order: a slice that needs another's code branches from that slice's branch once its PR is open, and is retargeted to the base when that merges. Building them all isn't leave to merge them;
 - a council review (the `council` skill), when the user hasn't asked for one and the change reaches the data model, a workflow, auth or a migration;
 - a student test (`student-test`), when they haven't asked for one and the change adds or reworks a flow a student goes through;
 - for a parked report, the reply to post;
@@ -99,19 +101,19 @@ Hold it to [ready.md](~/.agents/pr-flow/ready.md): the checks CI runs, the base 
 
 ## 8. Review until it would pass
 
-The bar: a reviewer who knows the repo's docs would approve it as it stands. Loop until it's met:
+The bar: a reviewer who knows the repo's docs would approve it as it stands.
 
-1. `review-loop` in **author** mode on the head. Its intent includes what the likely reviewer asks for: whoever reviewed these files last (`gh pr list --state merged --search <path>`), from their review comments on the repo's recent PRs.
+1. `review-loop` in **author** mode on the head, once: its budget bounds it. Its intent includes what the likely reviewer asks for: whoever reviewed these files last (`gh pr list --state merged --search <path>`), from their review comments on the repo's recent PRs.
 2. Prove its fixes again on the new head (step 7).
-3. Code changed since the loop last looked, or a lens came back `not verified`: go again.
+3. A lens that came back `not verified`: give it what it lacked (the doc, the look at the app) and recheck that lens alone.
 
-Done when, on one final head: the loop agrees with no open P1; each P2 is fixed, or skipped as optional in one line; every lens is clear or N/A, none `not verified`; both reviewers' DOCS cover the repo's docs for this change ([lenses.md](~/.agents/pr-flow/lenses.md), "The repo's docs"); and ready.md's checks pass on that head. A P1 still open when the budget is spent is Stuck: it goes on the card, and the PR opens as a draft until it's settled.
+Done when, on one final head: the loop agreed; each P2 is fixed, or skipped as optional in one line; every lens is clear or N/A, none `not verified`; both reviewers' DOCS cover the repo's docs for this change ([lenses.md](~/.agents/pr-flow/lenses.md), "The repo's docs"); and ready.md's checks pass on that head. A P1 still open when the budget is spent is Stuck: it goes on the card and blocks the merge, and the PR still opens ready for review, the open P1 first in its body.
 
 ## 9. Open the PR
 
 Screenshots, and GIFs of what moves, per [screenshots.md](~/.agents/pr-flow/screenshots.md), made without asking; the body per [pr-body.md](~/.agents/pr-flow/pr-body.md), its checklist from step 7. A title in the style of the repo's recent PRs: what's different now, not "Fix bug". Push, open it ready for review against its base (`--base`, branches.md) (or update the existing one), and finish `linear-track`'s step 3.
 
-Done when the PR shows the current head, its body has the T3 thread line (and Designed in Doop, after a sketch), every image loads, `screenshots-stale` says current, and every checklist item is `[x]`, `N/A` or Test by hand.
+Done when the PR shows the current head, its body has the T3 thread line (and Designed in Doop, after a sketch), every image loads, `screenshots-stale` says current, and every checklist item is `[x]`, `N/A` or a hand test asked of the user (ready.md, "A hand test blocks on the user").
 
 ## 10. Settle, then report
 
@@ -122,9 +124,10 @@ Two actions, in this order, because the report is your last message and the turn
 
 - the verdict, and the PR link with two or three lines on what changed, or for a parked one, why and what was posted, or for one already done, the commit or PR that did it;
 - the behaviour table when behaviour changed;
-- Test by hand, and anything that couldn't be proven;
+- the size, from `~/.agents/pr-flow/diff-size <base>` (`Size: +A/−B: logic …, tests …`), with a line on why it's that big when it's more than twice the design's estimate;
+- each hand test, asked as ready.md's "A hand test blocks on the user", and anything that couldn't be proven;
 - **Decided**: choices made without asking;
-- the **You:** line: "say *send for review*" when there's a PR;
+- the **You:** line: the hand test when there is one, otherwise "say *send for review*" when there's a PR;
 - the Links line ([links.md](~/.agents/pr-flow/links.md));
 - last, where the thread went: `Settled.` or `In sight: <why>.`
 

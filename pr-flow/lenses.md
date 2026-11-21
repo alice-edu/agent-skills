@@ -30,9 +30,11 @@ Does it do what was asked? The **intent** is the Linear issue, the PR body, the 
 - requirements that are missing, only partly done, or done wrong;
 - behaviour nobody asked for.
 
+A new feature a student uses ships with its usage tracking in the same PR (the repo's analytics; in Alicia, PostHog), when no event already answers how it's used; missing, it's a P1.
+
 Scope creep alone is a P2, or the user's call when it changes what a student sees. When nothing about it is written down, say "no written intent" and review the code against what the PR says it does.
 
-**Test by hand**, in author mode: each draft line against [ready.md](ready.md), "Test by hand". A line without one of its four reasons, or one this run could have proven (its table, or any other way you can name), is a P1 whose fix is the way to prove it. A line that asks for more than is left after the provable parts is a P1 too.
+**Test by hand**, in author mode: each draft line against [ready.md](ready.md), "Test by hand". A line without one of its four reasons, or one this run could have proven (its table, or any other way you can name), is housekeeping (review-loop, "Severity"), fixed by proving it. So is a line that asks for more than is left after the provable parts.
 
 ## Correctness
 
@@ -74,11 +76,13 @@ What was read and what it decided goes in the PR body's Research section ([pr-bo
 
 A design change starts from the setup the system should have, then works back to what's there. For each constraint the design inherits (a table's shape, a flag, a split between two paths), ask whether it's a real requirement or an earlier choice that a cleaner setup would drop. Where it's an earlier choice, clear it out first, in its own commits ahead of the change, and build on the clean setup. A design that bends around an earlier bad choice when a cleaner one was in reach is a P1. When clearing it out is much bigger than the change (a data migration, several packages), put both designs on the decision card with what each costs.
 
-**Leftovers.** The final diff holds only what the final design uses. Building iterates (an approach tried and dropped, a review round's fix that replaced another), and each iteration can leave **leftovers**: a function, export, prop, parameter, type, flag or file nothing reaches any more; a schema field nothing writes or nothing reads; a translation key no code reads; a test of behaviour that's gone; a comment about the earlier attempt ("now uses X instead of Y", "no longer needed"); a debug log; a fallback for a case the final design can't produce. Hunt them on the whole diff against the base, not the last round's: for each symbol, key and field the diff adds or keeps changed, search for a reader (`git grep`), and for each comment, ask whether it describes the code as it is. A leftover is a P1 under the right way, removed in this PR.
+**Leftovers.** The final diff holds only what the final design uses. Building iterates (an approach tried and dropped, a review round's fix that replaced another), and each iteration can leave **leftovers**: a function, export, prop, parameter, type, flag or file nothing reaches any more; a schema field nothing writes or nothing reads; a translation key no code reads; a test of behaviour that's gone; a comment about the earlier attempt ("now uses X instead of Y", "no longer needed"); a debug log; a fallback for a case the final design can't produce. Hunt them on the whole diff against the base, not the last round's: for each symbol, key and field the diff adds or keeps changed, search for a reader (`git grep`), and for each comment, ask whether it describes the code as it is. A leftover is housekeeping (review-loop, "Severity"), removed in this PR.
 
 ## Backend
 
-Applies when the change affects the backend: its data model, queries, workflows, or what they read. Go through every section of the repo's backend review doc, the one `AGENTS.md` points to for backend changes (in Alicia, `docs/backend-review.md`, Adam's checklist), and mark the sections that don't apply as N/A. The doc is the list: follow it as it stands today. Write down the cost of each changed query and workflow step in what grows (in Alicia, F files, N items and the course total), with file:line. A repo with no such doc: say so, and check that it scales with what changed, that a retry does no harm, and that two runs at once don't clash.
+Applies when the change affects the backend: its data model, queries, workflows, or what they read. Go through every section of the repo's backend review doc, the one `AGENTS.md` points to for backend changes (in Alicia, `docs/backend-review.md`), and mark the sections that don't apply as N/A. The doc is the list: follow it as it stands today. Write down the cost of each changed query and workflow step in what grows (in Alicia, F files, N items and the course total), with file:line. A repo with no such doc: say so, and check that it scales with what changed, that a retry does no harm, and that two runs at once don't clash.
+
+**The worst case.** When the change adds or changes a workflow, a fan-out, a scheduled job, a model call or a backfill, check the design's worst-case table (build-it, step 4) against the code: each row's number still holds for what was built. A missing row, or a number guessed where production could have given it, is a P1.
 
 ## UI and UX
 

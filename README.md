@@ -67,13 +67,14 @@ With the Excalidraw MCP connected, an agent can do the same: ask it to redraw a 
 
 The shared rules live in [`pr-flow/`](pr-flow), and every skill points at them rather than repeating them.
 
-- **One question per command** ([decision-card.md](pr-flow/decision-card.md)). Each command asks you at most once: one card with every choice that's yours, each with a recommended default, so "go" accepts the lot.
+- **One decision per message** ([decision-card.md](pr-flow/decision-card.md)). Only the choices that are yours are asked, one at a time in plain chat, the picture above the question and a recommended default, so "go" takes it.
 - **Who decides.** Product and UI/UX decisions are yours, asked as a ten-second tldr. Purely technical ones are the agents', settled by the repo's docs and the technology's own docs, looked up each time. You only hear about technical work when it's gone hairy and dropping a requirement would make it simpler.
 - **The right way, the first time** ([lenses.md](pr-flow/lenses.md)). A change leaves the code it touches in the shape it should have. Old debt is no excuse for new debt, and "follow-up PR" isn't a way to skip the work.
-- **Two reviewers who have to agree** ([review-loop](skills/review-loop/SKILL.md)). Claude and Codex review independently through the same lenses (Spec, Correctness, Standards, Backend, UI and UX), then argue it out.
+- **Two reviewers who have to agree** ([review-loop](skills/review-loop/SKILL.md)). Claude and Codex review independently through the same lenses (Spec, Correctness, Standards, Backend, UI and UX), then argue it out. It stops at the first round with no proven blocker, within two rounds (three for auth, data or money), and a later run reviews only what changed since it agreed.
 - **Overviews you can read at a glance** ([overview.md](pr-flow/overview.md)). A review is one bold line, your table, then ours, with confidence and the evidence behind it.
 - **The right branch** ([branches.md](pr-flow/branches.md)). A change with new native phone code goes to `release/next`, everything else to main, and "live" means what it does on each.
-- **Proof, not claims** ([ready.md](pr-flow/ready.md)). A PR is ready when its checks pass and the change has been seen working in the app.
+- **Proof, not claims** ([ready.md](pr-flow/ready.md)). A PR is ready when its checks pass and the change has been seen working in the app. What only you can test blocks on you, set up and ready, with steps and the reason it needs you ([ready.md](pr-flow/ready.md), "A hand test blocks on the user").
+- **The bar in the brief is the whole bar** ([worker.md](pr-flow/worker.md)). Every agent another one starts reads it first: no gates of its own, findings proven, what it opened it closes.
 - **Reports you can act on from two lines** ([report.md](pr-flow/report.md)). Every report opens on the verdict and ends on a **You:** line with the exact words to reply, so coming back to a thread cold takes a glance.
 - **Out of sight while waiting** ([waiting.md](pr-flow/waiting.md), [nudge.md](pr-flow/nudge.md)). In [T3 Code](https://github.com/pingdotgg/t3code), a thread snoozes while it waits on someone else, and comes back when there's something for you.
 

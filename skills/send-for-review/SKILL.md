@@ -17,9 +17,11 @@ Its **stack**: the open PRs it builds on (its base, down to `main` or `release/n
 
 ## 2. Make it ready
 
-[ready.md](~/.agents/pr-flow/ready.md), "Make it ready", on the current head: anything committed since `review-loop` last agreed is reviewed with the whole PR, proven again, and written into the PR body; the base is merged in; CI is green or running on this head. A check that failed or timed out on an earlier head of this PR, and hasn't passed since, is red until it passes: fix it, or wait for it as [waiting.md](~/.agents/pr-flow/waiting.md), "Waiting on CI" says. Push what it changes.
+[ready.md](~/.agents/pr-flow/ready.md), "Make it ready", on the current head: anything committed since `review-loop` last agreed is reviewed as its delta, proven again, and written into the PR body; the base is merged in; CI is green or running on this head. A check that failed or timed out on an earlier head of this PR, and hasn't passed since, is red until it passes: fix it, or wait for it as [waiting.md](~/.agents/pr-flow/waiting.md), "Waiting on CI" says. Push what it changes.
 
 A red check this PR didn't cause (main fails it too, or its test is in files the PR doesn't touch): rerun it once and send, saying so in the post. What else can't be made ready (a P1 the loop can't settle, a test that needs something we don't have) goes on the decision card: send it saying so, or wait.
+
+A hand test the user hasn't answered (ready.md, "A hand test blocks on the user"): ask it, and post once they've answered or said to skip it.
 
 A red `phone-native` is the PR's base, not a check to rerun: [branches.md](~/.agents/pr-flow/branches.md), "phone-native red".
 

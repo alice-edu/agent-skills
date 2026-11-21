@@ -55,7 +55,7 @@ Show the user the explanation, then the ledger as an overview ([overview.md](~/.
 - a finding the loop returned Stuck (still disputed, or the budget spent with a P1 open);
 - the verdict, when it rests on one of those.
 
-No such items: carry on and post. The user's answers adjust the draft.
+No such items: show the drafted review and its Slack reply, and post once the user has seen them (decision-card.md, "In the user's name"). The user's answers adjust the draft.
 
 ## 5. Post
 

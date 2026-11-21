@@ -1,0 +1,31 @@
+#!/usr/bin/env python3
+# diff-size [<base>]
+#
+# One line for a report or PR body: what the diff against the base adds and removes, split by
+# what it is. logic: the code that runs; tests; text: translation files (messages/); docs:
+# Markdown; generated: lockfiles, snapshots, generated code. The base defaults to the merge base
+# with origin/main.
+import re, subprocess, sys
+
+def git(*a):
+    return subprocess.run(["git", *a], capture_output=True, text=True, check=True).stdout
+
+base = sys.argv[1] if len(sys.argv) > 1 else git("merge-base", "HEAD", "origin/main").strip()
+kinds = [
+    ("generated", re.compile(r"(^|/)(_generated|generated)/|lock\.(json|yaml)$|\.lock$|\.snap$|pnpm-lock")),
+    ("tests", re.compile(r"(\.|_)(test|spec)\.[jt]sx?$|(^|/)(__tests__|e2e|web-e2e|tests?)/")),
+    ("text", re.compile(r"(^|/)messages/.*\.json$")),
+    ("docs", re.compile(r"\.mdx?$")),
+]
+sums = {}
+for line in git("diff", "--numstat", base).splitlines():
+    a, d, path = line.split("\t", 2)
+    if a == "-":
+        continue
+    kind = next((k for k, rx in kinds if rx.search(path)), "logic")
+    s = sums.setdefault(kind, [0, 0])
+    s[0] += int(a); s[1] += int(d)
+ta = sum(v[0] for v in sums.values()); td = sum(v[1] for v in sums.values())
+order = ["logic", "tests", "text", "docs", "generated"]
+parts = [f"{k} +{sums[k][0]}/−{sums[k][1]}" for k in order if k in sums]
+print(f"Size: +{ta}/−{td}: " + ", ".join(parts))

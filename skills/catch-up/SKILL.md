@@ -43,7 +43,7 @@ Hold the merged head to [ready.md](~/.agents/pr-flow/ready.md): rerun the checks
 
 A **complex** merge also gets:
 
-- `review-loop` in **author** mode, on the resolution: `git show --remerge-diff <merge sha>` shows what was decided beyond the automatic merge, together with the branch's whole diff against the new base;
+- `review-loop` in **author** mode on the resolution, as its delta: `git show --remerge-diff <merge sha>` shows what was decided beyond the automatic merge;
 - a diagram ([diagrams.md](~/.agents/pr-flow/diagrams.md)) when both sides reshaped the same thing: each side, then how the merge put them together, shown with the card or in the report;
 - the change seen working in the running app, when it's something a student sees (ready.md, "Proof"), with screenshots and GIFs updated where the screen changed, until `screenshots-stale` says current.
 

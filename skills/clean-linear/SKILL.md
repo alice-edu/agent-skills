@@ -48,7 +48,7 @@ One batch of 10 to 15 issues at a time, the easy cancels first, then by group. E
 | # | Issue | Now | What it is, in a line | Move to | Why |
 | - | ----- | --- | --------------------- | ------- | --- |
 
-Titles are linked to the issue. Then ask with the harness's question tool: "Apply batch 2 as recommended?", answered "yes", or with the exceptions ("yes, except 4: backlog, 7: keep"). An issue the user wants to talk about is set aside and comes back after the batches.
+Titles are linked to the issue. Then ask in a plain message: "Apply batch 2 as recommended?", answered "yes", or with the exceptions ("yes, except 4: backlog, 7: keep"). An issue the user wants to talk about is set aside and comes back after the batches.
 
 Done with a batch when it has an answer for every row.
 

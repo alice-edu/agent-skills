@@ -5,7 +5,7 @@ How a review is shown to the user: in `review-pr` (our review of a teammate's PR
 ## The shape
 
 1. **Summary line**, one sentence in bold:
-   - fix-comments: `**Adam left 6 points:** 3 we'll fix, 2 need you, 1 we're still checking.`
+   - fix-comments: `**<Reviewer> left 6 points:** 3 we'll fix, 2 need you, 1 we're still checking.`
    - review-pr: `**Verdict: changes requested.** 1 blocking, 3 optional, 1 needs you.`
 2. **Two tables**, split by owner ([decision-card.md](decision-card.md), "Who decides"):
    - **Product and design (your call)** first: every row of it is on the card.

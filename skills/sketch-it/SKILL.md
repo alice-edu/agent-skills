@@ -86,7 +86,7 @@ Read [decision-card.md](~/.agents/pr-flow/decision-card.md) now, whole, and ask 
 
 - the problem in a line, and where the brief and the screen differ;
 - **now**, then each option, as `![A: <convention>](/absolute/path.png)` with its line under it: the convention and its references' links, what changes, its usability verdict, its new parts and new text;
-- the options, the recommended first; from round 2, `Agreed: <the recommended one>` when one's ready. A mix or a comment comes through the question tool's own free answer;
+- the options, the recommended first; from round 2, `Agreed: <the recommended one>` when one's ready. A mix or a comment comes as their reply;
 - that comments on the canvas count too, and the Links line with the round's page (`/c/<canvas>?page=<page>`) as **Sketch**.
 
 Without Doop's tools, say so and stop: the sketch needs the canvas.

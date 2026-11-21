@@ -292,19 +292,6 @@ D["excalidraw"] = dict(title="17. Inside diagrams (Excalidraw), used by build-it
     E("c", "d"), E("d", "f"), E("f", "s"), E("s", "f", "fixed something"), E("s", "sh", "reads cleanly", "success"), E("sh", "p"),
 ])
 
-D["clean"] = dict(title="12. Inside clean-linear (\"clean Linear\", \"triage\")", nodes=[
-    N("c1", "1. Gather\nTriage, Backlog, Needs Shaping,\nReady to Build (or Triage alone)"),
-    N("c2", "2. Find the facts\nalready done? duplicate?\nout of date? thin? open?", "service"),
-    N("c3", "3. Recommend\none status each, a reason in a line,\ngrouped by area of the app"),
-    N("c4", "4. A batch of 10 to 15\n\"yes, except 4: backlog\"", "client"),
-    N("c5", "5. Apply\ncancel with a reason, bring Ready up to its bar,\nadd To shape to Needs Shaping"),
-    N("q", "More\nbatches?", "decision"),
-    N("c6", "6. Rank Ready to Build's top five,\nreport counts before and after", "terminal"),
-], edges=[
-    E("c1", "c2"), E("c2", "c3"), E("c3", "c4"), E("c4", "c5"), E("c5", "q"),
-    E("q", "c4", "yes"), E("q", "c6", "no", "success"),
-])
-
 D["usability"] = dict(title="9. Inside usability (\"usability this\")", nodes=[
     N("in1", "You: \"usability this\"\na screen, a flow", "terminal"),
     N("in2", "review-loop\nthe UI and UX lens", "terminal"),
@@ -347,7 +334,7 @@ AT = {
     "catch": (4310, 2700), "review": (5194, 2700),
     # Commands you say: on their own
     "grill": (150, 6350), "usability": (994, 6350), "student": (1868, 6350),
-    "council": (2820, 6350), "clean": (3880, 6350), "sketch": (6300, 6350),
+    "council": (2820, 6350), "sketch": (6300, 6350),
     # Run by other skills
     "loop": (150, 8550), "babysit": (1076, 8550), "ltrack": (2693, 8550),
     # Shared rules

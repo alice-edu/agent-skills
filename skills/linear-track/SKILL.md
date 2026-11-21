@@ -15,7 +15,7 @@ Every PR the user ships has one Linear issue, and the issue's status says where 
 
 In a repo without a row, track only when the user names the issue; ask them for the team and project before creating one, then add the row.
 
-Before work starts, an issue waits in one of four statuses. Each has a bar, and an issue that doesn't meet it moves (`clean-linear` keeps them honest):
+Before work starts, an issue waits in one of four statuses. Each has a bar, and an issue that doesn't meet it moves:
 
 - **Triage**: the inbox. Every issue leaves it, for one of the three below, Canceled or Duplicate.
 - **Ready to Build**: an agent could build it without asking anything: the problem, its evidence or cause, the constraints and what done means, with no product call left open. It describes the problem, never the design. Ordered by priority, so its top is what's next.

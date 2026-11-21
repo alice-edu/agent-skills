@@ -17,7 +17,7 @@ Proof is evidence observed in this session on the current **head** (the PR's lat
 Every line on this list is time the user spends, so it holds only what no agent here can prove. A line earns its place by one of four **reasons**, named in it (two when both hold: body and taste for a haptic's feel):
 
 - **body**: a person's senses, or what only a real device does: a finger on glass (an edge swipe, how a drag feels), haptics, sound out of real headphones or speakers, Bluetooth audio routes, the lock screen, the OS suspending an app in the background, a GPU or OS no machine here has;
-- **account**: an account, credential or app this run can't use: a store build, the EAS account, a mail client's rendering (Gmail, Outlook);
+- **account**: an account, credential or app this run can't use: the EAS account, a mail client's rendering (Gmail, Outlook);
 - **deploy**: what only production has: its data at full size, its domain (app links, cookies), the live deployment's crons. A migration's logic is still proven locally on old data; only its run over production's data is left;
 - **taste**: how it feels to a person (is the haptic light, does the motion read as smooth), when whether it works is already proven.
 
@@ -28,6 +28,7 @@ Everything else is proven in this run. What looks untestable usually isn't:
 | Data the test account lacks (a podcast, 30 history rows, a shared item) | Make it: in the app as a student would, or a seed script. What that bills is part of testing |
 | Safari or Firefox | `npx playwright install webkit firefox` in the package whose Playwright drives them (the browsers match its version), then the same steps in each. Screenshot the changed part (`locator.screenshot()`) in each engine and diff it against Chromium's: `ffmpeg -i chromium.png -i webkit.png -filter_complex "[1][0]scale2ref[b][a];[a][b]blend=all_mode=difference,format=gray,geq=lum='255*gt(lum(X\,Y)\,24)',signalstats,metadata=print:key=lavfi.signalstats.YAVG" -f null - 2>&1`, whose `YAVG=` is 0 when identical (text anti-aliasing alone gives about 2.5) |
 | Android or iOS | The emulator or simulator, set up in this run ([Proof](#proof), "A platform you can't test yet") |
+| The phone's store build (old phones against the new backend) | It runs main's phone JS, sent over the air ([branches.md](branches.md)): main in a worktree of its own, its Metro serving the simulator's dev client, pointed at this branch's local backend. A phone that hasn't updated yet: the same with the `phone-cut` tag's commit |
 | The preview deploy | Open it with the Vercel bypass (your notes say where the secret is) |
 | A screen that's hard to reach (a call, a lesson's end, an error) | Drive the app there, or render it in a story with that state (story ids from Storybook's `/index.json`) |
 | A microphone | Chromium launched with `--use-fake-device-for-media-stream --use-file-for-fake-audio-capture=<file.wav>`, the file spoken by `say -o x.aiff "<words>"` and `ffmpeg -i x.aiff -ar 48000 x.wav` |

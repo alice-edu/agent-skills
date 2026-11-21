@@ -22,7 +22,7 @@ Done when the problem or the feature is written in one sentence, with its eviden
 
 - Linear: `linear-track` step 1 as a search only, creating nothing yet, then its "taken" check on what it finds. More than one issue fits: keep going, and put the choice on the card (step 5);
 - an open PR for it (`gh pr list --search`), linked to an issue or not, other than the one this run updates;
-- a commit on `main` or `release/next` that already does it (`git log` on each, and the code itself);
+- a commit on `main` that already does it (`git log`, and the code itself);
 - from Slack, slack-report.md, "Taken".
 
 - **Taken**: stop, and tell the user who has it, its status and its PR; the thread stays in sight for their answer.
@@ -67,7 +67,7 @@ It ends as one verdict:
 | **Unconfirmed** | noise, the student's network, a one-off, or not reproducible | park it |
 | **Big feature** | a wish the user hasn't asked to build yet, needing design or a product call | park it |
 
-Then pick **the base** by branches.md, "The base", for a fix or a build. Native work that needs any backend change is two PRs, the backend's to main first (branches.md, "Both"): that's decided, not asked.
+Then read branches.md, "The base": the base is main, and native code means a PR that waits for its store build. Native work that needs any backend change is two PRs, the backend's to main first (branches.md, "Both"): that's decided, not asked.
 
 Done when the verdict has its evidence: a red test, numbers, a repro, the place in the app, or the design in a few lines, with its diagram when it matches diagrams.md's "When".
 
@@ -79,7 +79,7 @@ Read [decision-card.md](~/.agents/pr-flow/decision-card.md) now, whole, and ask 
 - the verdict, when it's anything but a **Bug** or a **Build**;
 - a fix whose scope grew;
 - each choice that's the user's by [decision-card.md](~/.agents/pr-flow/decision-card.md), "Who decides" (a UX or product choice, a Simplify? question), the recommended one first. A UX choice comes with its picture: the screen now beside a mockup of each option (decision-card.md, "a picture"), made before asking, even for a dialog nothing has drawn yet;
-- **slices**, when the design spans the data model, the backend and the UI together (a native change's backend PR isn't asked: it's decided in step 4, and built first): split it into PRs that each branch from and merge to their base on their own (the schema and backend first, then the UI on top; a native slice goes to `release/next` once the backend's is merged, branches.md), each its own PR and Linear issue, every one built in this run, in dependency order: a slice that needs another's code branches from that slice's branch once its PR is open, and is retargeted to the base when that merges. Building them all isn't leave to merge them;
+- **slices**, when the design spans the data model, the backend and the UI together (a native change's backend PR isn't asked: it's decided in step 4, and built first): split it into PRs that each branch from and merge to their base on their own (the schema and backend first, then the UI on top; a native slice is opened once the backend's is merged, and waits for its store build, branches.md), each its own PR and Linear issue, every one built in this run, in dependency order: a slice that needs another's code branches from that slice's branch once its PR is open, and is retargeted to the base when that merges. Building them all isn't leave to merge them;
 - a council review (the `council` skill), when the user hasn't asked for one and the change reaches the data model, a workflow, auth or a migration;
 - a student test (`student-test`), when they haven't asked for one and the change adds or reworks a flow a student goes through;
 - for a parked report, the reply to post;

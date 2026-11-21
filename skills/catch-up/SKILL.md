@@ -5,7 +5,7 @@ description: 'Bring a stale thread''s branch up to date: merge the base in, reso
 
 # Catch up
 
-This thread's work went stale while its base (`main`, or `release/next`) moved on. Bring its branch to today's base with the change still doing what it did, so the user can carry on from here. The user sends this and leaves, so do everything that needs no decision first, and ask them once at the end.
+This thread's work went stale while its base (`main`) moved on. Bring its branch to today's base with the change still doing what it did, so the user can carry on from here. The user sends this and leaves, so do everything that needs no decision first, and ask them once at the end.
 
 Shared files: [ready.md](~/.agents/pr-flow/ready.md), [github.md](~/.agents/pr-flow/github.md), [decision-card.md](~/.agents/pr-flow/decision-card.md), [branches.md](~/.agents/pr-flow/branches.md).
 
@@ -19,7 +19,7 @@ From the thread and the branch:
 
 - what the change is meant to do: the thread itself, the PR body, the Linear issue;
 - the PR, if there is one: its head, CI, approvals, and comments since the thread last looked;
-- its base: the PR's, or with no PR the branch it was made from (`main` or `release/next`, branches.md);
+- its base: the PR's, or with no PR the branch it was made from (`main`; a PR still on `release/next` is retargeted to main, branches.md);
 - how far behind the base it is, and what landed there that touches the branch's files or what they call (`git log HEAD..origin/<base>`, with the files each commit changed).
 
 Uncommitted work in the worktree gets committed on the branch first, as a WIP commit, so the merge can't lose it.

@@ -13,7 +13,7 @@ Shared files: [slack.md](~/.agents/pr-flow/slack.md), [ready.md](~/.agents/pr-fl
 
 The PR (from the link, or the current branch's), its head, `additions`, `deletions`, title and URL (`gh pr view --json`), its Linear issue, and its thread in `#pr-review-channel` (slack.md). No thread: **first round**. A thread: **another round**, and its reviewer is whoever reviewed on GitHub or in the thread.
 
-Its **stack**: the open PRs it builds on (its base, down to `main` or `release/next`) and that build on it (`gh pr list --base <its branch>`). A stack is sent as one: every layer goes through step 2, and step 3 posts once for all of them.
+Its **stack**: the open PRs it builds on (its base, down to `main`) and that build on it (`gh pr list --base <its branch>`). A stack is sent as one: every layer goes through step 2, and step 3 posts once for all of them.
 
 ## 2. Make it ready
 
@@ -23,7 +23,7 @@ A red check this PR didn't cause (main fails it too, or its test is in files the
 
 A hand test the user hasn't answered (ready.md, "A hand test blocks on the user"): ask it, and post once it works or they've said to skip it; one that failed is fixed first.
 
-A red `phone-native` is the PR's base, not a check to rerun: [branches.md](~/.agents/pr-flow/branches.md), "phone-native red".
+A red `phone-native` is a native PR waiting for its store build, or main's drift, not a check to rerun: [branches.md](~/.agents/pr-flow/branches.md), "phone-native red".
 
 Asked only "is it ready?": post nothing, and go to step 4 with the verdict, what the review fixed, and what's left.
 

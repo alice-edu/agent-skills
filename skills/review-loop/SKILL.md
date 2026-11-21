@@ -27,8 +27,9 @@ Re-grade every finding yourself, whatever label it came with. A **rare** case, o
 
 Every round finds about one new P1 whatever its number, so more rounds never converge by themselves: the budget is what ends the loop.
 
-- A diff of under ~100 changed lines: one round, then one check of the fixes.
+- A diff of under ~100 changed lines: one round.
 - Otherwise up to 2 rounds; 3 while a P1 proven by a run stays open in auth, permissions, data loss, money or concurrency.
+- After the last round, when it had a P1 you fixed: one **fix check** by the other reviewer, on the open ids and the fix's diff through its callers only. It raises nothing new beyond a regression from the fix.
 - The user's "another round" grants one more.
 - The budget is per run. A later run on the same PR (fix-comments, catch-up, a merge of the base) reviews only what changed since the PR's agreed head (step 1), so it never starts over.
 
@@ -52,7 +53,7 @@ Find the base (`git merge-base HEAD origin/<base branch>`, or the PR's `baseRefN
 
 In author mode, commit first, so the head names exactly what is reviewed; review a clean tree only.
 
-**The agreed head.** When the PR was already agreed (its body's `Agreed at <sha>`, or this thread's ledger), with the same mode, lenses and seats (a council asked for after a two-reviewer loop isn't one), compare the change itself: `git diff <base>...<sha> | git patch-id --stable` against the same for the head. The same patch id (a merge of the base alone) means the loop is done: return the ledger. Otherwise review the **delta**: the diff since the agreed head, through its callers, with the ledger carried over and its open ids. A full review again only on the user's word, or when the design changed (a rewrite).
+**The agreed head.** When the PR was already agreed (its body's `Agreed at <sha>`, or this thread's ledger), with the same mode, lenses and seats (a council asked for after a two-reviewer loop isn't one), compare the change itself: `git diff <base>...<sha> | git patch-id --verbatim` against the same for the head (verbatim: a whitespace change can change behaviour). The same patch id (a merge of the base alone) means the review is done: return the ledger; the checks and proof are still rerun on the new head (ready.md). Otherwise review the **delta**: the diff since the agreed head, through its callers, with the ledger carried over and its open ids. A full review again only on the user's word, or when the design changed (a rewrite).
 
 Done when base, head, intent and the checks are written down.
 
@@ -111,7 +112,7 @@ Go again, while budget remains, only after a round that had a confirmed P1: the 
 
 ### 7. Stop
 
-- **Agreed**: a round, or the check of the fixes, with no confirmed P1 on the current head, from the other reviewer or you. Write `Agreed at <head sha>` into the PR body's review line.
-- **Stuck**: a finding still disputed after two replies, or the budget spent with a P1 open. First run the smallest check that decides it yourself (the reviewer's repro, a test, the docs); still open, both sides in a line each go to the caller's decision card (decision-card.md, "Stuck"), and it blocks the merge. Budget spent is never agreement.
+- **Agreed**: a round, or the fix check, with no confirmed P1 on the current head, from the other reviewer or you. Only then write `Agreed at <head sha>` into the PR body's review line.
+- **Stuck**: a finding still disputed after two replies, or the budget spent with a P1 open. First run the smallest check that decides it yourself (the reviewer's repro, a test, the docs); still open, both sides in a line each go to the caller's decision card (decision-card.md, "Stuck"), and it blocks the merge. Budget spent is never agreement: the PR body's line says `Review stuck at <head sha>: <open ids>`, and keeps the last agreed sha, if any, as the agreed head.
 
-Report: rounds, the other reviewer's model and effort, base and head, each lens's result (lenses.md, "Results"), the ledger's P1s with their outcome (each with a diagram when it matches [diagrams.md](~/.agents/pr-flow/diagrams.md)'s "When"), the P2s fixed and declined, and one line for the PR body: `Reviewed by Claude and Codex (review-loop, <N> rounds, agreed at <sha>); <what its findings changed>.` Run on its own, shape it by [report.md](~/.agents/pr-flow/report.md) and end with the Links line ([links.md](~/.agents/pr-flow/links.md)); run from another skill, that skill's report carries it.
+Report: rounds, the other reviewer's model and effort, base and head, each lens's result (lenses.md, "Results"), the ledger's P1s with their outcome (each with a diagram when it matches [diagrams.md](~/.agents/pr-flow/diagrams.md)'s "When"), the P2s fixed and declined, and one line for the PR body: `Reviewed by Claude and Codex (review-loop, <N> rounds, agreed at <sha>); <what its findings changed>.`, or for Stuck, `Reviewed by Claude and Codex (review-loop, <N> rounds); stuck at <sha>: <open ids>.` Run on its own, shape it by [report.md](~/.agents/pr-flow/report.md) and end with the Links line ([links.md](~/.agents/pr-flow/links.md)); run from another skill, that skill's report carries it.

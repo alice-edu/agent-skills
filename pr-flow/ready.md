@@ -51,9 +51,9 @@ A line that keeps its reason is a **hand test**, and it waits for the user: the 
 - **why you**: its reason, and what was tried (`Tried: … → …`), in one line;
 - **set up**: whatever it needs is already running and loaded, on the newest head: the dev stack or the preview up, the build on their phone and signed in, the account seeded with the data, the screen opened at the right state. Links ready to click;
 - **steps**: numbered, one action each, ending in what they should see (a number where it's about speed);
-- **answer**: "works", or what they saw.
+- **answer**: "works", what they saw instead, or "skip".
 
-Their answer goes into the checklist: `- [x] Tested by hand by <user>: <what>, at <sha>`.
+Their answer goes into the checklist: works is `- [x] Tested by hand by <user>: <what>, at <sha>`; skip is `- [ ] Skipped by <user>: <what>` and lets the PR go on; what they saw instead is a failing check, fixed like a P1 and asked again.
 
 ## The checklist
 
@@ -79,7 +79,7 @@ Every item below ends as `[x]`, `N/A` or a Test-by-hand line:
 
 The gate before a reviewer sees the PR: `send-for-review` runs it before posting, and it runs alone when the user asks "is it ready?". The user often keeps changing a PR in its thread after `build-it` opened it, and those commits get no review of their own; this is where they get one.
 
-1. **What changed**: the head `review-loop` last agreed on is in the checklist's item 8 (`review-loop agreed at <sha>`). The same change (`review-loop`'s step 1, "The agreed head": the same patch id, so a merge of the base alone counts as no change): reuse it all and go to 4.
+1. **What changed**: the head `review-loop` last agreed on is in the checklist's item 8 (`review-loop agreed at <sha>`). The same change (`review-loop`'s step 1, "The agreed head": the same patch id, so a merge of the base alone counts as no change): reuse the review. The head itself is the agreed one: reuse it all and go to 4. Otherwise (the base moved): go to 3, since a base change can break the PR's code.
 2. **Review it**: merge the base in, then `review-loop` on the delta since the agreed head, through its callers, as `build-it`'s step 8 ([its Done when](~/.agents/skills/build-it/SKILL.md)).
 3. **Prove it again** on the new head: the checks above, the change seen in the running app when a student can see it, and screenshots and GIFs retaken where the screen changed, until `screenshots-stale` says current.
 4. **Rewrite the PR body** for where the PR ended up, not where it started ([pr-body.md](pr-body.md)): what changed, the behaviour table, the checklist with this head's SHA, the screenshots and GIFs.

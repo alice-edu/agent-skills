@@ -71,9 +71,9 @@ Then pick **the base** by branches.md, "The base", for a fix or a build. Native 
 
 Done when the verdict has its evidence: a red test, numbers, a repro, the place in the app, or the design in a few lines, with its diagram when it matches diagrams.md's "When".
 
-## 5. Ask the user, once
+## 5. Ask the user
 
-Read [decision-card.md](~/.agents/pr-flow/decision-card.md) now, whole, and ask as its "How to ask" says. One decision card holding what's open:
+Read [decision-card.md](~/.agents/pr-flow/decision-card.md) now, whole, and ask as its "How to ask" says. The decision card, one decision per message, holding what's open:
 
 - which Linear issue, when step 2 found several;
 - the verdict, when it's anything but a **Bug** or a **Build**;

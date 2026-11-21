@@ -48,6 +48,7 @@ Reviewed by Claude and Codex (`review-loop`, <N> rounds); <what its findings cha
 
 - [ ] <What to do>. <What should happen>. (<body|account|deploy|taste>: <why>. Tried: <command or step> → <result>.)
 - [x] Tested by hand by <user>: <what>, at <short sha>
+- [ ] Skipped by <user>: <what>
 
 Designed in Doop: [<what>](<the agreed round's page>)
 T3 thread: <this thread's title>, `t3code://threads/<environmentId>/<threadId>`

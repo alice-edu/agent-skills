@@ -23,7 +23,7 @@ For each issue, what an agent can settle without the user:
 - **Thin**: what it lacks for Ready to Build's bar.
 - **Open**: the product question it hangs on, if any.
 
-Over about 30 issues, split this across subagents where the harness has them, a batch each, each returning one line of facts per issue with its evidence.
+Over about 30 issues, split this across subagents where the harness has them, a batch each, each told to read `~/.agents/pr-flow/worker.md` first, each returning one line of facts per issue with its evidence.
 
 Done when every issue has its line of facts, or "nothing found".
 

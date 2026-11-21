@@ -49,7 +49,7 @@ Draft the whole review now: body and every inline comment, worded as github.md s
 
 ## 4. Ask the user, when there's something to ask
 
-Show the user the explanation, then the ledger as an overview ([overview.md](~/.agents/pr-flow/overview.md)): one row a finding, 🔴 Blocking for a P1, 🟡 Optional for a P2, ⚪ Drop for one not worth posting, with a diagram linked on each row that matches diagrams.md's "When" (the explanation's, or one drawn for the finding: a fix that reworks a flow or a cost). The drafted review follows, folded. Then, if any of these exist, one decision card with all of them:
+Show the user the explanation, then the ledger as an overview ([overview.md](~/.agents/pr-flow/overview.md)): one row a finding, 🔴 Blocking for a P1, 🟡 Optional for a P2, ⚪ Drop for one not worth posting, with a diagram linked on each row that matches diagrams.md's "When" (the explanation's, or one drawn for the finding: a fix that reworks a flow or a cost). The drafted review follows, folded. Then, if any of these exist, the decision card, asked one decision per message:
 
 - the product table's rows: post as blocking, optional, or drop;
 - a finding the loop returned Stuck (still disputed, or the budget spent with a P1 open);

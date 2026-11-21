@@ -21,7 +21,7 @@ Its **stack**: the open PRs it builds on (its base, down to `main` or `release/n
 
 A red check this PR didn't cause (main fails it too, or its test is in files the PR doesn't touch): rerun it once and send, saying so in the post. What else can't be made ready (a P1 the loop can't settle, a test that needs something we don't have) goes on the decision card: send it saying so, or wait.
 
-A hand test the user hasn't answered (ready.md, "A hand test blocks on the user"): ask it, and post once they've answered or said to skip it.
+A hand test the user hasn't answered (ready.md, "A hand test blocks on the user"): ask it, and post once it works or they've said to skip it; one that failed is fixed first.
 
 A red `phone-native` is the PR's base, not a check to rerun: [branches.md](~/.agents/pr-flow/branches.md), "phone-native red".
 

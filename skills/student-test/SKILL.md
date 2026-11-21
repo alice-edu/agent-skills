@@ -25,6 +25,7 @@ Give them what a student would see:
 
 Four agents, started at once with `delegate_task`, on cheap models from both providers: Claude's Haiku or Sonnet, Codex's Luna, Terra or Astra. Never Opus, Fable or Sol. Each brief has:
 
+- "Read ~/.agents/pr-flow/worker.md first.";
 - a persona in a line: language, what they study, and the apps they already use;
 - what they're testing, with the screenshots or text;
 - this:

@@ -32,7 +32,7 @@ Does it do what was asked? The **intent** is the Linear issue, the PR body, the 
 
 A new feature a student uses ships with its usage tracking in the same PR (the repo's analytics; in Alicia, PostHog), when no event already answers how it's used; missing, it's a P1.
 
-Scope creep alone is a P2, or the user's call when it changes what a student sees. When nothing about it is written down, say "no written intent" and review the code against what the PR says it does.
+Scope creep alone is P2 polish, or the user's call when it changes what a student sees. When nothing about it is written down, say "no written intent" and review the code against what the PR says it does.
 
 **Test by hand**, in author mode: each draft line against [ready.md](ready.md), "Test by hand". A line without one of its four reasons, or one this run could have proven (its table, or any other way you can name), is housekeeping (review-loop, "Severity"), fixed by proving it. So is a line that asks for more than is left after the provable parts.
 
@@ -41,24 +41,33 @@ Scope creep alone is a P2, or the user's call when it changes what a student see
 The bug hunt. Look for:
 
 - the intended case being wrong, a regression in a caller, an edge case;
-- permissions, and one student's data reaching another;
+- permissions, and one student's data reaching another; what a user can repeat or send at will: its cost (model calls, storage, mail), its rate, and what it lets them reach (an outside URL, someone else's account);
 - whether the tests actually prove the behaviour the change claims.
+
+**The case tables.** Bugs hide in the cases nobody wrote down, so each reviewer writes them down before judging, in its reply's CASES: one row a case, with what happens and the line or run that shows it. A table the diff gives nothing to is one line, `none: <why>`, so a small diff has small tables.
+
+- **Ways in**, for each state, screen, control or handler the change adds or changes: every way it can start (each caller and opener, a reload or link, the first render, each saved setting at its other value), and every event that can arrive after it settled (after the user chose, after unmount, after a retry, from a second tab).
+- **Failures**, for each step the change adds wherever it runs (server, client, script, CI): a call, a dispatch, a load, a subscription, a timer, a write. What happens when it throws, hangs, answers late, half-succeeds or runs twice; whether one failure takes a batch with it; who tries it again; what the user sees meanwhile. An optional step fails open: the feature works without it. Search the diff for where failures go quiet: `catch`, `?.`, `??`, a default on error, a retry that runs out.
+- **Assumptions**, for each thing the change relies on a library, the platform or another module to do (an order, a timing, a re-render, idempotence, whether it throws): proved in the installed source at the lockfile's version, cited by file and line, or by a probe run. One neither read nor run is `unproven`.
+- **Claims**, for each thing the change says or makes true: every text a person reads (a label, a consent line, help text, a prompt, the PR body's behaviour table) matches what the code does; every analytics event fires exactly when its thing happens, once, with properties that mean what they say; whatever runs across the deploy (an old client, a running job, a cached build) still works with it.
 
 **Read shared code from its callers.** A change to something several places use (a component, hook or helper) is reviewed from each caller, not from its diff: what each relies on it for, and whether that still holds. A clean diff hides what a rewrite lost. Name the callers read.
 
 **The fact it's safe because of.** A change that looks risky is usually safe because of one fact ("this only drops cache entries that are already dead"). Name it and prove it as far as is cheap: pointed at a line, walked through step by step, or run (a script or test calling the real code, its output pasted). Say how far it got; one only claimed is `unproven`. A change to the data model, auth, concurrency or a migration needs it run before Correctness is clear.
 
-**A test deleted or weakened** (removed, skipped, its assertion loosened) needs a replacement covering the same behaviour, or a reason in the PR body (the behaviour itself is gone). Without either it's a P1, with the deleted test as its evidence.
+**A test deleted or weakened** (removed, skipped, its assertion loosened) needs a replacement covering the same behaviour, or a reason in the PR body (the behaviour itself is gone). Without either it's a P1, with the deleted test as its evidence. `~/.agents/pr-flow/removed-tests <base> <head>` lists each removed or turned-off test with the commit that added it; every row gets an answer: what checks that behaviour now (file and test), or that the behaviour is gone.
 
 ## Standards
 
 Does it follow the repo's own rules? The repo's docs (above) for what it touches, with the rule cited: those docs are the standard, so read them every time rather than going from memory. Each smell is named (a mysterious name, duplicated code, duplicated state, speculative generality, a middle man, shotgun surgery, a workaround flag) and comes with its fix.
 
+**One rule at a time.** Walk the agent docs (`AGENTS.md` at the root and under each touched directory) section by section, and each doc a section points to for what the change touches, giving each its line in the reply's RULES: `holds` with where, `broken` with its finding, the rest in one `N/A` list. A finding quotes the rule's sentence.
+
 **The right way.** A change leaves the code it touches in the shape it should have, the way a careful teammate would build it from scratch: the right fix, never the quick way around. Old debt never justifies new debt: code nearby already doing it badly is a reason to fix that code too, not to copy it. So:
 
 - a smell the change adds, or a workaround it adds to fit around the shape of nearby code: **P1**, fixed in this PR by fixing the shape;
 - old debt the change leans on or extends: fixed in this PR too, kept to what the change touches, and said in the PR body;
-- old debt it only passes by: P2, or a Linear issue when it's bigger than the PR.
+- old debt it only passes by: P2 polish, or a Linear issue when it's bigger than the PR.
 
 **The simplest shape.** The design is as small as what it has to do: the plainest version that meets every requirement, built from parts the repo already has. **Over-built** is anything beyond that: an abstraction or option with one user, generality for cases nobody asked for, a new table, service, package, flag or second path where an existing one does the job, state kept twice, defensive code for states that can't happen. Name the simpler version, what it would give up, and what it saves (lines, parts, ongoing cost). Over-built with nothing given up is a P1 under the right way; where the simpler shape drops a requirement, it's a Simplify? question ([decision-card.md](decision-card.md), "Who decides").
 
@@ -72,7 +81,7 @@ Does it follow the repo's own rules? The repo's docs (above) for what it touches
 
 What was read and what it decided goes in the PR body's Research section ([pr-body.md](pr-body.md)).
 
-**Done the first time.** Whatever the change touches is finished in this PR: the small fix, the cleanup it leans on, the cleaner design for what it builds. Each finding is either worth doing, and done now, or optional, and fine to skip with an approval. "Follow-up PR" is neither: it's extra work later, kept only for debt that's too big for this PR and that the change merely passes by. Code already written, in this branch or before it, earns no protection: when a better design turns up mid-build or in review, rewrite to it.
+**Done the first time.** Whatever the change touches is finished in this PR: the small fix, the cleanup it leans on, the cleaner design for what it builds. Each finding is either worth doing, and done now, or polish, fine to skip with an approval. "Follow-up PR" is neither: it's extra work later, kept only for debt that's too big for this PR and that the change merely passes by. Code already written, in this branch or before it, earns no protection: when a better design turns up mid-build or in review, rewrite to it.
 
 A design change starts from the setup the system should have, then works back to what's there. For each constraint the design inherits (a table's shape, a flag, a split between two paths), ask whether it's a real requirement or an earlier choice that a cleaner setup would drop. Where it's an earlier choice, clear it out first, in its own commits ahead of the change, and build on the clean setup. A design that bends around an earlier bad choice when a cleaner one was in reach is a P1. When clearing it out is much bigger than the change (a data migration, several packages), put both designs on the decision card with what each costs.
 
@@ -101,7 +110,7 @@ Applies when the change affects what a user sees or does. Look before judging: t
   - the same thing done differently from the screens beside it;
   - focus lost after an action, or a control the keyboard can't reach.
 
-  A finding that's a choice about what the user sees (a label's wording, a layout, a flow, what's shown when, what moves behind "advanced") is the user's call, with a recommended answer; one that breaks a written rule is fixed. A missing state is fixed with what the app's other screens already show for it; one with no precedent is the user's call. On someone else's PR (`review-pr`), a usability finding is optional unless a student would hit it on the main path the change touches.
+  A finding that's a choice about what the user sees (a label's wording, a layout, a flow, what's shown when, what moves behind "advanced") is the user's call, with a recommended answer; one that breaks a written rule is fixed. A missing state is fixed with what the app's other screens already show for it; one with no precedent is the user's call. On someone else's PR (`review-pr`), usability polish is optional; a usability bug is graded as review-loop's Severity says.
 
   When the change is a new flow, `student-test` can get takes from a panel of stand-in students.
 

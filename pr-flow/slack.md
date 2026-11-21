@@ -38,9 +38,9 @@ Stack of <n> on <what they add up to, a few words>. Review in order, each builds
 
 A named reviewer as above. In the thread, a **Ready for another round** names the layer each fix is in.
 
-**Ready for another round** (in the thread, `send-for-review`): `<@reviewer> ready for another round.` then what changed, one bullet a comment or group of comments: `Fixed in <sha>: …`, and `Kept <what>, reasons in its thread` for any declined. End with the state: replied on every comment, base merged in, CI's actual state on the head (green, or running), screenshots updated where they changed.
+**Ready for another round** (in the thread, `send-for-review`): `<@reviewer> ready for another round.` then what changed, one bullet a comment or group of comments: `Fixed in <sha>: …`, and `Kept <what>, reasons in its thread` for any pushed back on or skipped as polish. End with the state: replied on every comment, base merged in, CI's actual state on the head (green, or running), screenshots updated where they changed.
 
-**Review done** (in the thread, `review-pr`): `<@author>` and the verdict first ("approved", "changes requested"). Then the P1s, one line each, what goes wrong for whom. The P2s as a count ("plus 3 optional nits inline"). Then the review's link. On a re-review, first what checked out from last time.
+**Review done** (in the thread, `review-pr`): `<@author>` and the verdict first ("approved", "changes requested"). Then the P1s, one line each, what goes wrong for whom. The P2s as counts ("plus 2 bugs worth fixing and 3 optional nits inline"). Then the review's link. On a re-review, first what checked out from last time.
 
 **Waiting for review** (top-level, the review digest): shape and rules in [digest.md](digest.md).
 

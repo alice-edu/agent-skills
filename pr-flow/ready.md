@@ -70,7 +70,7 @@ Every item below ends as `[x]`, `N/A` or a Test-by-hand line:
 2. The checks CI runs for what the PR touches (`AGENTS.md`, "CI"): typecheck, lint, format, tests of the touched packages.
 3. The base merged in before those final checks, so a key or type another PR added is in the run.
 4. Research written in the PR body ([pr-body.md](pr-body.md), "Research") for each outside package the diff uses in a new way and each solved problem it meets: the docs for the installed version read, each named (`next-intl 4.3 useTranslations`), and how others use it. The installed version is in `node_modules/<pkg>/package.json`; its bundled docs or the docs site for that version.
-5. Edge cases: the ones handled, each with its test, and the ones left on purpose, each with why.
+5. Edge cases: the case tables' rows (lenses.md, Correctness), each handled with its evidence (a test where it was a finding and the repo has a place for one), and any left in the body's Not fixed with the other reviewer's AGREE (pr-body.md).
 6. A file this PR made large or grew a lot: split considered, with the outcome. Only files the PR itself grew.
 7. Each changed screen tried at its worst case (Proof), naming the states tried and what broke; screenshots for every change a student can see, and GIFs for each that moves ([screenshots.md](screenshots.md)), shown to the user in the report; `screenshots-stale` says current on this head (screenshots.md, "Keep them current"); a change nobody sees is `N/A: Screenshots: <why>`.
 8. `review-loop` agreed on this head.

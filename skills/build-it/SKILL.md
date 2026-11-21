@@ -107,7 +107,7 @@ The bar: a reviewer who knows the repo's docs would approve it as it stands.
 2. Prove its fixes again on the new head (step 7).
 3. A lens that came back `not verified`: give it what it lacked (the doc, the look at the app) and recheck that lens alone.
 
-Done when, on one final head: the loop agreed; each P2 is fixed, or skipped as optional in one line; every lens is clear or N/A, none `not verified`; both reviewers' DOCS cover the repo's docs for this change ([lenses.md](~/.agents/pr-flow/lenses.md), "The repo's docs"); and ready.md's checks pass on that head. A P1 still open when the budget is spent is Stuck: it goes on the card and blocks the merge, and the PR still opens ready for review, the open P1 first in its body.
+Done when, on one final head: the loop agreed; each P2 bug is fixed or in Not fixed with the other reviewer's AGREE, and polish fixed or skipped in one line; every lens is clear or N/A, none `not verified`; both reviewers' DOCS cover the repo's docs for this change ([lenses.md](~/.agents/pr-flow/lenses.md), "The repo's docs"); and ready.md's checks pass on that head. A P1 still open when the budget is spent is Stuck: it goes on the card and blocks the merge, and the PR still opens ready for review, the open P1 first in its body.
 
 ## 9. Open the PR
 

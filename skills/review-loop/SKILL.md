@@ -16,12 +16,12 @@ Either mode can run as a **council** when the caller or the user asks for it (th
 
 ## Severity
 
-- **P1**: the intended case is wrong, a bug callers will hit, a security hole, data loss, or a broken deploy. Every P1 carries **evidence**: the code path that reaches it, a reproduction, a failing test, or a doc quote. A P1 without evidence is a P2 until it has some. From round 2, a new P1 in code the fixes didn't touch needs a **run** as its evidence: a failing test, a repro, or command output (a probe script where a race or data loss is hard to reproduce); an argument alone makes it a P2.
+- **P1**: the intended case is wrong, a bug callers will hit, a security hole, data loss, or a broken deploy. Every P1 carries **evidence**: the code path that reaches it, a reproduction, a failing test, or a doc quote. A P1 without evidence is **unconfirmed** (step 4) until it has some: neither fixed nor skipped. From round 2, a new P1 in code the fixes didn't touch needs a **run** as its evidence: a failing test, a repro, or command output (a probe script where a race or data loss is hard to reproduce); an argument alone leaves it unconfirmed.
 - **Housekeeping**: what lenses.md asks of the PR around the code: leftovers, Test by hand lines, screenshots, the PR body, a missing story. In author mode you fix it directly and list it in the ledger; it is done before the PR is ready, and never starts a round by itself.
-- **P2**: everything else: another path, a rare case, small performance, naming, style, a refactor. Optional.
+- **P2**: a **P2 bug**, one whose harm is cosmetic or clears by itself with nothing for the user to do, and **polish**: naming, style, small performance, a refactor. A P2 bug is fixed like a P1 (step 5); polish is optional. Anything else wrong that a user sees or relies on (a false label, an event sent twice, slowness at a supported size, a step they must redo) is a P1.
 - **The user's call**: a finding that's theirs by [decision-card.md](~/.agents/pr-flow/decision-card.md), "Who decides" (the product, or a Simplify? question), whatever its severity. It goes on the caller's decision card, with the answer the reviewers agree on as the default. Every technical finding is settled here by the docs, in both modes.
 
-Re-grade every finding yourself, whatever label it came with. A **rare** case, one an honest user reaches only through an unusual sequence of steps, is P2 even from a confident reviewer, and so is a speculative one. Never rare: input at the sizes the repo supports (the largest course, the most files) and anything an attacker controls. Harm a reload can't undo (another student's data, lost work, money, a broken deploy) keeps a finding P1 however rare, as does what the repo calls blocking (lenses.md, "Every finding").
+Re-grade every finding yourself, whatever label it came with. **Grade by harm, from a path that's reachable.** A case is reachable when normal use, the platform or time can produce it, and the code path or a run shows how: another way into the state (opened folded, after a reload, from a link, on first render), a step that fails or answers late, an event that arrives after the user already chose, two tabs, a deploy between two steps, the sizes the repo supports, anything an attacker controls. A reachable case grades as the intended case does: when it breaks the feature, shows something false, or loses work, it's a P1, however unusual the steps. A case nothing can produce (a state the types or the data model rule out) isn't a finding; a speculative one without a path stays unconfirmed until one is shown. Harm a reload can't undo (another student's data, lost work, money, a broken deploy) keeps a finding P1, as does what the repo calls blocking (lenses.md, "Every finding"). So does a rule the repo's agent docs write down, broken by the change (lenses.md, Standards, "One rule at a time"): the rule is the repo's decision already made, whatever the harm today. Where the rule's own words leave the case open, it's the user's call.
 
 ## Budget
 
@@ -29,7 +29,7 @@ Every round finds about one new P1 whatever its number, so more rounds never con
 
 - A diff of under ~100 changed lines: one round.
 - Otherwise up to 2 rounds; 3 while a P1 proven by a run stays open in auth, permissions, data loss, money or concurrency.
-- After the last round, when it had a P1 you fixed: one **fix check** by the other reviewer, on the open ids and the fix's diff through its callers only. It raises nothing new beyond a regression from the fix.
+- After the last round, when you fixed a P1 or a P2 bug in it, or propose a Not fixed row: one **fix check** by the other reviewer, on the open ids and each fix's diff through its callers, with the case tables (lenses.md, Correctness) redone for what the fixes changed, and its AGREE or DISAGREE on each proposed Not fixed row. It raises nothing new beyond a regression from a fix or another case of a fixed bug's class.
 - The user's "another round" grants one more.
 - The budget is per run. A later run on the same PR (fix-comments, catch-up, a merge of the base) reviews only what changed since the PR's agreed head (step 1), so it never starts over.
 
@@ -64,6 +64,7 @@ Done when base, head, intent and the checks are written down.
 - **In T3 Code**: `orchestrator_capabilities` once, then `delegate_task` with `role: "review"`, `mode: "async"` and a new `clientRequestId` each round, on the other provider's newest model at high effort (Codex: the newest GPT, the `sol` line when listed; Claude: the newest Opus). Name the model and effort in the report.
 - **Outside T3**: from Claude, `codex exec -s read-only "<brief>"` in the repo; from Codex, `claude -p --permission-mode plan "<brief>"` in the repo (plan mode reads but never edits).
 - No route to the other provider: say so and stop. A second review on the same model is no substitute.
+- **Two seats, one focus each**, in round 1 of a diff over ~100 changed lines (a council keeps its own four seats, each on every lens): start the other reviewer twice in parallel with the same brief, its `Focus:` line **hunt** on one (Correctness and its case tables) and **rules** on the other (Spec, Standards with RULES, Backend, UI and UX). Your own review covers every lens. Later rounds and the fix check are one seat on every lens.
 
 Brief, the same every round:
 
@@ -71,48 +72,54 @@ Brief, the same every round:
 Review only. Edit nothing, post nothing, start no subagents. Read ~/.agents/pr-flow/worker.md first.
 Repo: <abs path>  Base: <sha>  Head: <sha>
 Intent: <intent> (source: <issue/PR/words>)  Out of scope: <scope>  Checks: <results>
+Focus: <hunt | rules | every lens>: report on your focus's lenses, the others as `other seat`
 Test by hand (author mode): <draft lines, or none>
 Diff: git diff <base>..<head> (plus `git status --short` for uncommitted files)
+Removed tests: <~/.agents/pr-flow/removed-tests <base> <head> output, or "none">
 Read the surrounding code and callers. Review through these lenses: <lenses>, as
 ~/.agents/pr-flow/lenses.md describes (read it, then the repo's docs as its "The repo's docs"
 says: every one that bears on the change, in full).
-P1 = intended case wrong / bug callers hit / security / data loss / broken deploy / what the
-repo calls blocking, each with evidence (code path, repro, failing test, doc). P2 = everything
-else, optional.
+Report every finding you can show a path to, however unusual the steps, graded as
+~/.agents/skills/review-loop/SKILL.md's "Severity" says. Each P1 carries its evidence (code path,
+repro, failing test, doc).
 Reply:
 VERDICT: APPROVE or CHANGES
 DOCS: <each repo doc read, by path>
 LENSES: <lens>: clear | findings <ids> | N/A | not verified: <why>, one per lens
+CASES: the four case tables of lenses.md's Correctness, every row, fine ones too; an empty table is `none: <why>`
+RULES: <agent-doc section or doc it points to>: holds | broken <id>, one line each; then `N/A: <the rest, comma-separated>`
 <id> [P1|P2] [agents|user] [<lens>] <file>:<line> <claim>. Source: <...>. Evidence: <...>. Fix: <...>
 ```
 
-From round 2, add the ledger (`fixed in <sha>` / `disagree: <evidence>` / `declined: <why>`), the diff since the last round, and: "Check the open ids and the changed code, through its callers; mark each old id resolved or still open. Reopen a settled id only with new evidence. A new id only for a regression from the fixes, or with a run as its evidence. Classes found so far: <classes>."
+From round 2, add the ledger (`fixed in <sha>` / `disagree: <evidence>` / `not fixed: <the proposed Not fixed row>`), the diff since the last round, and: "Check the open ids and the changed code, through its callers; mark each old id resolved or still open. Reopen a settled id only with new evidence. A new id only for a regression from the fixes, or with a run as its evidence. For each `not fixed` row: AGREE or DISAGREE, with why. Classes found so far: <classes>."
 
 ### 3. Your own review
 
 While the other reviewer runs, review the same diff yourself, before reading its reply, so the two stay independent. Read the changed code's callers, and apply each chosen lens as lenses.md says, with the repo docs it names and the current docs of each technology it uses (lenses.md, "The technology's way"). In author mode, edit nothing until its reply is in: it is reviewing this head.
 
-Done when every changed file has been read in full with its callers, and every doc in the repo's docs for this change (lenses.md) has been read.
+Done when every changed file has been read in full with its callers, every doc in the repo's docs for this change (lenses.md) has been read, and your own CASES and RULES are written as the brief asks of the other reviewer.
 
 ### 4. Merge
 
-Put both reviews in the ledger: one row a finding, duplicates merged, each with id, severity (re-graded), owner (decision-card.md, "Who decides"), lens, **class** (the way the bug gets through: "an image URL gets past the Mermaid text filter"), file:line, claim, source, evidence, and who raised it. Check each against the code yourself; a finding you can't confirm is marked unconfirmed, not dropped. Compare each reviewer's DOCS with your own list: a doc it missed makes the lenses that doc bears on `not verified` for it, and the next round's brief names the doc.
+Put both reviews in the ledger: one row a finding, duplicates merged, each with id, severity (re-graded), owner (decision-card.md, "Who decides"), lens, **class** (the way the bug gets through: "an image URL gets past the Mermaid text filter"), file:line, claim, source, evidence, and who raised it. Check each against the code yourself; a finding you can't confirm is marked unconfirmed, not dropped. Compare each reviewer's DOCS with your own list: a doc it missed makes the lenses that doc bears on `not verified` for it, and the next round's brief names the doc. Hold the CASES and RULES lines to the diff the same way: a step, handler, `catch`, fallback or new state in the diff that no reviewer's table has a row for leaves Correctness `not verified`, and a section of the agent docs on neither RULES line leaves Standards `not verified`, until a reviewer (you, or the next round's brief) fills the row in.
 
 ### 5. Act
 
-**Author mode**: a user-owned finding waits for the card; the rest are yours. Fix each P1 completely, the whole cause rather than the one symptom ([lenses.md](~/.agents/pr-flow/lenses.md), "The right way"), plus a test that fails without it when the repo has a place for one. Fix housekeeping directly. Take each P2 that matters for what the change touches, cheap or not. One that doesn't really matter is optional: skip it in one line, as optional rather than a follow-up. Where you disagree, write why with evidence. Then rerun the checks the fixes touch, and compare `git diff --shortstat <base>` with before: growth from doing the change right stays; cut back only what reaches past what the change touches.
+**Author mode**: a user-owned finding waits for the card; the rest are yours. Fix each P1 completely, the whole cause rather than the one symptom ([lenses.md](~/.agents/pr-flow/lenses.md), "The right way"), plus a test that fails without it when the repo has a place for one. Fix housekeeping directly. Fix each P2 that's a bug, the same way, cheap or not. Polish is optional: skip it in one line. A P2 bug stays unfixed only when the other reviewer answers AGREE that its fix costs more than its harm (a new subsystem for a cosmetic glitch): propose the row in the next round's brief or the fix check, quote its answer in the PR body's **Not fixed** (pr-body.md), and fix it on DISAGREE; a fix made on a fix check's DISAGREE gets one more fix check, on its diff only. A fix whose cost comes from the design's shape is a design finding, fixed by changing the shape. More than three rows for Not fixed means the design is wrong: redesign before writing them. Where you disagree, write why with evidence. Then rerun the checks the fixes touch, and compare `git diff --shortstat <base>` with before: growth from doing the change right stays; cut back only what reaches past what the change touches.
 
 **Reviewer mode**: edit nothing. The ledger, with the user's-call items separated out, is the result.
 
 ### 6. Next round
 
-Go again, while budget remains, only after a round that had a confirmed P1: the next round checks its fix. A round with no confirmed P1 ends the loop: fix the P2s you take and the housekeeping, rerun the checks they touch, and stop. Their fixes get no round of their own.
+Go again, while budget remains, only after a round that had a confirmed P1: the next round checks its fix. A round with no confirmed P1 ends the rounds: fix the P2 bugs and the housekeeping, rerun the checks they touch, and send the P2 fixes and any proposed Not fixed rows to the fix check (Budget).
 
-**A recurring class.** The second time a P1 of one class turns up on this PR (an earlier round, an earlier run of this loop, or a human review's point fixed before), its ledger row answers: does this fix close the whole class, or only this case? Closing it names the boundary at file:line (a check every path goes through, a library that solves it, lenses.md "A solved problem") and a test that feeds it a second case of the class. A fix that only patches one more case means the approach is wrong: redesign so the class can't happen, and note the redesign in the ledger. It's the agents' call, under **Decided**, unless it changes what a student sees or grows the scope. Findings of other classes are fixed as usual. Wait for each reply before the next round; a timeout, an error or no reply is not approval.
+**A recurring class.** Every review of this PR, its human reviews included, adds its P1s' classes to the brief's "Classes found so far", so each later round looks for the class, not only its case. The second time a P1 of one class turns up on this PR (an earlier round, an earlier run of this loop, or a human review's point fixed before), its ledger row answers: does this fix close the whole class, or only this case? Closing it names the boundary at file:line (a check every path goes through, a library that solves it, lenses.md "A solved problem") and a test that feeds it a second case of the class. A fix that only patches one more case means the approach is wrong: redesign so the class can't happen, and note the redesign in the ledger. It's the agents' call, under **Decided**, unless it changes what a student sees or grows the scope. Findings of other classes are fixed as usual. Wait for each reply before the next round; a timeout, an error or no reply is not approval.
 
 ### 7. Stop
 
-- **Agreed**: a round, or the fix check, with no confirmed P1 on the current head, from the other reviewer or you. Only then write `Agreed at <head sha>` into the PR body's review line.
+- **Agreed**: a round, or the fix check, on the current head with no confirmed P1 open, from the other reviewer or you, and every confirmed P2 bug fixed or in Not fixed with the other reviewer's AGREE. Only then write `Agreed at <head sha>` into the PR body's review line.
 - **Stuck**: a finding still disputed after two replies, or the budget spent with a P1 open. First run the smallest check that decides it yourself (the reviewer's repro, a test, the docs); still open, both sides in a line each go to the caller's decision card (decision-card.md, "Stuck"), and it blocks the merge. Budget spent is never agreement: the PR body's line says `Review stuck at <head sha>: <open ids>`, and keeps the last agreed sha, if any, as the agreed head.
 
-Report: rounds, the other reviewer's model and effort, base and head, each lens's result (lenses.md, "Results"), the ledger's P1s with their outcome (each with a diagram when it matches [diagrams.md](~/.agents/pr-flow/diagrams.md)'s "When"), the P2s fixed and declined, and one line for the PR body: `Reviewed by Claude and Codex (review-loop, <N> rounds, agreed at <sha>); <what its findings changed>.`, or for Stuck, `Reviewed by Claude and Codex (review-loop, <N> rounds); stuck at <sha>: <open ids>.` Run on its own, shape it by [report.md](~/.agents/pr-flow/report.md) and end with the Links line ([links.md](~/.agents/pr-flow/links.md)); run from another skill, that skill's report carries it.
+**Changing this skill.** An edit that changes how findings are graded or what reviewers look for (Severity, the brief, lenses.md's lenses) is measured before it's kept: [misses.md](~/.agents/pr-flow/misses.md), "Measure a change".
+
+Report: rounds, the other reviewer's model and effort, base and head, each lens's result (lenses.md, "Results"), the ledger's P1s with their outcome (each with a diagram when it matches [diagrams.md](~/.agents/pr-flow/diagrams.md)'s "When"), the P2 bugs fixed and those in Not fixed, and one line for the PR body: `Reviewed by Claude and Codex (review-loop, <N> rounds, agreed at <sha>); <what its findings changed>.`, or for Stuck, `Reviewed by Claude and Codex (review-loop, <N> rounds); stuck at <sha>: <open ids>.` Run on its own, shape it by [report.md](~/.agents/pr-flow/report.md) and end with the Links line ([links.md](~/.agents/pr-flow/links.md)); run from another skill, that skill's report carries it.

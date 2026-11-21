@@ -42,17 +42,19 @@ Done when `review-loop` has stopped (and the student test, when one runs), its B
 From the ledger:
 
 - an open P1: **changes requested**;
-- only P2s, or nothing: **approve**, the P2s posted as optional. A rare edge case is approved with the note that it's optional; a cheap one can carry "worth fixing before merge" and still be an approval;
+- only P2s, or nothing: **approve**, the P2 bugs posted as "worth fixing", polish as optional;
+- each P1 only an unusual sequence of steps reaches, with harm a reload clears and no written rule broken, goes on the user's card (step 4): post it as blocking (recommended), or approve with it as "worth fixing before merge". The ledger keeps it P1;
 - on a re-review, earlier findings the author settled are said to check out.
 
 Draft the whole review now: body and every inline comment, worded as github.md says.
 
 ## 4. Ask the user, when there's something to ask
 
-Show the user the explanation, then the ledger as an overview ([overview.md](~/.agents/pr-flow/overview.md)): one row a finding, 🔴 Blocking for a P1, 🟡 Optional for a P2, ⚪ Drop for one not worth posting, with a diagram linked on each row that matches diagrams.md's "When" (the explanation's, or one drawn for the finding: a fix that reworks a flow or a cost). The drafted review follows, folded. Then, if any of these exist, the decision card, asked one decision per message:
+Show the user the explanation, then the ledger as an overview ([overview.md](~/.agents/pr-flow/overview.md)): one row a finding, 🔴 Blocking for a P1, 🟠 Worth fixing for a P2 bug, 🟡 Optional for polish, ⚪ Drop for one not worth posting, with a diagram linked on each row that matches diagrams.md's "When" (the explanation's, or one drawn for the finding: a fix that reworks a flow or a cost). The drafted review follows, folded. Then, if any of these exist, the decision card, asked one decision per message:
 
-- the product table's rows: post as blocking, optional, or drop;
+- the product table's rows: post as blocking, worth fixing, optional, or drop;
 - a finding the loop returned Stuck (still disputed, or the budget spent with a P1 open);
+- each P1 that may be approved as "worth fixing" (step 3);
 - the verdict, when it rests on one of those.
 
 No such items: show the drafted review and its Slack reply, and post once the user has seen them (decision-card.md, "In the user's name"). The user's answers adjust the draft.

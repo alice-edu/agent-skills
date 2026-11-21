@@ -21,7 +21,7 @@ On CI and reviews, as [waiting.md](~/.agents/pr-flow/waiting.md), "Waiting on CI
 
 **Bots**: the checks branch protection requires are **required**, and the PR waits for them. Review bots (CodeRabbit, Copilot, any other) are **advisory**: answer what they post, never wait for one to start or finish. Deploy bots' comments (Vercel's and Expo's preview links, posted again on each push) ask nothing: they're no finding and need no answer.
 
-Keep the PR the size its goal needs: a bot's nit on a rare path is answered, not built.
+Keep the PR the size its goal needs: a bot's polish nit is answered, not built; a bug it shows is fixed, however rare its path (review-loop, "Severity").
 
 ## Done
 

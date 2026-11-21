@@ -23,7 +23,7 @@ Read the code each point is about and check the claim yourself; a reviewer's cer
 
 - ✅ **Fix**: the point is right. Its whole cause gets fixed in this PR. A point of a class an earlier round on this PR already fixed is a sign the approach is wrong: redesign it, as `review-loop`'s "A recurring class". A fix the reviewer suggests is a change like any other: read it through its callers before taking it.
 - 💬 **Push back**: the claim is wrong, with evidence (a line, a test, a doc). A technical point the reviewer and the docs see differently is settled by the docs (lenses.md, "The technology's way").
-- ⏭️ **Skip**: an optional point that doesn't matter for what the PR touches, with a short reason.
+- ⏭️ **Skip**: polish that doesn't matter for what the PR touches, with a short reason. A point that's a bug, however rare, is ✅ Fix, or 💬 Push back when it isn't reachable. A reviewer asking for a Not fixed row (pr-body.md) is ✅ Fix unless the user says otherwise on the card.
 
 Every Push back and Skip is a reply that speaks for the user, so it goes on the card with its wording, whichever table it's in. A technical row below High: investigate until it's High (overview.md, "Confidence"), while the rest goes on.
 
@@ -44,7 +44,8 @@ For "review's back" or "what did they say", stop after the overview, with the ca
 2. Fix each ✅ row, the whole of what it points at (the same problem in its sibling code too), the right way ([lenses.md](~/.agents/pr-flow/lenses.md), "The right way"): fix the shape a comment exposes rather than patching around it. A point that was a bug gets a test that fails without the fix.
 3. Hold the PR to [ready.md](~/.agents/pr-flow/ready.md) again: rerun the checks the fixes touch, see a visible fix in the running app.
 4. `review-loop` in **author** mode on what changed since the PR's agreed head (its step 1, "The agreed head"), the base merged in: the fixes through their callers, its ledger carried over with the user's approved answers; every lens that fits, the Backend lens through the repo's backend review doc when it touches the backend. On top of that, each fix this round gets a **regression** check: its callers, its sibling code and the tests around it, for what the fix could have broken. Fix what it finds the same way (items 2 and 3), whether or not the reviewer raised it, and list the new ones in the report. A regression a fix caused is fixed whatever its grade. Done when the loop agrees on the final head, every fix (the reviewer's and the loop's own) has had its regression check, and each regression found is fixed and proven. Budget spent with a P1 open: don't send it back; go to step 7, where the thread stays in sight.
-5. Screenshots and GIFs retaken where something visible changed, under new names, until `screenshots-stale` says current (screenshots.md, "Keep them current"), and the PR body updated: What changed, the checklist, Test by hand, and this thread's T3 line ([pr-body.md](~/.agents/pr-flow/pr-body.md), "Where it was made").
+5. **Log the misses**: each ✅ point that's a P1 by `review-loop`'s Severity, on code the PR's own loop had reviewed without raising it, gets a row in [misses.md](~/.agents/pr-flow/misses.md), so the loop is measured against it, committed on its own in the skills repo (`readlink ~/.agents/pr-flow`), never in the PR.
+6. Screenshots and GIFs retaken where something visible changed, under new names, until `screenshots-stale` says current (screenshots.md, "Keep them current"), and the PR body updated: What changed, the checklist, Test by hand, and this thread's T3 line ([pr-body.md](~/.agents/pr-flow/pr-body.md), "Where it was made").
 
 ## 5. Push and reply
 

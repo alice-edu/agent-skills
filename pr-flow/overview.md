@@ -6,7 +6,7 @@ How a review is shown to the user: in `review-pr` (our review of a teammate's PR
 
 1. **Summary line**, one sentence in bold:
    - fix-comments: `**<Reviewer> left 6 points:** 3 we'll fix, 2 need you, 1 we're still checking.`
-   - review-pr: `**Verdict: changes requested.** 1 blocking, 3 optional, 1 needs you.`
+   - review-pr: `**Verdict: changes requested.** 1 blocking, 2 worth fixing, 3 optional, 1 needs you.`
 2. **Two tables**, split by owner ([decision-card.md](decision-card.md), "Who decides"):
    - **Product and design (your call)** first: every row of it is on the card.
    - **Technical (we decide)** second.
@@ -30,8 +30,8 @@ Done when every row has its cells, and every row that matches diagrams.md's "Whe
 - **Kind**, one of a fixed set. Product: **UX**, **Copy**, **Flow**, **Scope**. Technical: **Bug**, **Perf**, **Design**, **Cleanup**, **Test**.
 - **What it means**: in the product table, what a student sees or does; in the technical table, the cause and effect in plain words. No code names or file paths in either: parts are named as they look on screen. The test: someone who hasn't read the code understands the row.
 - **Recommended**: one emoji and a word, then the action, verb first.
-  - fix-comments: ✅ **Fix**, 💬 **Push back** (the reviewer is wrong, with evidence), ⏭️ **Skip** (optional, and it doesn't matter here).
-  - review-pr: 🔴 **Blocking**, 🟡 **Optional**, ⚪ **Drop** (not worth posting).
+  - fix-comments: ✅ **Fix**, 💬 **Push back** (the reviewer is wrong, with evidence), ⏭️ **Skip** (polish that doesn't matter here).
+  - review-pr: 🔴 **Blocking**, 🟠 **Worth fixing** (a P2 bug), 🟡 **Optional** (polish), ⚪ **Drop** (not worth posting).
 - **Conf.**: High, Med or Low.
 
 Each cell stays under about 60 characters, not counting its links. Whatever doesn't fit goes in the details.

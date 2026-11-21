@@ -5,8 +5,8 @@ How the user's reviews and replies read on GitHub, and how to post them so they 
 ## A review of someone else's PR
 
 - One review a round. The body starts with `**AI:**`, then what was reviewed and the verdict in a sentence or two: "Re-reviewed at `abc1234`. Every earlier fix checks out. One new P1 …".
-- Each finding is an inline comment at its line, starting `**AI:** **P1.**` or `**AI:** **P2.**`: what goes wrong, for whom, the evidence, and a suggested fix. A P2 says it's optional.
-- The event follows the findings: `REQUEST_CHANGES` when a P1 is open, `APPROVE` when only P2s are left ("a few optional nits, none blocking"), `COMMENT` only when the user chose it.
+- Each finding is an inline comment at its line, starting `**AI:** **P1.**` or `**AI:** **P2.**`: what goes wrong, for whom, the evidence, and a suggested fix. A P2 bug says it's worth fixing; polish says it's optional.
+- The event follows the findings: `REQUEST_CHANGES` when a P1 is open, `APPROVE` when only P2s are left ("nothing blocking; two bugs worth fixing, a few optional nits"), `COMMENT` only when the user chose it.
 - Post it in one call, pinned to the head reviewed:
 
   ```bash

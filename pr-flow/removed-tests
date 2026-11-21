@@ -1,0 +1,196 @@
+#!/usr/bin/env python3
+"""removed-tests [<base> [<head>]]
+
+Lists every test a change removes or turns off, with the commit that added it, so a review
+can name what checks that behaviour now (lenses.md, "A test deleted or weakened").
+Run in the repo. <base> defaults to the merge base with origin/main, <head> to HEAD.
+
+Each test file the change touches is read whole at base and at head (following a rename),
+and its it(/test( declarations compared by title: single-line or not, .each tables, chained
+modifiers. A row for each one gone, ordered by how likely it pinned a fix:
+  FIX      added later than its file, with a code change, by a commit whose message reads as
+           a fix or a review round
+  LATER    added later than its file, with a code change
+  SKIPPED  still there, now .skip / .todo / .fails
+  MOVED    gone from its file, a test of the same title declared in another test file
+  WITH     came with its file, or in a commit of tests only
+  UNREAD   a declaration whose title this can't read (a variable, a call): check by hand
+Every row needs an answer. Exit 0 nothing removed, 1 rows to answer, 2 usage, 3 couldn't check.
+"""
+import re, subprocess, sys
+
+TEST_FILE = re.compile(r"(\.(test|spec)\.[cm]?[jt]sx?$)|(_test\.(py|go)$)|(^|/)test_[^/]+\.py$")
+FIXLIKE = re.compile(r"\b(fix(e[sd])?|bugs?|regress\w*|broke|broken|crash\w*|review\w*|again|no longer|"
+                     r"(does|do|is|was|were|did|won|can|could|would)n't|not any more|any more)\b", re.I)
+# A declaration: it/test, any modifiers, an optional .each(...) or .each`...` table, then "(".
+DECL = re.compile(r"(?<![\w.$])(?:it|test)((?:\s*\.\s*\w+)*)", re.S)
+OFF = {"skip", "todo", "fails", "fixme", "fail"}
+# Modifiers of a test itself; anything else (hooks, describe, step, use, extend) isn't a test.
+MODS = OFF | {"only", "concurrent", "sequential", "each", "skipIf", "runIf", "for"}
+TABLED = {"each", "skipIf", "runIf", "for"}  # take an argument list before the title's call
+
+
+def git(*args):
+    return subprocess.run(["git", *args], check=True, capture_output=True, text=True).stdout
+
+
+def show(rev, path):
+    r = subprocess.run(["git", "show", f"{rev}:{path}"], capture_output=True, text=True)
+    return r.stdout if r.returncode == 0 else ""
+
+
+def skip_balanced(text, i, open_ch, close_ch):
+    """Index after the bracket that closes the one at text[i], skipping strings."""
+    depth, q = 0, None
+    while i < len(text):
+        c = text[i]
+        if q:
+            if c == "\\":
+                i += 1
+            elif c == q:
+                q = None
+        elif c in "'\"`":
+            q = c
+        elif c == open_ch:
+            depth += 1
+        elif c == close_ch:
+            depth -= 1
+            if depth == 0:
+                return i + 1
+        i += 1
+    return i
+
+
+def read_string(text, i):
+    """The string literal starting at text[i] and the index after it, or (None, i)."""
+    q = text[i] if i < len(text) else ""
+    if q not in "'\"`":
+        return None, i
+    j, out = i + 1, []
+    while j < len(text):
+        c = text[j]
+        if c == "\\" and j + 1 < len(text):
+            out.append(text[j:j + 2]); j += 2; continue
+        if c == q:
+            return "".join(out), j + 1
+        if q == "`" and text.startswith("${", j):
+            k = skip_balanced(text, j + 1, "{", "}")
+            out.append(text[j:k]); j = k; continue
+        out.append(c); j += 1
+    return None, i
+
+
+def decls(text):
+    """{title: modifiers} for each test declared in text, plus how many titles couldn't be read."""
+    found, unread = {}, 0
+    for m in DECL.finditer(text):
+        mods = {s.strip() for s in m.group(1).split(".") if s.strip()}
+        if not mods <= MODS:
+            continue
+        i = m.end()
+        if not mods and text[i:i + 1] != "(":    # prose ("it (the panel)") in a comment
+            continue
+        while i < len(text) and text[i].isspace():
+            i += 1
+        if mods & TABLED:                        # .each(table)(title, .skipIf(x)(title, .each`table`(title
+            if text[i:i + 1] == "(":
+                i = skip_balanced(text, i, "(", ")")
+            elif text[i:i + 1] == "`":
+                _, i = read_string(text, i)
+            else:
+                continue
+            while i < len(text) and text[i].isspace():
+                i += 1
+        if i >= len(text) or text[i] != "(":
+            continue
+        i += 1
+        while i < len(text) and text[i].isspace():
+            i += 1
+        title, _ = read_string(text, i)
+        if title is None:
+            unread += 1
+            continue
+        found[title] = mods
+    return found, unread
+
+
+def main():
+    args = sys.argv[1:]
+    if len(args) > 2 or any(a.startswith("-") for a in args):
+        print(__doc__.splitlines()[0], file=sys.stderr)
+        return 2
+    try:
+        head = args[1] if len(args) > 1 else "HEAD"
+        base = args[0] if args else git("merge-base", "origin/main", head).strip()
+        status = git("diff", "-z", "--name-status", "-M", f"{base}..{head}").split("\0")
+        pairs, i = [], 0                          # (path at base, path at head or None)
+        while i < len(status) - 1:
+            code = status[i]
+            if code.startswith(("R", "C")):
+                old, new = status[i + 1], status[i + 2]; i += 3
+            else:
+                old = new = status[i + 1]; i += 2
+            if code.startswith("A") or not TEST_FILE.search(old):
+                continue
+            pairs.append((old, None if code.startswith("D") or not TEST_FILE.search(new) else new))
+        if not pairs:
+            print("removed-tests: no test file lost a test")
+            return 0
+        head_titles = {}
+        for f in git("ls-tree", "-r", "-z", "--name-only", head).split("\0"):
+            if TEST_FILE.search(f):
+                head_titles[f] = None             # read lazily, only when needed for MOVED
+        rows = []
+        for old, new in pairs:
+            before, unread_before = decls(show(base, old))
+            after, unread_after = decls(show(head, new)) if new else ({}, 0)
+            for title, mods in before.items():
+                if title in after:
+                    if after[title] & OFF and not mods & OFF:
+                        rows.append(("SKIPPED", old, title, None))
+                    continue
+                elsewhere = None
+                for f in head_titles:
+                    if f == new:
+                        continue
+                    if head_titles[f] is None:
+                        head_titles[f] = decls(show(head, f))[0]
+                    if title in head_titles[f]:
+                        elsewhere = f; break
+                off = elsewhere and head_titles[elsewhere][title] & OFF and not mods & OFF
+                rows.append(("SKIPPED" if off else "MOVED" if elsewhere else None, old, title, elsewhere))
+            if unread_before > unread_after:
+                rows.append(("UNREAD", old, f"{unread_before - unread_after} declaration(s) without a literal title", None))
+        out = []
+        first_of = {}
+        for kind, path, title, where in rows:
+            if kind in ("SKIPPED", "UNREAD", "MOVED"):
+                out.append((kind, f"{kind:8} {path}: \"{title}\"" + (f"\n         now in {where}" if where else "")))
+                continue
+            log = git("log", "--follow", "--reverse", "--format=%H%x09%s", f"-S{title}", base, "--", path).splitlines()
+            if not log:
+                out.append(("WITH", f"WITH     {path}: \"{title}\" (its adding commit wasn't found)"))
+                continue
+            sha, subject = log[0].split("\t", 1)
+            if path not in first_of:
+                first_of[path] = git("log", "--follow", "--reverse", "--format=%H", "--diff-filter=A", base, "--", path).split()[:1]
+            code = [f for f in git("show", "--name-only", "--format=", sha).split("\n") if f and not TEST_FILE.search(f)]
+            later = first_of[path] != [sha] and code
+            kind = ("FIX" if FIXLIKE.search(git("log", "-1", "--format=%B", sha)) else "LATER") if later else "WITH"
+            out.append((kind, f"{kind:8} {path}: \"{title}\"\n         added in {sha[:10]} {subject}"
+                        + (f" (also changed {', '.join(code[:3])}{'…' if len(code) > 3 else ''})" if code else "")))
+        if not out:
+            print("removed-tests: none removed")
+            return 0
+        order = ["FIX", "LATER", "SKIPPED", "MOVED", "WITH", "UNREAD"]
+        for _, text in sorted(out, key=lambda r: order.index(r[0])):
+            print(text)
+        print(f"removed-tests: {len(out)} rows, each to answer: "
+              + ", ".join(f"{sum(r[0] == k for r in out)} {k}" for k in order if any(r[0] == k for r in out)))
+        return 1
+    except subprocess.CalledProcessError as e:
+        print(f"removed-tests: could not check: {' '.join(e.cmd)}: {e.stderr.strip()}", file=sys.stderr)
+        return 3
+
+
+sys.exit(main())

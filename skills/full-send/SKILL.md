@@ -20,7 +20,7 @@ The approvals and what each approved (`commit_id`), the nits left in them and in
 ## 2. Settle what's left
 
 - Merge the base in and resolve conflicts the way both sides meant.
-- Take each nit that matters for what the PR touches; reply on the rest with a short reason (github.md). A reply that declines what a reviewer asked, or a nit that's the user's call ([decision-card.md](~/.agents/pr-flow/decision-card.md), "Who decides"), goes on the card.
+- Fix each P2 bug a reviewer left (review-loop, "Severity"); take polish that matters for what the PR touches; reply on the rest with a short reason (github.md). A reply that declines what a reviewer asked, or a nit that's the user's call ([decision-card.md](~/.agents/pr-flow/decision-card.md), "Who decides"), goes on the card.
 
 ### What still counts as approved
 

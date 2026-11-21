@@ -5,4 +5,3 @@ Who "the user" is in these skills. Written by `install.sh` from `me.example.md`,
 - Name: __NAME__
 - Slack user ID: `__SLACK_ID__`
 - GitHub login: `__GITHUB__`
-- Doop kits: none yet (doop-kit.md, "Make a kit")

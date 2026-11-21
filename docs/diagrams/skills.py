@@ -322,9 +322,9 @@ D["usability"] = dict(title="9. Inside usability (\"usability this\")", nodes=[
 
 D["sketch"] = dict(title="17. Inside sketch-it (\"sketch it\", from build-it or review-pr)", nodes=[
     N("in", "You: \"sketch it\"\nor build-it: a new screen,\nflow or panel", "terminal"),
-    N("f", "1. Frame it\nwhat, which state, the problem;\nthe kit checked; now as a frame"),
+    N("f", "1. Frame it\nwhat, which state, the problem;\nStorybook up; now as a copy"),
     N("m", "2. References\nMobbin: 3-5 well-known apps,\nthe convention each shows", "external"),
-    N("s", "3-4. Canvas and sketch\nup to 3 options on Doop, from the\nkit's real parts and fake data"),
+    N("s", "3-4. Canvas and sketch\nup to 3 options on Doop, from the\napp's parts copied from Storybook"),
     N("u", "5. Usability\neach option judged,\nfixed within its idea", "service"),
     N("d", "6. Show\na Doop page a round, frames beside now;\nthe card in chat, a picture each", "client"),
     N("q", "Agreed?", "decision"),

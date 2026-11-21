@@ -14,6 +14,19 @@ Every message is posted as the user, so write each in their voice: short and pla
 
 The thread is the top-level post in `#pr-review-channel` whose text holds the PR's URL. Read the channel's history back to when the PR was opened (`slack_read_channel` with `oldest`) and match `alicia/pull/<n>` in each post: Slack's search misses these links, and the bare number is noisy. When a PR was folded into another (a stack collapsed), the thread may live under the other PR's post: read the replies. Done when one thread is found, or it's certain there is none.
 
+## Reactions
+
+A reaction tracks where a PR is, in the channel itself, so anyone scanning it sees what's under way without opening a thread. Each is added in the user's name with `slack_add_reaction`, at the moment its step happens, never ahead of it:
+
+| Reaction | On | When | Skill |
+| --- | --- | --- | --- |
+| 👀 `eyes` | the teammate's **Up for review** post | a first review starts | `review-pr`, step 1 |
+| 👀 `eyes` | the teammate's **Ready for another round** message in the thread | a re-review starts | `review-pr`, step 1 |
+| 🙌 `raised_hands` | the reviewer's approval message in the thread (none: the **Up for review** post) | `full-send` starts on it | `full-send`, step 1 |
+| ✅ `white_check_mark` | the user's own **Up for review** post | the PR is merged, by anyone | `full-send` after the merge; the nudge check (nudge.md) when it finds it merged |
+
+A message that's gone or can't be found: skip its reaction and say so in the report.
+
 ## Messages
 
 **Up for review** (top-level, `send-for-review`):

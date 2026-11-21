@@ -29,7 +29,7 @@ The **reviewers** are everyone the round's message @mentions and everyone reques
 
 The first of these that's true decides:
 
-1. **Over**: the PR is merged or closed, or this thread is settled. Delete the task and leave the thread as it is.
+1. **Over**: the PR is merged or closed, or this thread is settled. Delete the task and leave the thread as it is; when it's merged, first react ✅ on its **Up for review** post (slack.md, "Reactions").
 2. **Reviewed**: anyone (a reviewer or not) approved, requested changes, left review comments, or asked the user something, since the round started. Delete the task, then build the overview of what came back (`fix-comments` steps 1 and 2):
    - **Nothing on the card** (every row technical, High and ✅ Fix): run `fix-comments` in full, as if the user had said it. Its report lands in this thread.
    - **Something on the card**: unsnooze and post the overview with the card's questions, ending "say *fix comments* to go". Nothing fixed, replied or published yet; a row that needs a diagram says so, and it's drawn when `fix-comments` runs.

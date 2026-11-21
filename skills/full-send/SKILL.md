@@ -17,6 +17,8 @@ Shared files: [ready.md](~/.agents/pr-flow/ready.md), [github.md](~/.agents/pr-f
 
 The approvals and what each approved (`commit_id`), the nits left in them and inline, unanswered comments, CI on the head, and whether the branch is behind or conflicts with its base.
 
+Find the PR's Slack thread (slack.md, "Finding a PR's thread") and react 🙌 on the reviewer's approval message in it, or on the **Up for review** post when the approval was only on GitHub (slack.md, "Reactions").
+
 ## 2. Settle what's left
 
 - Merge the base in and resolve conflicts the way both sides meant.
@@ -69,7 +71,7 @@ gh api repos/<o>/<r>/deployments/$id/statuses --jq '.[0].state'   # success | fa
 
 ## 6. Settle, then report
 
-Once merged, delete its `Nudge PR #<n>` task, if any (`list_scheduled_tasks`, `delete_scheduled_task`; nudge.md).
+Once merged, react ✅ on the PR's **Up for review** post (slack.md, "Reactions"), and delete its `Nudge PR #<n>` task, if any (`list_scheduled_tasks`, `delete_scheduled_task`; nudge.md).
 
 Two actions, in this order, because the report is your last message and the turn ends with it:
 

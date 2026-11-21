@@ -51,7 +51,7 @@ Reviewed by Claude and Codex (`review-loop`, <N> rounds); <what its findings cha
 - [ ] Skipped by <user>: <what>
 
 Designed in Doop: [<what>](<the agreed round's page>)
-T3 thread: <this thread's title>, `t3code://threads/<environmentId>/<threadId>`   ← GitHub only; Slack's form is links.md's
+T3 thread: <this thread's title>, `t3code://threads/<environmentId>/<threadId>`
 
 Fixes ALI-123
 ```
@@ -61,5 +61,5 @@ Fixes ALI-123
 - The checklist follows [ready.md](ready.md).
 - **Where it was made**, two lines above `Fixes`:
   - **Designed in Doop**, when `sketch-it` agreed a design for this work: the full URL of the agreed round's page (`/c/<canvas>?page=<page>` on Doop's site, the Links line's **Sketch**), for anyone curious how it was designed. One line, no picture: the screenshot tables show the built app, never the sketch.
-  - **T3 thread**: this thread's deep link (links.md, "The T3 link on a PR"). Kept on every rewrite of the body; a later thread that works on the PR (fix-comments, catch-up, full-send) adds its own line under it. Outside T3 Code, no line.
+  - **T3 thread**: this thread's deep link (links.md, "The T3 link on a PR"). This form is GitHub's only; a Slack post uses links.md's linked title. Kept on every rewrite of the body; a later thread that works on the PR (fix-comments, catch-up, full-send) adds its own line under it. Outside T3 Code, no line.
 - End with `Fixes ALI-123`, or `Part of ALI-123` when the issue stays open (`linear-track`), then the attribution line the harness gives.

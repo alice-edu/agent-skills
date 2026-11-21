@@ -11,6 +11,8 @@ The user comes back to a thread cold, between many others, and reads its report'
    **You:** nothing, it's with <reviewer>.
    ```
 
+   An unattended run ([decision-log.md](decision-log.md)) puts its **Attention** section just above it.
+
    It points at what the report already holds (the card, its rows, the next skill to say); every question it names is asked in full above it.
 
 3. **Shows what changed on screen**: each screenshot and recording it made, inline ([screenshots.md](screenshots.md), "Show them").

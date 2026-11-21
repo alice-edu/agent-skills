@@ -5,7 +5,7 @@ description: 'Bring a stale thread''s branch up to date: merge the base in, reso
 
 # Catch up
 
-This thread's work went stale while its base (`main`) moved on. Bring its branch to today's base with the change still doing what it did, so the user can carry on from here. The user sends this and leaves, so do everything that needs no decision first, and ask them once at the end.
+This thread's work went stale while its base (`main`) moved on. Bring its branch to today's base with the change still doing what it did, so the user can carry on from here. The user sends this and leaves: an unattended run ([decision-log.md](~/.agents/pr-flow/decision-log.md)), so do everything that needs no decision first, and ask them once at the end only what that file says waits for them.
 
 Shared files: [ready.md](~/.agents/pr-flow/ready.md), [github.md](~/.agents/pr-flow/github.md), [decision-card.md](~/.agents/pr-flow/decision-card.md), [branches.md](~/.agents/pr-flow/branches.md).
 

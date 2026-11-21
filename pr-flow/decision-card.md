@@ -49,4 +49,4 @@ Read this file again right before asking, whenever the last read is from an earl
 3. When the user answers "explain" or "I don't get it", that's no pick: explain that question at more length, with a diagram ([diagrams.md](diagrams.md)) when a flow or an order is involved, then ask the same card again.
 4. Apply the answers and carry on to the end of the skill. A new choice for the user that turns up later (a full review after the card): ask one more card only when the next step depends on it; otherwise it goes at the top of the report.
 
-No answer: post nothing that depends on it, finish the rest, and start the report with the question.
+No answer: post nothing that depends on it, finish the rest, and start the report with the question. In an unattended run, the user's cheap-to-undo calls are taken and logged instead ([decision-log.md](decision-log.md)).

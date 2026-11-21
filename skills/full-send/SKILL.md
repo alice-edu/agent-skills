@@ -5,7 +5,7 @@ description: 'Take the user''s approved PR the rest of the way: settle the last 
 
 # Full send
 
-The PR is approved, with perhaps a few nits or a conflict left. The user isn't watching: this run owns it from here to merged and live, and merges only when confident. Every update goes unread until the end, so the report carries everything.
+The PR is approved, with perhaps a few nits or a conflict left. The user isn't watching, an unattended run ([decision-log.md](~/.agents/pr-flow/decision-log.md)): this run owns it from here to merged and live, and merges only when confident. Every update goes unread until the end, so the report carries everything.
 
 Shared files: [ready.md](~/.agents/pr-flow/ready.md), [github.md](~/.agents/pr-flow/github.md), [slack.md](~/.agents/pr-flow/slack.md), [decision-card.md](~/.agents/pr-flow/decision-card.md), [branches.md](~/.agents/pr-flow/branches.md).
 

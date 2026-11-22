@@ -122,10 +122,9 @@ Two actions, in this order, because the report is your last message and the turn
 1. **Put the thread away.** Parked (unconfirmed, or a big feature left in Linear), or found already done: `t3_thread_organize` with `action: "settle"`. A PR opened: it isn't sent yet, so the thread stays in sight, no call.
 2. **Write the report**, shaped by [report.md](~/.agents/pr-flow/report.md):
 
-- the verdict, and the PR link with two or three lines on what changed, or for a parked one, why and what was posted, or for one already done, the commit or PR that did it;
+- the verdict, and the PR link with what changes for a student, a line each, or for a parked one, why and what was posted, or for one already done, the commit or PR that did it;
 - the behaviour table when behaviour changed;
-- the size, from `~/.agents/pr-flow/diff-size <base>` (`Size: +A/−B: logic …, tests …`), with a line on why it's that big when it's more than twice the design's estimate;
-- each hand test, asked as ready.md's "A hand test blocks on the user", and anything that couldn't be proven;
+- **Needs you**: each hand test, asked as ready.md's "A hand test blocks on the user", and what couldn't be proven;
 - **Decided**: choices made without asking;
 - the **You:** line: the hand test when there is one, otherwise "say *send for review*" when there's a PR;
 - the Links line ([links.md](~/.agents/pr-flow/links.md));

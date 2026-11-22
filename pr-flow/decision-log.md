@@ -24,4 +24,4 @@ ts	phase	decision	why	evidence	result
 
 1. **Audit it** against this run's transcript: every row is a real decision with evidence that shows what it claims, and every fork that shaped the work has a row. Fix by adding rows.
 2. **A second read**: an agent on the other provider (Codex when Claude ran the work, Claude when Codex did), told to read [worker.md](worker.md) first, reads the log and the transcript, and flags decisions with weak evidence, checks claimed but not run, choices that look risky now, and what a skim would miss.
-3. **The report** ([report.md](report.md)) gets an **Attention** section just above the **You:** line: `reviewed by <model>`, then the user's calls taken alone (each with its pick and how to undo it), then each flag pointing at its row. "No flags" when there are none. The log's path goes on the Links line.
+3. **The report** ([report.md](report.md)) gets an **Attention** section in its Needs you: `reviewed by <model>`, then the user's calls taken alone (each with its pick and how to undo it), then each flag pointing at its row. "No flags" when there are none. The log's path goes on the Links line.

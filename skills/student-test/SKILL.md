@@ -42,7 +42,7 @@ Report, shaped by [report.md](~/.agents/pr-flow/report.md):
 
 - what more than one of them got wrong or found confusing, in their words, with a suggested fix for each;
 - what only one of them hit, listed apart;
-- the panel: each tester's model and persona.
+- the panel in one line: each tester's model and persona.
 
 When nobody struggled, say "nothing found", not "it's clear". Agents are better at this than students, so a problem they hit is likely real, and a pass proves little.
 

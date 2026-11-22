@@ -63,9 +63,9 @@ Everything that needs the user goes on one decision card, asked as [decision-car
 
 Report, shaped by [report.md](~/.agents/pr-flow/report.md):
 
-- how far behind it was, and what landed on the base that mattered to it;
-- simple or complex, and each conflict's resolution in a line;
-- the proof: checks, `review-loop`'s verdict, the app;
+- what landed on the base that changes this PR, a line each;
+- each conflict resolved by a call about behaviour, a line each with what it kept; the rest are in the commit;
+- whether it still works, labelled measured, with what showed it in one line;
 - **Decided**: each call made on the user's behalf;
 - the **You:** line: comments for `fix-comments`, a review to request, or nothing.
 

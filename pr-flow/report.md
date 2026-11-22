@@ -1,9 +1,13 @@
 # Report
 
-The user comes back to a thread cold, between many others, and reads its report's first line and its move before anything else. So every report a skill ends with:
+The user skims a thread's report between many others: its first line, what needs them, and its move. A report is what changes for the user; how the work got there is the record, and lives elsewhere. Every report a skill ends with, in this order:
 
-1. **Opens on the verdict**: in one line, where it ended (ready, merged, blocked, parked) or what's recommended, before any detail.
-2. **Ends on the user's move**: a **You:** line, just above the Links line ([links.md](links.md)), holding the exact words to reply, the recommended answer first:
+1. **The verdict**, in one line: where it ended (ready, merged, blocked, parked) or what's recommended.
+2. **What changes for the user**, a line each: what's different in the app, the PR, or what they now have to do. The skill's report step names what goes here.
+3. **Each screenshot and recording** the run made, inline ([screenshots.md](screenshots.md), "Show them").
+4. **Needs you**: every call that's theirs, also one raised earlier and not answered, each with the pick, its evidence and its risk; each hand test; and what couldn't be proven. All of them, however many: this part has no length, and is left out when empty. An unattended run puts its **Attention** section here ([decision-log.md](decision-log.md)).
+5. **Decided**: each call taken on their behalf that they'd want to know about, a line each with its reason.
+6. **The user's move**: a **You:** line holding the exact words to reply, the recommended answer first, then the Links line ([links.md](links.md)):
 
    ```
    **You:** reply "last card" (recommended) or "keep card 1", then "send it".
@@ -11,12 +15,12 @@ The user comes back to a thread cold, between many others, and reads its report'
    **You:** nothing, it's with <reviewer>.
    ```
 
-   An unattended run ([decision-log.md](decision-log.md)) puts its **Attention** section just above it.
+## Writing it
 
-   It points at what the report already holds (the card, its rows, the next skill to say); every question it names is asked in full above it.
+Short declarative sentences. Each claim of a result carries its label: **measured** (a run, a test or a check showed it), **inferred** (read from code, logs or docs), or **guess**. Never hand the user a check you could run.
 
-3. **Shows what changed on screen**: each screenshot and recording it made, inline ([screenshots.md](screenshots.md), "Show them").
+## What goes elsewhere
 
-4. **Keeps the story short**: what happened in under 100 words outside pictures, one line per thing the user asked for (what came of it; done, running, failed or not checked), and every call still waiting on them, also one raised earlier and not answered, each with the pick, its evidence and its risk.
+The record of the work: review rounds and what each found, each lens's result, the checks and tests run, the models used, what was tried and dropped, the size. It goes in the PR body ([pr-body.md](pr-body.md)) or the decision log, and the report links it. A claim the user needs proof for keeps its label and one line of evidence, not the story behind it.
 
-Done when someone reading only the first line and the **You:** line knows what happened and what to type, and every screenshot or GIF it made is on screen.
+Done when someone reading only the first line, Needs you and the **You:** line knows what happened and what to type, and no line in it recounts how the work was done.

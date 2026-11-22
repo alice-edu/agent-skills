@@ -41,7 +41,7 @@ Done when each check is answered.
 **Fix: find the cause.**
 
 1. **Reproduce** it: a test, a script, or the running app, until it goes red the way the report says. An error alert: slack-report.md, "An error alert". When it won't go red, read the evidence and the code for a cause, and write down what was tried: a cause shown in the code is still a **Bug**; none is **Unconfirmed**.
-2. **Cause**: the line or decision that makes it happen, and why it slipped through. Search for the same cause elsewhere (other callers, the sibling component, the other language files).
+2. **Cause**: the line or decision that makes it happen, and why it slipped through. Narrow it by elimination: list the hypotheses, then take the check that rules out the most of them first (a log read as it runs, a probe, the `why` skill for when it began), until one is left and a run shows it. Every line the fix ships traces to that evidence: a change that "might help" is a hypothesis and doesn't ship, and one made for a hypothesis the evidence ruled out is reverted. Search for the same cause elsewhere (other callers, the sibling component, the other language files).
 3. **Scope**: when the cause makes the fix much bigger than the report suggested (a data migration, a change across packages, a behaviour change for other screens), that goes on the card with the options.
 
 **Build: design it.**

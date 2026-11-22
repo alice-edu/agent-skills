@@ -23,7 +23,7 @@ For each class, the highest of these that can stop it:
 
 1. **Architecture**: one owner for each piece of state, one supported way for each task. Hide internals so the wrong import fails, replace hand-synced lists with one source of truth, delete the old way and dead code an agent would copy.
 2. **Types**: the bad state can't be written. When bad code still compiles, a lint or CI check whose error names the file, type or function to use instead. When the pattern is already common, the check fails only on a change that adds more.
-3. **A test** of the behaviour. A test that still passes when the behaviour breaks, or fails when only the internals change, is fixed or deleted.
+3. **A test** of the behaviour. A test that still passes when the behaviour breaks, or fails when only the internals change, is fixed or deleted. A class that comes from steps happening in an order nobody wrote a test for (a retry, a cancel, a second tab, a late answer) gets a property test of the real code in the repo's test runner (`fast-check`'s model-based commands in Vitest): random sequences of those steps, with the rule the bug broke checked after each step.
 4. **An agent rule** (`AGENTS.md`, a skill), only for a judgment call no check can make: nothing fails when an agent skips it.
 
 Done when each class has its level, and why each higher one doesn't work.
@@ -33,5 +33,9 @@ Done when each class has its level, and why each higher one doesn't work.
 Fix the most frequent classes, one PR each, through `build-it` (Build, with the class and its cases as the design). Prove each new check fails on a real past mistake: check out or replay one of the class's cases and paste the check's error. It runs the same locally and in CI. An exception sits on the offending line with a reason and the user's approval.
 
 An `AGENTS.md` rule that a check now enforces shrinks to a pointer to the check, or goes once the mistake can't happen.
+
+## 4. Keep the rule table
+
+`AGENTS.md` keeps a table, **What enforces it**: each rule, a line each, beside the check that enforces it (the lint rule, the type, the test, the CI job) or "nothing: judgment". Each class this run fixed adds its row. When the user corrects an agent for a mistake whose rule is already in the table with "nothing" beside it, it's a repeat: fix it at the highest level that works, in the same change. A row goes once its mistake can't happen any more.
 
 **Reply** per [report.md](~/.agents/pr-flow/report.md): each class with its cases, the level picked and why a higher one didn't work, its PR, and the check's error on the past mistake.

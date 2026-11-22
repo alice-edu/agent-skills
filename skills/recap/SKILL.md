@@ -1,13 +1,13 @@
 ---
-name: ketchup
-description: 'Catch the user up on a thread since their last message: what changed for them, then every call waiting on them, each with a pick, so they can decide from the reply alone. Use when the user says "ketchup", "where are we" or "what did I miss" (not "catch up": that's the catch-up skill, which merges the base in).'
+name: recap
+description: 'Catch the user up on a thread since their last message: what changed for them, then every call waiting on them, each with a pick, so they can decide from the reply alone. Use when the user says "recap", "where am I at", "where are we" or "what did I miss" (not "catch up": that's the catch-up skill, which merges the base in).'
 ---
 
-# Ketchup
+# Recap
 
 Catch the user up on what changed in this thread since the last message they wrote before asking, and lay out every call that waits on them so they can make it from this reply alone. Notifications, subagent results and other threads' messages are not their messages. Assume they remember their last message and nothing after it.
 
-Adapted from poteto's [pstack](https://github.com/cursor/plugins/tree/main/pstack) (MIT).
+Adapted from poteto's `ketchup` in [pstack](https://github.com/cursor/plugins/tree/main/pstack) (MIT).
 
 Not `catch-up`: that brings a branch up to date. This one catches a person up.
 

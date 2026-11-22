@@ -41,7 +41,7 @@ Done when each check is answered.
 **Fix: find the cause.**
 
 1. **Reproduce** it: a test, a script, or the running app, until it goes red the way the report says. An error alert: slack-report.md, "An error alert". When it won't go red, read the evidence and the code for a cause, and write down what was tried: a cause shown in the code is still a **Bug**; none is **Unconfirmed**.
-2. **Cause**: the line or decision that makes it happen, and why it slipped through. Narrow it by elimination: list the hypotheses, then take the check that rules out the most of them first (a log read as it runs, a probe, the `why` skill for when it began), until one is left and a run shows it. Every line the fix ships traces to that evidence: a change that "might help" is a hypothesis and doesn't ship, and one made for a hypothesis the evidence ruled out is reverted. Search for the same cause elsewhere (other callers, the sibling component, the other language files).
+2. **Cause**: the line or decision that makes it happen, and why it slipped through. Narrow it by elimination: list the hypotheses, then take the check that rules out the most of them first (a log read as it runs, a probe, the `why` skill for when it began), until one is left and a run shows it. A cause no run has shown is a **suspect**, written as one, never as the cause. Every line the fix ships traces to that evidence: a change that "might help" is a hypothesis and doesn't ship, and one made for a hypothesis the evidence ruled out is reverted. Search for the same cause elsewhere (other callers, the sibling component, the other language files).
 3. **Scope**: when the cause makes the fix much bigger than the report suggested (a data migration, a change across packages, a behaviour change for other screens), that goes on the card with the options.
 
 **Build: design it.**
@@ -64,6 +64,7 @@ It ends as one verdict:
 | **Bug** | reproduced, or a cause found in our code | fix it |
 | **Build** | a feature the user asked to build, in their words or by naming its issue or report ("build ALI-123") | build it |
 | **Small feature** | a wish the user hasn't asked to build yet (a report they said to pick up), a day's work or less | the proposed scope on the card, then build it |
+| **Mitigation** | the harm is real and measured, but no run shows its cause yet (the bug didn't go red, or only a suspect is left) | the card: ship a change that softens it (a message, a retry, a count) with the cause still hunted, or keep hunting first |
 | **Unconfirmed** | noise, the student's network, a one-off, or not reproducible | park it |
 | **Big feature** | a wish the user hasn't asked to build yet, needing design or a product call | park it |
 
@@ -76,7 +77,7 @@ Done when the verdict has its evidence: a red test, numbers, a repro, the place 
 Read [decision-card.md](~/.agents/pr-flow/decision-card.md) now, whole, and ask as its "How to ask" says. The decision card, one decision per message, holding what's open:
 
 - which Linear issue, when step 2 found several;
-- the verdict, when it's anything but a **Bug** or a **Build**;
+- the verdict, when it's anything but a **Bug** or a **Build** (a **Mitigation** always: shipping one is the user's call);
 - a fix whose scope grew;
 - each choice that's the user's by [decision-card.md](~/.agents/pr-flow/decision-card.md), "Who decides" (a UX or product choice, a Simplify? question), the recommended one first. A UX choice comes with its picture: the screen now beside a mockup of each option (decision-card.md, "a picture"), made before asking, even for a dialog nothing has drawn yet;
 - **slices**, when the design spans the data model, the backend and the UI together (a native change's backend PR isn't asked: it's decided in step 4, and built first): split it into PRs that each branch from and merge to their base on their own (the schema and backend first, then the UI on top; a native slice is opened once the backend's is merged, and waits for its store build, branches.md), each its own PR and Linear issue, every one built in this run, in dependency order: a slice that needs another's code branches from that slice's branch once its PR is open, and is retargeted to the base when that merges. Building them all isn't leave to merge them;
@@ -93,7 +94,7 @@ Done when the card is asked, and each question about what a student sees has its
 
 ## 6. Do it
 
-Write the change the repo's way, and the right way ([lenses.md](~/.agents/pr-flow/lenses.md), "The right way"): what it adds is clean, and the debt it leans on is fixed in this PR rather than worked around. A fix: the change that removes the whole cause, its red test now green. Two fixes that leave it red share a **premise** about the cause: write it down and test it directly (a log, a probe, a script) before a third; a wrong premise sends it back to step 4's Cause. A build: what the design says, with the tests `AGENTS.md` asks for. A requirement that arrives after the design (the user's, a reviewer's, a case found while building) gets a design pass of its own before code: had it been known from the start, what shape would this have? Sketch two, pick the one where each piece of state has one owner, and rebuild to it when it isn't the current shape, rather than adding a branch for the new case. A file this change grows past easy reading gets the split considered.
+Write the change the repo's way, and the right way ([lenses.md](~/.agents/pr-flow/lenses.md), "The right way"): what it adds is clean, and the debt it leans on is fixed in this PR rather than worked around. A fix: the change that removes the whole cause, its red test now green. A check where the bad state shows up is a fix only when that state is legitimate; when it shouldn't exist, the check hides the bug (pstack's fix-root-causes), and the change is a mitigation. Two fixes that leave it red share a **premise** about the cause: write it down and test it directly (a log, a probe, a script) before a third; a wrong premise sends it back to step 4's Cause. A build: what the design says, with the tests `AGENTS.md` asks for. A requirement that arrives after the design (the user's, a reviewer's, a case found while building) gets a design pass of its own before code: had it been known from the start, what shape would this have? Sketch two, pick the one where each piece of state has one owner, and rebuild to it when it isn't the current shape, rather than adding a branch for the new case. A file this change grows past easy reading gets the split considered.
 
 ## 7. Prove it
 
@@ -122,7 +123,7 @@ Two actions, in this order, because the report is your last message and the turn
 1. **Put the thread away.** Parked (unconfirmed, or a big feature left in Linear), or found already done: `t3_thread_organize` with `action: "settle"`. A PR opened: it isn't sent yet, so the thread stays in sight, no call.
 2. **Write the report**, shaped by [report.md](~/.agents/pr-flow/report.md):
 
-- the verdict, and the PR link with what changes for a student, a line each, or for a parked one, why and what was posted, or for one already done, the commit or PR that did it;
+- the verdict, opening with report.md's VERIFIED / NOT VERIFIED / INCONCLUSIVE held to the outcome step 4 wrote (a Mitigation is NOT VERIFIED until its cause is fixed); its PR's title and body say `Mitigation:` and name the suspect; then the PR link with what changes for a student, a line each, or for a parked one, why and what was posted, or for one already done, the commit or PR that did it;
 - the behaviour table when behaviour changed;
 - **Needs you**: each hand test, asked as ready.md's "A hand test blocks on the user", and what couldn't be proven;
 - **Decided**: choices made without asking;

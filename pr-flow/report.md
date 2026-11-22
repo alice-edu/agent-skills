@@ -2,7 +2,7 @@
 
 The user skims a thread's report between many others: its first line, what needs them, and its move. A report is what changes for the user; how the work got there is the record, and lives elsewhere. Every report a skill ends with, in this order:
 
-1. **The verdict**, in one line: where it ended (ready, merged, blocked, parked) or what's recommended.
+1. **The verdict**, in one line: where it ended (ready, merged, blocked, parked) or what's recommended. Work the user asked to have done (a fix, a feature, a check) opens with one word held to what they asked for, not to what was built: **VERIFIED** (a run showed it does what they asked), **NOT VERIFIED** (it doesn't yet, or nothing ran), or **INCONCLUSIVE** (it ran and couldn't tell). Inconclusive is not a pass, and a negative goes first, never under the good news. From poteto's pstack (MIT).
 2. **What changes for the user**, a line each: what's different in the app, the PR, or what they now have to do. The skill's report step names what goes here.
 3. **Each screenshot and recording** the run made, inline ([screenshots.md](screenshots.md), "Show them").
 4. **Needs you**: every call that's theirs, also one raised earlier and not answered, each with the pick, its evidence and its risk; each hand test; and what couldn't be proven. All of them, however many: this part has no length, and is left out when empty. An unattended run puts its **Attention** section here ([decision-log.md](decision-log.md)).

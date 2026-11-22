@@ -16,7 +16,7 @@ Either mode can run as a **council** when the caller or the user asks for it (th
 
 ## Severity
 
-- **P1**: the intended case is wrong, a bug callers will hit, a security hole, data loss, or a broken deploy. Every P1 carries **evidence**: the code path that reaches it, a reproduction, a failing test, or a doc quote. A P1 without evidence is **unconfirmed** (step 4) until it has some: neither fixed nor skipped. From round 1, a P1 comes with a run wherever one can be made (step 2, "Break it"), and one that has a run outranks one that only argues. From round 2, a new P1 in code the fixes didn't touch needs a **run** as its evidence: a failing test, a repro, or command output (a probe script where a race or data loss is hard to reproduce); an argument alone leaves it unconfirmed.
+- **P1**: the intended case is wrong, a bug callers will hit, a security hole, data loss, or a broken deploy. Every P1 carries **evidence**: the code path that reaches it, a reproduction, a failing test, or a doc quote. A P1 without evidence is **unconfirmed** (step 4) until it has some: neither fixed nor skipped. From round 2, a new P1 in code the fixes didn't touch needs a **run** as its evidence: a failing test, a repro, or command output (a probe script where a race or data loss is hard to reproduce); an argument alone leaves it unconfirmed.
 - **Housekeeping**: what lenses.md asks of the PR around the code: leftovers, Test by hand lines, screenshots, the PR body, a missing story. In author mode you fix it directly and list it in the ledger; it is done before the PR is ready, and never starts a round by itself.
 - **P2**: a **P2 bug**, one whose harm is cosmetic or clears by itself with nothing for the user to do, and **polish**: naming, style, small performance, a refactor. A P2 bug is fixed like a P1 (step 5); polish is optional. Anything else wrong that a user sees or relies on (a false label, an event sent twice, slowness at a supported size, a step they must redo) is a P1.
 - **The user's call**: a finding that's theirs by [decision-card.md](~/.agents/pr-flow/decision-card.md), "Who decides" (the product, or a Simplify? question), whatever its severity. It goes on the caller's decision card, with the answer the reviewers agree on as the default. Every technical finding is settled here by the docs, in both modes.
@@ -65,21 +65,15 @@ Done when base, head, intent and the checks are written down.
 - **Outside T3**: from Claude, `codex exec -s read-only "<brief>"` in the repo; from Codex, `claude -p --permission-mode plan "<brief>"` in the repo (plan mode reads but never edits).
 - No route to the other provider: say so and stop. A second review on the same model is no substitute.
 - **Two seats, one focus each**, in round 1 of a diff over ~100 changed lines (a council keeps its own four seats, each on every lens): start the other reviewer twice in parallel with the same brief, its `Focus:` line **hunt** on one (Correctness and its case tables) and **rules** on the other (Spec, Standards with RULES, Backend, UI and UX). Your own review covers every lens. Later rounds and the fix check are one seat on every lens.
-- **A design seat**, in parallel with the others, once in round 1 of a diff over ~100 changed lines, and again on an area when "A mechanism that keeps breaking" fires (step 6): the other reviewer, with the brief's `Focus:` line **design** (a council's round 1 gives one of its seats this focus too). It looks for no bugs. Its one job: a shape for this change that deletes code or makes cases impossible.
-
-**Break it.** Every seat but the design one is a breaker: for each P1 it tries to prove it with a run, in a scratch worktree of the head (`git worktree add /tmp/break-<n> <head>`), never in the repo's checkout: a failing test, a repro script, command output. Where its sandbox or the case won't allow a run (a race, a deploy, production's data), it says so and gives the code path.
+- **A design seat**, only when "A mechanism that keeps breaking" fires on an area (step 6): the other reviewer, with the brief's `Focus:` line **design**. It looks for no bugs. Its one job: a shape for that area that deletes code or makes cases impossible. (Measured on every round 1 over ~100 lines, it caught no held-out miss for 1.7× the tokens: misses.md, Runs.)
 
 Brief, the same every round:
 
 ```
-Review only. Edit nothing in the repo, post nothing, start no subagents. Read ~/.agents/pr-flow/worker.md first.
+Review only. Edit nothing, post nothing, start no subagents. Read ~/.agents/pr-flow/worker.md first.
 Repo: <abs path>  Base: <sha>  Head: <sha>
 Intent: <intent> (source: <issue/PR/words>)  Out of scope: <scope>  Checks: <results>
 Focus: <hunt | rules | every lens>: report on your focus's lenses, the others as `other seat`
-Break it: for each P1, try to prove it with a run in a scratch worktree of the head
-(git worktree add /tmp/break-<n> <head>), never in the repo: a failing test, a repro script,
-command output. Give the command and what it printed beside what the intent needs. Where no run
-can be made here, say why and give the code path.
 Test by hand (author mode): <draft lines, or none>
 Diff: git diff <base>..<head> (plus `git status --short` for uncommitted files)
 Removed tests: <~/.agents/pr-flow/removed-tests <base> <head> output, or "none">
@@ -98,7 +92,7 @@ RULES: <agent-doc section or doc it points to>: holds | broken <id>, one line ea
 <id> [P1|P2] [agents|user] [<lens>] <file>:<line> <claim>. Source: <...>. Evidence: <...>. Fix: <...>
 ```
 
-The design seat's brief keeps the first block (through `Intent`, `Diff` and the lenses' reading) and replaces `Focus`, `Break it` and everything from `Report every finding` with:
+The design seat's brief keeps the first block (through `Intent`, `Diff` and the lenses' reading) and replaces `Focus` and everything from `Report every finding` with:
 
 ```
 Focus: design. Look for no bugs. Find a shape for this change that deletes code or makes cases
@@ -108,7 +102,7 @@ own way, a smaller design that still meets the intent. Read the PR's commits and
 a run of fixes to one area points at its shape. For each proposal, a sketch: the types or schema
 it changes, what it removes (file:line ranges, branches, fields, the cases or ledger ids it
 makes impossible), what it costs, and anything a student would see differently.
-Area: <the whole change, or the area that kept breaking, with its fixes>
+Area: <the area that kept breaking, with its fixes>
 Reply:
 VERDICT: KEEP (no shape removes more than it adds) or RESHAPE
 <id> [design] <area> <the proposal>. Removes: <...>. Costs: <...>. Student sees: <nothing | ...>

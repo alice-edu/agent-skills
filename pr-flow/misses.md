@@ -31,6 +31,10 @@ An edit that changes how findings are graded or what reviewers look for (`review
 | 2026-11-21 | same | #1090 library assumed | missed | caught (P2: the loop it risks unproven) | 0 / 1 |
 | 2026-11-21 | same | #935 claim | part (refusals not told apart) | caught | 1 / 1 (the same read-aloud P1 both) |
 | 2026-11-21 | same | #759 repo rule | caught as an optional P2 | caught, graded P2; "a written rule broken is P1" added from it | 0 / 0 |
+| 2026-11-22 | Breakers prove P1s with runs, design seat, fixes counted across the PR (Claude Opus, one seat every lens, plus the design seat over ~100 lines) | #1572 design | caught as a P2, the user's call (the lead stays once everything's imported) | caught, the same P2 user's call; the design seat looked at the lead's check and kept it | 0 / 0 (both raised "the welcome isn't built" from an intent taken from the final PR body: not counted) |
+| 2026-11-22 | same | #783 failure path | caught as a P2, both runs (a failed summary leaves the row "Every file ready" and Publish refuses) | caught, P1 with a run, then P2 (the user's) on the rerun; the design seat named the cause in a note, not a proposal | 0 / 0 |
+| 2026-11-22 | same | #903 ordering | missed | missed (the design seat looked at begin/finish/drop and kept it) | 0 / 0 |
+| 2026-11-22 | same | #867 library assumed | caught as a P2, both runs (a rerun without `{reset: true}` is a no-op) | caught, P1 with a run, then P2 on the rerun | 0 / 0 |
 
 ## Rows
 

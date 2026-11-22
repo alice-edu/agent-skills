@@ -1,6 +1,6 @@
 ---
 name: excalidraw
-description: 'Draw in Excalidraw so anyone with the link can read it: plain Nunito text, never the hand-drawn font; each colour's meaning on the label it colours; a public view link. Use whenever you create, edit or share an Excalidraw scene (a diagram, chart, table, board or slide), and from diagrams.md.'
+description: 'Draw in Excalidraw so anyone with the link can read it: plain Nunito text, never the hand-drawn font; each colour named on the label it colours; a public view link. Use whenever you create, edit or share an Excalidraw scene (a diagram, chart, table, board or slide), and from diagrams.md.'
 ---
 
 # Excalidraw

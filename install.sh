@@ -20,6 +20,11 @@ link() { # link <target> <path>
   ln -s "$1" "$2"
 }
 
+# A single-quoted description with a lone apostrophe ("that's") breaks the YAML: the skill
+# loads with no description and never triggers. Write it '' or reword.
+bad=$(grep -l "^description: '.*[^']'[^']" "$here"/skills/*/SKILL.md || true)
+if [ -n "$bad" ]; then echo "Unescaped ' in description: $bad" >&2; exit 1; fi
+
 link "$here/pr-flow" "$agents/pr-flow"
 # Every Claude Code setup: ~/.claude, and others beside it (~/.claude-second, for a second
 # account run with CLAUDE_CONFIG_DIR) that have a skills folder.

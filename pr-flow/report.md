@@ -17,7 +17,7 @@ The user skims a thread's report between many others: its first line, what needs
 
 ## Writing it
 
-Short declarative sentences. Each claim of a result carries its label: **measured** (a run, a test or a check showed it), **inferred** (read from code, logs or docs), or **guess**. Never hand the user a check you could run.
+Short declarative sentences. Each claim carries its label, in a report and in any answer ("why did X happen", "is this worth it"), above all where it argues: **measured** (a run, a test or a check showed it), **inferred** (read from code, logs or docs), or **guess**. Never hand the user a check you could run.
 
 ## What goes elsewhere
 

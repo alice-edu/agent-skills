@@ -7,4 +7,5 @@ Read by every agent another one starts for this work: a reviewer, a council seat
 - **Work, don't wait.** Use the access you have: run the app, the tests, the scripts, the browser. Name exactly what you couldn't reach and what you tried, rather than "blocked".
 - **Scratch work runs unattended.** Put probe files, extracted trees and temporary git indexes in a `mktemp -d` folder and leave them there for the system to clear. Removing them with `rm -f` or `rm -rf` (in a `trap` too) stops a Codex child for the user's approval, even at full access.
 - **What you started, you stop.** Close the browsers, simulators and servers you opened, unless your brief says to leave one running for the user.
+- **Label each claim** in your reply: **measured** (a run, a test or a check showed it), **inferred** (read from code, logs or docs), or **guess**. The one who started you passes the labels on, so they're never lost.
 - **Report in the shape the brief asks**, nothing posted anywhere else.

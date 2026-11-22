@@ -1,6 +1,6 @@
 ---
 name: recap
-description: 'Catch the user up on a thread since their last message: what changed for them, then every call waiting on them, each with a pick, so they can decide from the reply alone. Use when the user says "recap", "where am I at", "where are we" or "what did I miss" (not "catch up": that's the catch-up skill, which merges the base in).'
+description: 'Catch the user up on a thread since their last message: what changed for them, then every call waiting on them, each with a pick, so they can decide from the reply alone. Use when the user says "recap", "where am I at", "where are we" or "what did I miss" (not "catch up": the catch-up skill merges the base in).'
 ---
 
 # Recap

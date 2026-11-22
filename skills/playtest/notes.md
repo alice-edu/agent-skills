@@ -8,3 +8,5 @@
   - Google sign-in.
 - Rough times: a PDF processes in under a minute, a written answer is graded in about 20 s, and Explain this takes about 40 s.
 - Playwright saves files only inside the checkout.
+- The test account keeps courses and sessions from earlier runs in the worktree: make a new course (switcher, New course) to play as a first-time student; `packages/backend/scripts/alice-eval/fixtures/Lecture 3 - Prototyping.pdf` processes in about a minute into 6 goals in 4 topics.
+- Practice and guided answer choices are radio inputs laid over their label: click them with `force: true` (Playwright reports the input "intercepts pointer events" otherwise).

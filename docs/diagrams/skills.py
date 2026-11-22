@@ -48,19 +48,20 @@ D["build"] = dict(title="2. Inside build-it", nodes=[
     N("b2", "2. Check nobody has it\nLinear, open PRs, branches", group="u"),
     N("b3", "3. Track it\nLinear issue to In Progress", group="u"),
     N("b4", "4. Find out what it is\na bug: reproduce it, a test goes red\na feature: design it from the clean setup", group="u"),
+    N("b4m", "Harm measured,\ncause not shown by a run:\na Mitigation, yours to ship", "warning", "u"),
     N("b5", "Anything\nfor you?", "decision"),
     N("card", "Decision card\nproduct, UX, scope", "client"),
-    N("b6", "6. Build it the right way\nfix the whole cause, clean up\nwhat it leans on", "service", "p"),
+    N("b6", "6. Build it the right way\nfix the whole cause, clean up\nwhat it leans on; a late requirement\ngets its own design pass", "service", "p"),
     N("b7", "7. Prove it\nchecks, tests, seen in the app", "service", "p"),
     N("b8", "8. review-loop\nClaude + Codex, every lens,\nevery repo doc read", "service", "r"),
     N("b8q", "Would a reviewer\napprove it?", "decision", "r"),
     N("b8f", "Fix it, prove it again", "warning", "r"),
     N("b9", "9. Open the PR\nscreenshots, GIFs of what moves,\nbody, checklist"),
-    N("b10", "10. Settle if parked, then report\nverdict first, the pictures, then You:\nsay \"send for review\"", "terminal"),
+    N("b10", "10. Settle if parked, then report\nVERIFIED, NOT VERIFIED or INCONCLUSIVE first,\nthe pictures, then You: say \"send for review\"", "terminal"),
 ], groups=[{"id": "u", "label": "Understand"}, {"id": "p", "label": "Build and prove"},
            {"id": "r", "label": "Review until it would pass"}],
 edges=[
-    E("b1", "b2"), E("b2", "b3"), E("b3", "b4"), E("b4", "b5"),
+    E("b1", "b2"), E("b2", "b3"), E("b3", "b4"), E("b4", "b5"), E("b4", "b4m", "no run shows the cause", "warning"), E("b4m", "card"),
     E("b5", "card", "yes"), E("card", "b6", "your answers"), E("b5", "b6", "no"),
     E("b6", "b7"), E("b7", "b8"), E("b8", "b8q"),
     E("b8q", "b8f", "not yet", "warning"), E("b8f", "b8", "next round"),
@@ -102,14 +103,20 @@ D["loop"] = dict(title="13. Inside review-loop (used by every skill that reviews
     N("fix", "Fix it, prove it\n(when it's our PR)", "warning"),
     N("stuck", "Still disputed after 2 replies,\nor out of rounds", "warning"),
     N("card", "Decision card", "client"),
+    N("brk", "Third fix to one area\n(counted across the whole PR)", "decision"),
+    N("why", "Stop fixing: should the state exist?\ntest the premise, then the design seat\nproposes a shape that deletes code", "warning"),
+    N("size", "Size check: each area\nagainst what its part needs", "decision"),
     N("ok", "Both agree", "terminal"),
     N("lens", "Lenses: Spec, Correctness,\nStandards, Backend, UI and UX", "note"),
 ], groups=[{"id": "rv", "label": "Each on its own"}],
 edges=[
     E("r1", "cx"), E("r1", "cl"), E("cx", "m"), E("cl", "m"), E("m", "q"),
-    E("q", "ok", "no", "success"), E("q", "fix", "yes, our PR"),
+    E("q", "size", "no", "success"), E("size", "ok", "fits", "success"),
+    E("size", "why", "too big, or a branch per fix", "warning"),
+    E("q", "fix", "yes, our PR"),
     E("q", "stuck", "can't settle"), E("stuck", "card"),
-    E("fix", "m", "both check the fixes", "warning"),
+    E("fix", "brk"), E("brk", "m", "no: both check the fixes", "warning"),
+    E("brk", "why", "yes", "warning"), E("why", "m", "reshaped, or nothing simpler"),
     dict(E("lens", "cl"), endArrowhead="none"),
 ])
 
@@ -352,5 +359,5 @@ AT = {
     # Run by other skills
     "loop": (150, 8550), "babysit": (1076, 8550), "ltrack": (2693, 8550),
     # Shared rules
-    "rules": (150, 10450), "excalidraw": (3736, 10450),
+    "rules": (150, 10900), "excalidraw": (3736, 10900),
 }

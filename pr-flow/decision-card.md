@@ -4,11 +4,13 @@ the user runs many threads at once, by voice. The **decision card** is every cho
 
 ## Who decides
 
-**Agents figure it out first.** Before anything goes on the card, ask: can an agent do it, find it or verify it itself? Then it does, and the result goes in the report. Running a test, a simulator, an emulator, a browser or a check, reading the code, the docs or the logs, measuring, trying access: all the agent's. Only what's truly the user's (below) is asked, and a hand test only when ready.md, "A hand test blocks on the user", says no agent can do it.
+**Agents figure it out first.** Before anything goes on the card, ask: can an agent do it, find it or verify it itself? Then it does, and the result goes in the report. Running a test, a simulator, an emulator, a browser or a check, reading the code, the docs or the logs, measuring, trying access: all the agent's. Only what's truly the user's (below) is asked, and a hand test only when ready.md, "A hand test blocks on the user", says no agent can do it. Proceed, then present: the user course-corrects after (pstack's never-block-on-the-human).
+
+**Why you.** Every question carries a `Why you:` line naming one of three: **irreversible** (it can't be undone, or it's said to people in the user's name), **product** (what a student sees or does, which no test, doc or experiment can settle), or **dead end** (every route tried, each named). A question that can't name one isn't asked: do the work and list it under **Decided**. Nor is one whose recommended option is only "do the work" (fix it, finish it, run it) against waiting or shipping less: that's no choice, so do it.
 
 Every choice and every finding has an **owner**, apart from its severity:
 
-- **The user's call**: the product. What a student sees or does (a screen, a flow, wording, what's shown when), scope (what's in or out, a fix that grew), a report's triage verdict (`build-it`: bug or not, which item of a bundle), and anything said for the user in public (a reply that disagrees with a human reviewer or declines what they asked, quoted in full). On the card always, even when every reviewer agrees: the agreed answer is the default.
+- **The user's call**: the product. What a student sees or does (a screen, a flow, wording, what's shown when), scope (a new feature in or out; fixing what a review, a playtest or a test finds in the change's own feature isn't scope: it's done in this PR, never offered as a follow-up, and only what's unrelated to the change is named, as a finding), a report's triage verdict (`build-it`: bug or not, which item of a bundle), and anything said for the user in public (a reply that disagrees with a human reviewer or declines what they asked, quoted in full). On the card always, even when every reviewer agrees: the agreed answer is the default.
 - **Agents' call**: the purely technical. How it's built, an API's shape, which of two working approaches. The docs decide: the repo's (`AGENTS.md` and what it points to), then the technology's own, looked up each time ([lenses.md](lenses.md), "The technology's way"). Decided without asking and listed under **Decided** in the report.
 - **Simplify?**: a technical choice gone hairy, where a simpler shape exists only if a requirement gives. The cleanest design the agents can find still needs something heavy (a data migration, a new table, service or package, a flag, a second path doing what one path does; a package that replaces hand-rolled logic doesn't count, lenses.md, "A solved problem"), and dropping or changing one named requirement would remove it. The user's call, as one question: the simpler shape, the requirement it drops, what a student loses, and what it saves. Choosing between documented approaches is the agents'.
 - **Stuck**: reviewers still disagreeing on a technical point after the docs and a check that could decide it (a test, a repro, a measurement). One question: both sides in a line each, and which the agents lean to.
@@ -38,6 +40,8 @@ Read this file again right before asking, whenever the last read is from an earl
    **Decision: <short title>**
 
    <the story: 2–3 plain sentences>
+
+   Why you: <irreversible | product | dead end>: <one line>
 
    1. **<option> (recommended)**: what happens, for the student and for the work
    2. **<option>**: what happens

@@ -7,7 +7,7 @@ description: 'Design a screen, component, flow, panel or landing section with th
 
 A **sketch** is the real thing drawn early, on a Doop canvas: frames composed from **copies** of the app's own components, each taken on demand from the story that draws it in its Storybook (`~/.agents/pr-flow/story-shot --inline`: the story's drawing with each element's computed styles written on it). Only the layout between parts is written by hand, so what's agreed is what gets built, and each part names the story and file it's copied from.
 
-Each **round** is a **row** on the canvas: **Before** (the screen now), then at most three options, each following a **convention** seen in well-known apps or marked an own idea, and checked for usability before the user sees it, then the references they borrow from. Over each design sits its **note**, a frame of its own; the recommended option's note is outlined in orange. The user comments on the canvas and types **next** in chat; the next round is a new row below. It ends when the user says **agreed**.
+Each **round** is a **row** on the canvas: **Before** (the screen now), then at most three options, each an **own idea** unless a reference clearly shows it, and checked for usability before the user sees it, then the references they borrow from. Over each design sits its **note**, a frame of its own; the recommended option's note is outlined in orange. The user comments on the canvas and types **next** in chat; the next round is a new row below. It ends when the user says **agreed**.
 
 What's sketched sets the row's shape (step 4): a **screen**, a **component** (its variants and states), or a **flow** (a **lane** of screens in step order).
 
@@ -51,13 +51,15 @@ Done when you can say in one line what's sketched, in which state and mode, and 
 
 A reference earns its place by what an option **borrows** from it: a part, an order, a way of grouping, that the option wouldn't have without it. A reference found to back up an option already decided borrows nothing, and goes.
 
-Search Mobbin (its `search_screens`, `search_flows` for a flow, or `search_sections` for a landing section; platform `web`, or `ios` for a phone screen) by the problem, as specifically as it can be said: "results screen, extra study material for only what you missed", not "lesson complete screen", and never by how the screen looks now ("card with a bar"). Run two or three queries from different angles; half the results miss. Look at what each result does about the problem before keeping it.
+**Own idea** is the default: most options have no reference, and that's a finished option, not a gap. A reference is the exception, kept only on a **clear match**: a screen from a well-known, well-made app, ideally in a nearby domain (learning, notes, productivity), that solves the same problem for the same kind of user, where the borrowed part is visible in the screenshot itself. A screen that only shares a word, a look or a layout with the option is no match; neither is what every app does (one main button, a quiet way out, a back arrow, sign up or log in).
 
-Keep only the references an option borrows from: one or two strong ones beat four loose ones, and an option no app shows is an **own idea**, said so in its note. What every app does (one main button, a quiet way out, a back arrow) is the app's own convention and needs no reference.
+Search Mobbin (its `search_screens`, `search_flows` for a flow, or `search_sections` for a landing section; platform `web`, or `ios` for a phone screen) **once a round, before drawing any option**, by the problem, as specifically as it can be said: "results screen, extra study material for only what you missed", not "lesson complete screen". Write each query from the problem, never from how the screen looks now ("card with a bar") or from an option already drawn ("removable chips with clear all"). Two or three queries from different angles, each run once. Look at what each result does about the problem before keeping it.
+
+At most one reference an option; a round with none is normal. When the search finds no clear match, the notes say `No clear match on Mobbin` and the options stand as own ideas.
 
 Each reference kept is a **reference frame** at the end of its row (step 4), so the user compares without leaving Doop: the whole screenshot at a size that reads (`upload_asset` from its image URL), an orange box (`#e5683a`) on exactly the part borrowed, and under it the borrow in one line, `A takes <what> from it`, with its `mobbin_url`. For a flow, the two or three screens of its flow that show it, side by side. Decide the box when you upload, from the screenshot you have: a reference is drawn once.
 
-Done when every reference kept has its borrow line naming an option and the boxed part, and every option has its references or is marked an own idea.
+Done when every reference kept is a clear match with its borrow line naming an option and the boxed part, and every other option is marked an own idea.
 
 ## 3. The canvas
 
@@ -71,9 +73,9 @@ Done when the canvas has the fonts and images, and a page with the banner and Be
 
 ## 4. Sketch
 
-Each option is a frame beside Before, named `A: <convention>`, `B: …`, at most three, at the same width, 80 px apart, its height fitted to what it holds, with its note above it. A row holds, left to right: Before, the options, then the reference frames.
+Each option is a frame beside Before, named `A: <idea>`, `B: …`, at most three, at the same width, 80 px apart, its height fitted to what it holds, with its note above it. A row holds, left to right: Before, the options, then the reference frames.
 
-- **Notes** are their own frames, never written into a design: the option's name and convention, then a few short lines: what changes, its usability verdict (step 5), its cost to build, and what it borrows from which reference, with its link, or "own idea". Every note in a row is one height. The recommended option's note has a 3 px orange border (`#e5683a`), a pale orange fill (`#fff6f1`) and a `★ Recommended` badge; the others a dashed grey border on off-white.
+- **Notes** are their own frames, never written into a design: the option's name and idea, then a few short lines: what changes, its usability verdict (step 5), its cost to build, and what it borrows from which reference, with its link, or "own idea". Every note in a row is one height. The recommended option's note has a 3 px orange border (`#e5683a`), a pale orange fill (`#fff6f1`) and a `★ Recommended` badge; the others a dashed grey border on off-white.
 - **One template a round**: write the note and the frame's wrapper once and fill them in for each option, so a row is drawn in a few calls and its frames line up.
 - **Before carries over**: from round 2, Before is the earlier round's frame unchanged, so its note says `Same as Round <n> ↑` and the frame isn't drawn again. A flow's Before lane is the exception: it's drawn again in every round, so each round reads on its own.
 
@@ -88,7 +90,7 @@ By what's sketched:
 - **Controls**: compare the options with Before for controls that are easy to lose while composing, including settings chips, group headings and overflow menus. Keep them unless changing them is the point of the option.
 - **Data** is the fake data the app's stories use (`storyData.ts` in Alicia): the same course, files and names, so options compare with Before.
 - **New text** in English, listed once a search of `packages/i18n/messages/en.json` shows no key says it already.
-- **Dark**: when an option's colours are the question, a second frame of it, `A: <convention> (dark)`, built from the `--dark` copies and the theme's `.dark` values.
+- **Dark**: when an option's colours are the question, a second frame of it, `A: <idea> (dark)`, built from the `--dark` copies and the theme's `.dark` values.
 
 Look at each with `get_frame_screenshot` beside Before's, and fix what draws wrong before anyone sees it: a part that draws unlike its story's picture is `story-shot`'s to fix ("Copies").
 
@@ -114,7 +116,7 @@ Done when every frame of the row has been looked at with `get_frame_screenshot` 
 
 ## 7. Iterate
 
-On **next**, read the canvas's comments (`get_comments`; an element comment's `elementId` is a `data-doop-id` in `get_frame`) and what was said in chat. A pick, a mix ("A's card with B's order"), or comments become the next round: a new row below the last, its label `Round <n>: <what changed>`, Before carried over, then the variants named `<picked><n>: <Convention>` (`A1: Quiet card`), each through steps 4–6. A reference already on the canvas is pointed at, not drawn again; a variant on a convention no reference shows gets a search of its own. Keep the user's words as the brief; a comment that conflicts with a principle is asked about, not overruled.
+On **next**, read the canvas's comments (`get_comments`; an element comment's `elementId` is a `data-doop-id` in `get_frame`) and what was said in chat. A pick, a mix ("A's card with B's order"), or comments become the next round: a new row below the last, its label `Round <n>: <what changed>`, Before carried over, then the variants named `<picked><n>: <Idea>` (`A1: Quiet card`), each through steps 4–6. A reference already on the canvas is pointed at, not drawn again; a variant gets a new search only when the round's problem itself changed. Keep the user's words as the brief; a comment that conflicts with a principle is asked about, not overruled.
 
 Answer each comment with `reply_to_comment` (what changed, or why not), and `resolve_comment` once the next round shows it.
 
@@ -122,7 +124,7 @@ Done when the user says agreed (or picks `Agreed: …`), on one option.
 
 ## 8. Hand over
 
-1. Rename the agreed frame `Agreed: <convention>` (and its dark one), and mark it ready for dev with `set_frame_approval`: the user's agreed is the ask. The rounds stay as they are.
+1. Rename the agreed frame `Agreed: <idea>` (and its dark one), and mark it ready for dev with `set_frame_approval`: the user's agreed is the ask. The rounds stay as they are.
 2. Report, shaped by [report.md](~/.agents/pr-flow/report.md): the agreed picture beside Before, the frame's link (`/c/<canvas>?frame=<id>`), and the lists: the **parts** it uses with their stories and code paths, **new parts**, **new text**, and **Decided**: each call the design left that you settled (where a moved control goes, what shows when a list is empty), one line each with its reason. A call that's truly the user's (what a student sees, the scope) is asked as one decision with the recommended answer marked ([decision-card.md](~/.agents/pr-flow/decision-card.md)); work the build will do (a story's assertions to update) goes to the build, not the report.
 
 From build-it, its step 6 builds the agreed frame in React: each part from its code path, the layout from the frame's. The PR's pictures are the built app's, before and after, never the frame's; the PR links the agreed frame in one line, for anyone curious how it was designed ([pr-body.md](~/.agents/pr-flow/pr-body.md), "Where it was made"). On its own, the report ends by asking whether to build it.

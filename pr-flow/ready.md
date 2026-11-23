@@ -6,6 +6,14 @@ What "ready for review" means for a PR of the user's. `build-it`, `fix-comments`
 
 Proof is evidence observed in this session on the current **head** (the PR's latest commit, with its base merged in): command output, a test that went red without the change and green with it, the running app. Green mocked tests prove the logic; for a change a student sees, proof is the change seen in the running app (`pnpm dev`, the `run` skill), used as a student would: upload the file, send the message, get the answer graded. For the phone app, that's its dev client on both an iOS simulator and an Android emulator (the app's `AGENTS.md` and README say how): its tests run its web build, which shows neither native layout, gestures nor the keyboard. A story stands in for the app only when the change is inside one component's drawing and a story renders each caller's props (how it looks in another engine, a theme); what the change does with the screen around it (a dialog over another, data, a flow) is seen in the app. Opening a screen once proves only the easy case. Each changed screen is tried at its **worst case**, hunting for where it breaks: the longest content, scrolled to the end; the keyboard up over a multi-line input; every expandable part open; each caller of changed shared code. The checklist names the states tried. What that bills (models, grading, reading a file) is part of testing and needs no asking; reuse an upload that already does the job. A check run on an earlier head is history, not proof: after any commit or merge of the base, rerun what the change could affect.
 
+**Used, on every surface.** "Ready", "fixed" and VERIFIED are said only after the change was used as a student would on this head, on every surface it changes (web, each phone, the voice agent answering, the call connecting), never from a passing test or a message alone.
+
+**Loose ends.** Before ready:
+
+- every "I'll come back to it" in the thread is done or on the card;
+- each label, key, selector or export the change removes or renames is searched for across the whole repo (`git grep`: E2E tests, the other apps, `packages/i18n`), and every hit is updated;
+- the commands CI runs for the touched packages are run as CI runs them (`.github/workflows/`), formatting and lint included.
+
 **Leave nothing running.** Once a proof is done, close what the run opened for it (browsers, simulators, extra servers), except what the report links for the user to try. Start one dev stack and reuse it.
 
 **A platform you can't test yet.** Every platform the change runs on (web, iOS, Android) is tested. One that isn't set up here is set up in this run: the SDK, the emulator image, the tool (Android took 15 minutes). Only one that can't be (it needs hardware or an account we don't have) goes on the decision card before the PR opens, never into Test by hand.
@@ -44,6 +52,8 @@ Everything else is proven in this run. What looks untestable usually isn't:
 **Each line shows its attempt**: the reason, then the closest stand-in that was run and what it gave (`Tried: <command or step> → <result>`): the simulator run beside a haptic, the injected unplug beside AirPods. What should happen is something a person can check: a number where it's about speed ("connects within 3 s, as main does"), not "as quickly as before". A line names what to do, never who does it: the user picks who. A line with nothing tried has no reason yet: "not run here", "not opened", "seen in Storybook only" and "no data" each name an attempt still to make, so make it. A local stack that won't come up is a blocker ([Proof](#proof), "A stack that won't come up"), never a line on this list.
 
 `review-loop` checks the list before the PR opens (lenses.md, "Spec"): a line this run could have proven is housekeeping, fixed by proving it.
+
+**Every route first.** Before a line becomes a hand test, try each route the agent has: the PR's preview deploy, a Simlock simulator and emulator, a read-only or signed-out call to production (a page, an API, a price), the running stack. A hand test is only what none of them reach (a real phone's mic, a real payment, the user's own account), and its `Tried:` names each route and what it gave. When the user is away, nothing is asked: the line waits in Test by hand and the run goes on.
 
 ### A hand test blocks on the user
 

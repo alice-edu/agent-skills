@@ -30,7 +30,8 @@ Every round finds about one new P1 whatever its number, so more rounds never con
 - A diff of under ~100 changed lines: one round.
 - Otherwise up to 2 rounds; 3 while a P1 proven by a run stays open in auth, permissions, data loss, money or concurrency.
 - After the last round, when you fixed a P1 or a P2 bug in it, or propose a Not fixed row: one **fix check** by the other reviewer, on the open ids and each fix's diff through its callers, with the case tables (lenses.md, Correctness) redone for what the fixes changed, and its AGREE or DISAGREE on each proposed Not fixed row. It raises nothing new beyond a regression from a fix or another case of a fixed bug's class.
-- The user's "another round" grants one more.
+- A third fix check on this PR (earlier runs of this loop count) doesn't start: the fix it would check goes through step 6's "A mechanism that keeps breaking" first.
+- The user's "another round" grants one more. The budget is never asked about: no card offers another round.
 - The budget is per run. A later run on the same PR (fix-comments, catch-up, a merge of the base) reviews only what changed since the PR's agreed head (step 1), so it never starts over.
 
 ## Council

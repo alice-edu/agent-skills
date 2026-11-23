@@ -25,7 +25,7 @@ Read the code each point is about and check the claim yourself; a reviewer's cer
 - 💬 **Push back**: the claim is wrong, with evidence (a line, a test, a doc). A technical point the reviewer and the docs see differently is settled by the docs (lenses.md, "The technology's way").
 - ⏭️ **Skip**: polish that doesn't matter for what the PR touches, with a short reason. A point that's a bug, however rare, is ✅ Fix, or 💬 Push back when it isn't reachable. A reviewer asking for a Not fixed row (pr-body.md) is ✅ Fix unless the user says otherwise on the card.
 
-Every Push back and Skip is a reply that speaks for the user, so it goes on the card with its wording, whichever table it's in. A technical row below High: investigate until it's High (overview.md, "Confidence"), while the rest goes on.
+A technical Push back or Skip that the docs or the code settle at High is the agents' call (decision-card.md, "Who decides"): reply, and list it with its reply under **Decided**. Only a product row's Push back or Skip, or a technical one still below High, goes on the card with its wording. A technical row below High: investigate until it's High (overview.md, "Confidence"), while the rest goes on.
 
 Done when every point from step 1 has its row, every technical row is High or Stuck, and every row that matches [diagrams.md](~/.agents/pr-flow/diagrams.md)'s "When" has its diagram drawn and linked. A technical fix that turns out, while it's built, to change what a student sees or to grow the PR's scope moves to the product table and waits for the card.
 
@@ -33,8 +33,8 @@ Done when every point from step 1 has its row, every technical row is High or St
 
 Show the user the overview. Then:
 
-- **Nothing on the card** (every row is technical, High and ✅ Fix): no question. Go on to step 4; the overview opens the report.
-- **Otherwise**: one decision card, asked as [decision-card.md](~/.agents/pr-flow/decision-card.md)'s "How to ask" says (read it first, pictures included): each product row, each Push back and Skip with its reply quoted, each Stuck row. Fixing the technical ✅ rows doesn't wait for it: start step 4 first and ask once that work is under way. Product rows wait for the answer.
+- **Nothing on the card** (every row is technical and High): no question. Go on to step 4; the overview opens the report.
+- **Otherwise**: one decision card, asked as [decision-card.md](~/.agents/pr-flow/decision-card.md)'s "How to ask" says (read it first, pictures included): each product row, each Push back and Skip step 2 left for the card with its reply quoted, each Stuck row. Fixing the technical ✅ rows doesn't wait for it: start step 4 first and ask once that work is under way. Product rows wait for the answer.
 
 For "review's back" or "what did they say", stop after the overview, with the card's questions in it: "say *fix comments* to go", the last line `In sight: <why>.` A later "fix comments" in the same thread starts from this overview when the review hasn't changed since.
 

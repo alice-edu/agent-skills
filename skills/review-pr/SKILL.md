@@ -11,7 +11,7 @@ Shared files: [overview.md](~/.agents/pr-flow/overview.md) (how it's shown to th
 
 ## 1. Resolve the round
 
-- The PR: from the link, or the Slack thread the user pointed at. Its head SHA, base branch, author.
+- The PR: from the link, or the Slack thread the user pointed at. Its head SHA, base branch, author, and repo: the same as this thread's checkout (`git remote get-url origin`). Another repo: stop and say so before reviewing.
 - Its thread in `#pr-review-channel` (slack.md, "Finding a PR's thread"), and everything said in it.
 - The linked Linear issue, read for intent only. Its status and owner stay as they are.
 - The user's earlier reviews (`gh api repos/<o>/<r>/pulls/<n>/reviews`, by `gh api user --jq .login`). None: **round 1**. Otherwise a **re-review**, against the `commit_id` of their last one.

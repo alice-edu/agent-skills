@@ -64,7 +64,7 @@ Done when every reference kept has its borrow line naming an option and the boxe
 Read Doop's guide once (`get_guide`). Its brief, inspiration and image steps are for designs from scratch: here the app's copies are the brief.
 
 1. **One canvas per sketch**, `Sketch: <what>`, made once; a new thing sketched on it gets a page of its own (`create_canvas_page`). On a new one, upload the fonts and images the copies list ("Copies"); a later round uploads what it adds. No tokens and no components: the copies carry their own styles.
-2. **A banner** across the top of the page, a frame of a few lines: what's sketched, how to read the rows (faded is unchanged, orange is recommended), and "comment, then type next in chat".
+2. **A banner** across the top of the page, a frame of a few lines: what's sketched, how to read the rows (a strip marked `same as Before` is unchanged, `NEW` is new or changed, orange is recommended), and "comment, then type next in chat".
 3. **The first row**, under the banner: a label frame `Round 1: <the problem in a few words>`, then Before as a copy (step 1) at the width it was made at, named `Before`, with its note over it.
 
 Done when the canvas has the fonts and images, and a page with the banner and Before.
@@ -75,13 +75,13 @@ Each option is a frame beside Before, named `A: <convention>`, `B: …`, at most
 
 - **Notes** are their own frames, never written into a design: the option's name and convention, then a few short lines: what changes, its usability verdict (step 5), its cost to build, and what it borrows from which reference, with its link, or "own idea". Every note in a row is one height. The recommended option's note has a 3 px orange border (`#e5683a`), a pale orange fill (`#fff6f1`) and a `★ Recommended` badge; the others a dashed grey border on off-white.
 - **One template a round**: write the note and the frame's wrapper once and fill them in for each option, so a row is drawn in a few calls and its frames line up.
-- **Before carries over**: from round 2, Before is the earlier round's frame unchanged, so its note says `Same as Round <n> ↑` and the frame isn't drawn again.
+- **Before carries over**: from round 2, Before is the earlier round's frame unchanged, so its note says `Same as Round <n> ↑` and the frame isn't drawn again. A flow's Before lane is the exception: it's drawn again in every round, so each round reads on its own.
 
 By what's sketched:
 
 - **A screen**: each option the whole screen (1280 wide on the web, 390 × 844 on the phone).
 - **A component**: each option one frame holding the component's variants and states side by side (default, hover, disabled, loading, at each size the app uses), labelled, so a change shows on every state at once.
-- **A flow**: each option is a **lane**, a row of its own: the note at the left, then its screens in step order, each topped by a label strip (`3 · Level →`). A screen the lane leaves as Before's is carried over faded, with a centred `Same as Before <n>` pill; only a new or changed screen is drawn at full strength, with an orange `NEW` badge. Carried-over screens are their story's picture (`story-shot`'s png), not copies: nothing on them is being designed. A new screen over an existing one (a sheet, a dialog) is drawn over its picture, dimmed behind.
+- **A flow**: each option is a **lane**, a row of its own: the note at the left, then its screens in step order, each topped by a label strip (`3 · Level →`). Every lane shows every step at full strength, so each lane reads as the whole flow; what's the same as Before is marked outside the screen, on its label strip (`3 · Level · same as Before`), and a new or changed screen's strip carries an orange `NEW` badge. Nothing is faded, covered or left out. Carried-over screens are their story's picture (`story-shot`'s png), not copies: nothing on them is being designed. A new screen over an existing one (a sheet, a dialog) is drawn over its picture, dimmed behind.
 
 - **Parts** are copies ("Copies") of the stories that draw them, in the state and with the props the option needs: a story missing that state gets one, `<Name>.sketch.stories.tsx` beside the component, uncommitted, with Storybook on the thread's checkout. Each part's line names its story and the file it's built from.
 - **Layout** between parts is plain HTML with inline styles, its values read off the copies and the theme (`apps/web/app/globals.css`): flex and grid, gaps and padding on the 4 px grid (16 px is the app's `p-4`), surfaces in the theme's colours, a panel's corners as the app's `rounded-xl` and a row's or control's as its `rounded-lg`, its shadows, text at the app's sizes (14 px body, 12 px labels).

@@ -17,9 +17,11 @@ Shared files: [overview.md](~/.agents/pr-flow/overview.md) (how it's shown to th
 - The user's earlier reviews (`gh api repos/<o>/<r>/pulls/<n>/reviews`, by `gh api user --jq .login`). None: **round 1**. Otherwise a **re-review**, against the `commit_id` of their last one.
 - A PR stacked on another (its base isn't `main`): review this layer's diff against its base, and note the order they merge in.
 
+In T3 Code, link the PR to this thread (`link_pull_request` with its full URL), though you only review it: the user finds the review from the PR. A failed link is said in the report.
+
 Once the round is known, react 👀 on the message it answers (slack.md, "Reactions"): the **Up for review** post on round 1, the author's latest **Ready for another round** message on a re-review.
 
-Done when PR, head, round, thread (or none) and intent are known, and the 👀 is on.
+Done when PR, head, round, thread (or none) and intent are known, the PR is linked to this thread (in T3 Code), and the 👀 is on.
 
 ## 2. Review and explain, side by side
 

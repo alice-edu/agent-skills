@@ -13,6 +13,7 @@ They're written for our repo (Alicia), our Slack and our Linear, and they're pub
 | "review's back", "what did they say" | [`fix-comments`](skills/fix-comments/SKILL.md) | An overview of the review that came back: what we'll fix and what needs you, with confidence, in two tables. Nothing changed yet. |
 | "fix comments" | [`fix-comments`](skills/fix-comments/SKILL.md) | The same overview, then fixes what's right (without asking when it's all technical and certain), asks you the product calls, re-reviews the whole PR, replies on every comment, and sends it back. |
 | "full send" | [`full-send`](skills/full-send/SKILL.md) | Takes an approved PR the rest of the way: last comments, conflicts, CI, merge, and checks it's live. |
+| "phone release", "cut it" | [`phone-release`](skills/phone-release/SKILL.md) | Takes the phone app through the stores: sorts what needs a store build, bundles native work into one cut, tries it, cuts it, and sees it out and merged. |
 | "catch up" | [`catch-up`](skills/catch-up/SKILL.md) | Brings a stale branch up to date: merges the base in, resolves conflicts, and proves it still works. |
 | "review this", "another look" | [`review-pr`](skills/review-pr/SKILL.md) | Reviews a teammate's PR with Claude and Codex, explains it in plain words, and posts the review on GitHub and in Slack. |
 | "review loop" | [`review-loop`](skills/review-loop/SKILL.md) | Claude and Codex review a change in rounds until they agree. The other skills run it. |

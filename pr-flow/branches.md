@@ -16,7 +16,7 @@ Always main. What differs is whether the PR can merge when it's green:
 
 ## The native release
 
-Run by hand, by the user, never by a pr-flow skill unless they say so in that thread:
+Run by the user, or by `phone-release` when they ask for it; never by another pr-flow skill:
 
 1. **Tried**: the PR is approved, main is merged in, and a person has tried its build (`eas workflow:run .eas/workflows/preview.yml --ref <branch>` from `apps/mobile`: TestFlight and Play internal).
 2. **The cut**: `gh workflow run phone-release.yml -f sha=<the PR's head>` tags it `phone-cut` (its message: each platform's native code, `pr=<n>`) and starts the store builds. One cut at a time: the next waits till the last is marked out and merged. A fix the stores' review asks for is cut again with `-f replace=true`, the same PR only.

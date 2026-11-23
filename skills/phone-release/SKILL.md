@@ -44,7 +44,12 @@ Before submitting, each store-review gate is set for this version (`STORE_SALES_
 
 The cut sends a build to the stores, so it's the user's go: one card with the SHA, the version and what it carries. On go: `gh workflow run phone-release.yml -f sha=<head>`.
 
-Done when its run is green, `phone-cut` names the head, and the #phone-releases thread has the cut.
+The cut only uploads: each build still has to be sent for review by hand, once EAS's submits finish (`eas submit:list`), in the browser (the user signs in):
+
+- **App Store Connect**: the version made (iris `POST /v1/appStoreVersions`, `releaseType: MANUAL`, with the cut's build), What's New in each language from `storeListing.releaseNotes`, App Review's notes saying how to reach what's new (`store.config.js`'s, plus each store-review feature's path), then a review submission with that version, submitted.
+- **Play Console**: the production track's draft for the version: release notes in each language from the same text, rollout 100%, Save, then Publishing overview's Send for review (managed publishing on, so approval waits for Publish). An availability warning the last release shipped with too is ignored, saying why.
+
+Done when its run is green, `phone-cut` names the head, both stores show the version in review, and the #phone-releases thread has the cut.
 
 ## 5. Through the stores
 

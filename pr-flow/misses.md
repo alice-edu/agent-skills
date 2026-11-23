@@ -35,6 +35,12 @@ An edit that changes how findings are graded or what reviewers look for (`review
 | 2026-11-22 | same | #783 failure path | caught as a P2, both runs (a failed summary leaves the row "Every file ready" and Publish refuses) | caught, P1 with a run, then P2 (the user's) on the rerun; the design seat named the cause in a note, not a proposal | 0 / 0 |
 | 2026-11-22 | same | #903 ordering | missed | missed (the design seat looked at begin/finish/drop and kept it) | 0 / 0 |
 | 2026-11-22 | same | #867 library assumed | caught as a P2, both runs (a rerun without `{reset: true}` is a no-op) | caught, P1 with a run, then P2 on the rerun | 0 / 0 |
+| 2026-11-23 | Every bug finding needs a run from round 1; unrun findings dropped (Claude Opus, one seat, every lens) | #1057 ways in | missed: tabled "join when already a member: invite deleted" as fine (11 findings, 4 P1; 267k tokens, 16 min) | missed (4 reported, 5 dropped; 184k, 8 min) | 0 / 0 |
+| 2026-11-23 | same | #915 failure path | missed: tabled "appendMarks throws → unmarked" as fine (9 findings, 3 P1; 269k, 15 min) | missed, the same row tabled as fine (3 reported, 4 dropped; 263k, 17 min) | 0 / 0 |
+| 2026-11-23 | same | #1545 scale | missed: the entitlements read on a paused day called "a few rows a user" (7 findings, 1 P1; 207k, 10 min) | missed, the same read named and passed (4 reported, 2 dropped; 193k, 12 min) | 0 / 0 |
+| 2026-11-23 | same | #773 logic edge | missed (9 findings, 3 P1; 268k, 13 min) | missed: found "105:00" → undefined on the parser, then dropped it because no run showed Gemini writing that form (3 reported, 5 dropped; 24 min) | 0 / 0 |
+| 2026-11-23 | same | #707 claim | missed: ">25 ids refused" read as the client's 25-a-batch, not the tool text (10 findings, 3 P1; 256k, 15 min) | missed, the same (5 reported, 4 dropped; 242k, 11 min) | 1 / 0 (goalReader's by_linked read past 1,000: a documented cap with a scale test; the after seat dropped it unrun) |
+| 2026-11-23 | same | #1618 repo rule | caught, P1 (code and the test's local row; 5 findings, 1 P1; 193k, 10 min) | caught, P1 with a probe run (2 reported, 2 dropped; 160k, 6 min) | 0 / 0 |
 
 ## Rows
 

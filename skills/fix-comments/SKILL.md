@@ -12,7 +12,7 @@ Shared files: [overview.md](~/.agents/pr-flow/overview.md), [github.md](~/.agent
 ## 1. Gather every point
 
 - The reviews on GitHub, the latest from each reviewer, and every inline thread without a reply from the user since.
-- Top-level PR comments, bots' included (Copilot, CodeRabbit).
+- Top-level PR comments, bots' included (Copilot, CodeRabbit), each settled by [bot-triage.md](~/.agents/pr-flow/bot-triage.md).
 - The PR's Slack thread (slack.md), for anything said only there.
 
 List each point once, with its link, what it asks, and its severity as the reviewer gave it. Done when every comment since the user's last round is on the list.

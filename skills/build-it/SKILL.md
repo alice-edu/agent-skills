@@ -94,11 +94,15 @@ Done when the card is asked, and each question about what a student sees has its
 
 ## 6. Do it
 
+**Types first** (pstack's architect), when the change adds data (a table, a field, a stored shape) or a function called across files: before any logic, write the types, signatures and where each piece lives, in two shapes, and pick the one where each piece of state has one owner, each task one way to do it, and callers need to know least. The pick and the one it beat go under **Decided** in a line each; nothing is asked. A change inside one file or one screen skips it.
+
 Write the change the repo's way, and the right way ([lenses.md](~/.agents/pr-flow/lenses.md), "The right way"): what it adds is clean, and the debt it leans on is fixed in this PR rather than worked around (a small change whose debt fix would make it big: a thread of its own started now, [ready.md](~/.agents/pr-flow/ready.md), "A small change"). A fix: the change that removes the whole cause, its red test now green. A check where the bad state shows up is a fix only when that state is legitimate; when it shouldn't exist, the check hides the bug (pstack's fix-root-causes), and the change is a mitigation. Two fixes that leave it red share a **premise** about the cause: write it down and test it directly (a log, a probe, a script) before a third; a wrong premise sends it back to step 4's Cause. A build: what the design says, with the tests `AGENTS.md` asks for. A requirement that arrives after the design (the user's, a reviewer's, a case found while building) gets a design pass of its own before code: had it been known from the start, what shape would this have? Sketch two, pick the one where each piece of state has one owner, and rebuild to it when it isn't the current shape, rather than adding a branch for the new case. A file this change grows past easy reading gets the split considered.
 
 ## 7. Prove it
 
 Hold it to [ready.md](~/.agents/pr-flow/ready.md): the checks CI runs, the base merged in, the change seen in the running app when a student can see it, edge cases written down. Record each result against the head. When the user asked for a student test (the `student-test` skill), run it here, once the change works in the app.
+
+Then, once, on the whole diff against the base: `no-comments`, then `deslop`, committed on their own, so the review and the PR see the cleaned change.
 
 ## 8. Review until it would pass
 

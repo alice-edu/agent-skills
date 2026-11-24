@@ -53,15 +53,16 @@ Push, then reply on every point (github.md): `Agreed, fixed in <sha>: …`, or t
 
 Done when every point from step 1 has a reply on GitHub pointing at a pushed commit or giving its reason.
 
-## 6. Send it back
+## 6. Send it back, or merge
 
-Run `send-for-review`: it posts "ready for another round" in the thread and re-requests the reviewer.
+- **Approved**, and the fixes keep the approved shape (full-send, "What still counts as approved"): don't send it back. Run `full-send`: the user's standing rule is that an approved PR merges by default (2026-11-24).
+- **Not approved**, or the shape changed: run `send-for-review`: it posts "ready for another round" in the thread and re-requests the reviewer.
 
 ## 7. Snooze, then report
 
 Two actions, in this order, because the report is your last message and the turn ends with it:
 
-1. **Snooze the thread.** When `send-for-review` posted, call `t3_thread_organize` with `action: "snooze"` and `snoozedUntil` 10:30 on the next working day, with the local offset (`date`; skip weekends and Danish public holidays, [waiting.md](~/.agents/pr-flow/waiting.md)). When it didn't post (a card unanswered, a red check of ours), the thread stays in sight: no call.
+1. **Snooze the thread.** When `full-send` ran, it settled the thread and wrote the report: stop here. When `send-for-review` posted, call `t3_thread_organize` with `action: "snooze"` and `snoozedUntil` 10:30 on the next working day, with the local offset (`date`; skip weekends and Danish public holidays, [waiting.md](~/.agents/pr-flow/waiting.md)). When it didn't post (a card unanswered, a red check of ours), the thread stays in sight: no call.
 2. **Write the report** ([report.md](~/.agents/pr-flow/report.md)): the verdict first; the overview's rows as one table, each with its outcome in a few words (fixed, pushed back, skipped) and any rows the full review added; CI's state if it isn't green; the **You:** line; the Links line ([links.md](~/.agents/pr-flow/links.md)); and last, where the thread went: `Snoozed until Wed 10:30.` or `In sight: <why>.`
 
 Done when `t3_thread_organize` has answered (or the thread is in sight for a reason) and the report's last line says which.

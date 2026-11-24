@@ -26,13 +26,15 @@ Find the PR's Slack thread (slack.md, "Finding a PR's thread") and react 🙌 on
 
 ### What still counts as approved
 
-From the approval to the merge, only these go in without another review:
+The default is to merge. An approval covers the change while it keeps the **shape** the reviewer approved: the same approach, in the same areas. So these go in without another review:
 
-- the base merged in, with its conflicts resolved;
-- cheap nits;
-- small mechanical fixes for CI or a bot: a type error, a lint error, a flaky test.
+- what the reviewer asked for, in their approval or its comments, behaviour changes included;
+- the base merged in, with its conflicts resolved; nits; fixes for CI or a bot;
+- fixes from our own checks (a `review-loop` P1 in step 3, a FAIL from the student check, a bot's bug) that fix the approved approach without replacing it.
 
-Anything else was never approved: a P1 from `review-loop` (step 3) or a bot (step 4), a fix that changes behaviour, a diff that grows noticeably. Push the fix, run `send-for-review` saying what changed and why, `unwatch_pull_request`, and go to the report (step 6) without merging. When the right fix isn't clear, or would change what the PR does, put it on the card instead of writing it.
+Only a change of shape goes back to the reviewer: a new approach or redesign, a feature or ask they never saw, most of the approved diff rewritten, a new area the PR didn't touch before (backend, auth, money, the data model), or the reviewer asked to see it again or requests changes. Then push it, run `send-for-review` saying what changed and why, `unwatch_pull_request`, and go to the report (step 6) without merging. Measured: of 20 approved PRs sent back for changes like the first list, 5 re-reviews were an approval with no comments and most got none (2026-11-24).
+
+**Tell the reviewer** what went in after their approval, in one comment on the PR when it merges (github.md's voice): `Merged with your suggestions. Since your approval: <each change in a line, with its commit>.` so they can look afterwards.
 
 ## 3. Prove it
 
@@ -46,13 +48,13 @@ Push, then `babysit-pr`. The **merge gate**, all true on the latest head:
 
 - proof covers every change in the diff, and `screenshots-stale` says current;
 - when a student can see the change, the non-author verdict (step 3) is PASS for the latest head's patch id;
-- everything since the approval is in "What still counts as approved";
+- everything since the approval keeps the approved shape ("What still counts as approved");
 - required checks are green (`phone-native` red: branches.md, "phone-native red"; a native PR waiting for its store build stops here, `In sight`);
 - every bot finding posted so far is fixed or answered with a reason (`babysit-pr`, "Bots": advisory ones aren't waited for);
 - an approval stands, and no review still requests changes;
 - the branch is up to date with its base, and GitHub reports it mergeable.
 
-Merge with a merge commit (`gh pr merge <n> --merge`), the repo's habit, through branch protection as it's set. Not confident in the change, or the gate can't pass and the fix isn't ours to make: leave it unmerged and put it on the card.
+Merge with a merge commit (`gh pr merge <n> --merge`), the repo's habit, through branch protection as it's set, then post the reviewer's comment ("What still counts as approved"). Not confident in the change, or the gate can't pass and the fix isn't ours to make: leave it unmerged and put it on the card.
 
 ## 5. Close the loop when it's live
 

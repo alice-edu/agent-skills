@@ -27,9 +27,10 @@ Re-grade every finding yourself, whatever label it came with. **Grade by harm, f
 
 Every round finds about one new P1 whatever its number, so more rounds never converge by themselves: the budget is what ends the loop.
 
+- A small change (ready.md, "A small change") gets no round: its proving run stands in. Called on one anyway (the user's "review loop"), it's one round with one seat.
 - A diff of under ~100 changed lines: one round.
 - Otherwise up to 2 rounds; 3 while a P1 proven by a run stays open in auth, permissions, data loss, money or concurrency.
-- After the last round, when you fixed a P1 or a P2 bug in it, or propose a Not fixed row: one **fix check** by the other reviewer, on the open ids and each fix's diff through its callers, with the case tables (lenses.md, Correctness) redone for what the fixes changed, and its AGREE or DISAGREE on each proposed Not fixed row. It raises nothing new beyond a regression from a fix or another case of a fixed bug's class.
+- After the last round, when you fixed a P1 in it, or propose a Not fixed row: one **fix check** by the other reviewer, on the open ids and each fix's diff through its callers, with the case tables (lenses.md, Correctness) redone for what the fixes changed, and its AGREE or DISAGREE on each proposed Not fixed row. It raises nothing new beyond a regression from a fix or another case of a fixed bug's class.
 - A third fix check on this PR (earlier runs of this loop count) doesn't start: the fix it would check goes through step 6's "A mechanism that keeps breaking" first.
 - The user's "another round" grants one more. The budget is never asked about: no card offers another round.
 - The budget is per run. A later run on the same PR (fix-comments, catch-up, a merge of the base) reviews only what changed since the PR's agreed head (step 1), so it never starts over.
@@ -131,7 +132,7 @@ Put both reviews in the ledger: one row a finding, duplicates merged, each with 
 
 ### 6. Next round
 
-Go again, while budget remains, only after a round that had a confirmed P1: the next round checks its fix. A round with no confirmed P1 ends the rounds: fix the P2 bugs and the housekeeping, rerun the checks they touch, and send the P2 fixes and any proposed Not fixed rows to the fix check (Budget).
+Go again, while budget remains, only after a round that had a confirmed P1: the next round checks its fix. A round with no confirmed P1 ends the rounds: fix the P2 bugs and the housekeeping, rerun the checks they touch, and send any proposed Not fixed rows to the fix check (Budget).
 
 **A recurring class.** Every review of this PR, its human reviews included, adds its P1s' classes to the brief's "Classes found so far", so each later round looks for the class, not only its case. The second time a P1 of one class turns up on this PR (an earlier round, an earlier run of this loop, or a human review's point fixed before), its ledger row answers: does this fix close the whole class, or only this case? Closing it names the boundary at file:line (a check every path goes through, a library that solves it, lenses.md "A solved problem") and a test that feeds it a second case of the class. A fix that only patches one more case means the approach is wrong: redesign so the class can't happen, and note the redesign in the ledger. It's the agents' call, under **Decided**, unless it changes what a student sees or grows the scope. Findings of other classes are fixed as usual.
 
@@ -144,7 +145,7 @@ Go again, while budget remains, only after a round that had a confirmed P1: the 
 
 The ledger records each answer and what was searched. Fixes go on only once none of the four finds a shape that removes the area's run of fixes.
 
-Wait for each reply before the next round; a timeout, an error or no reply is not approval.
+Wait for each reply before the next round; a timeout, an error or no reply is not approval. A seat with no reply 20 minutes after it started is cancelled (`task_cancel`) and started once more; silent again, the round stands on the replies that came, and the report names the seat as timed out.
 
 ### 7. Stop
 

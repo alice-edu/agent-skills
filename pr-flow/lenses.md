@@ -66,7 +66,7 @@ Does it follow the repo's own rules? The repo's docs (above) for what it touches
 **The right way.** A change leaves the code it touches in the shape it should have, the way a careful teammate would build it from scratch: the right fix, never the quick way around. Old debt never justifies new debt: code nearby already doing it badly is a reason to fix that code too, not to copy it. So:
 
 - a smell the change adds, or a workaround it adds to fit around the shape of nearby code: **P1**, fixed in this PR by fixing the shape;
-- old debt the change leans on or extends: fixed in this PR too, kept to what the change touches, and said in the PR body;
+- old debt the change leans on or extends: fixed in this PR too, kept to what the change touches, and said in the PR body; in a small change (ready.md, "A small change"), a Linear issue linked in the body instead, unless the fix is itself small;
 - old debt it only passes by: P2 polish, or a Linear issue when it's bigger than the PR.
 
 **The simplest shape.** The design is as small as what it has to do: the plainest version that meets every requirement, built from parts the repo already has. **Over-built** is anything beyond that: an abstraction or option with one user, generality for cases nobody asked for, a new table, service, package, flag or second path where an existing one does the job, state kept twice, defensive code for states that can't happen. Name the simpler version, what it would give up, and what it saves (lines, parts, ongoing cost). Over-built with nothing given up is a P1 under the right way; where the simpler shape drops a requirement, it's a Simplify? question ([decision-card.md](decision-card.md), "Who decides").

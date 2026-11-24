@@ -6,6 +6,18 @@ What "ready for review" means for a PR of the user's. `build-it`, `fix-comments`
 
 Proof is evidence observed in this session on the current **head** (the PR's latest commit, with its base merged in): command output, a test that went red without the change and green with it, the running app. Green mocked tests prove the logic; for a change a student sees, proof is the change seen in the running app (`pnpm dev`, the `run` skill), used as a student would: upload the file, send the message, get the answer graded. For the phone app, that's its dev client on both an iOS simulator and an Android emulator (the app's `AGENTS.md` and README say how): its tests run its web build, which shows neither native layout, gestures nor the keyboard. A story stands in for the app only when the change is inside one component's drawing and a story renders each caller's props (how it looks in another engine, a theme); what the change does with the screen around it (a dialog over another, data, a flow) is seen in the app. Opening a screen once proves only the easy case. Each changed screen is tried at its **worst case**, hunting for where it breaks: the longest content, scrolled to the end; the keyboard up over a multi-line input; every expandable part open; each caller of changed shared code. The checklist names the states tried. What that bills (models, grading, reading a file) is part of testing and needs no asking; reuse an upload that already does the job. A check run on an earlier head is history, not proof: after any commit or merge of the base, rerun what the change could affect.
 
+## A small change
+
+A **small change** is under ~30 changed lines (tests, stories and `packages/i18n/messages/` aside) and touches no backend (`packages/backend`, `worker/`), no auth, money or data model, and no code shared beyond the screen it changes. It's held to the same bar with less around it, as pstack's bug fix is: reproduce, fix, see it fixed where it broke, open the PR.
+
+- **No review round.** In place of `review-loop`, name the one fact the change is safe because of and prove it by a run (pstack's blast-radius): the test red without the change and green with it, or the screen used at its main state and its worst case. The PR body's review line: `Small change: no review round; <the fact>, proven by <the run>`.
+- **Pictures**: one cropped After, and a Before only for a bug; light and dark only when colours changed; a GIF only when it moves (screenshots.md).
+- **No diagram**, unless a card's question needs one.
+- **Old debt** the change leans on goes to a Linear issue linked in the body, unless fixing it is itself small. A gap in the change's own feature is still fixed in this PR.
+- The verdict from an agent that didn't write it, before the merge (`full-send` step 3), stays: one pass over the changed screen.
+
+A diff that grows past small (a review's fix, the user's next ask) gets the full path from there: `review-loop` on the whole change.
+
 **Used, on every surface.** "Ready", "fixed" and VERIFIED are said only after the change was used as a student would on this head, on every surface it changes (web, each phone, the voice agent answering, the call connecting), never from a passing test or a message alone.
 
 **Loose ends.** Before ready:
@@ -84,13 +96,13 @@ Every item below ends as `[x]`, `N/A` or a Test-by-hand line:
 5. Edge cases: the case tables' rows (lenses.md, Correctness), each handled with its evidence (a test where it was a finding and the repo has a place for one), and any left in the body's Not fixed with the other reviewer's AGREE (pr-body.md).
 6. A file this PR made large or grew a lot: split considered, with the outcome. Only files the PR itself grew.
 7. Each changed screen tried at its worst case (Proof), naming the states tried and what broke; screenshots for every change a student can see, and GIFs for each that moves ([screenshots.md](screenshots.md)), shown to the user in the report; `screenshots-stale` says current on this head (screenshots.md, "Keep them current"); a change nobody sees is `N/A: Screenshots: <why>`.
-8. `review-loop` agreed on this head.
+8. `review-loop` agreed on this head, or for a small change its proving run on this head ("A small change").
 
 ## Make it ready
 
 The gate before a reviewer sees the PR: `send-for-review` runs it before posting, and it runs alone when the user asks "is it ready?". The user often keeps changing a PR in its thread after `build-it` opened it, and those commits get no review of their own; this is where they get one.
 
-1. **What changed**: the head `review-loop` last agreed on is in the checklist's item 8 (`review-loop agreed at <sha>`). The same change (`review-loop`'s step 1, "The agreed head": the same patch id, so a merge of the base alone counts as no change): reuse the review. The head itself is the agreed one: reuse it all and go to 4. Otherwise (the base moved): go to 3, since a base change can break the PR's code.
+1. **What changed**: the head `review-loop` last agreed on is in the checklist's item 8 (`review-loop agreed at <sha>`). The same change (`review-loop`'s step 1, "The agreed head": the same patch id, so a merge of the base alone counts as no change): reuse the review. The head itself is the agreed one: reuse it all and go to 4. Otherwise (the base moved): when the base's new commits touch none of the PR's files or what they import (`git diff --name-only <old base>..<new base>`), reuse the proof and rerun only CI's checks; when they do, go to 3, since a base change can break the PR's code.
 2. **Review it**: merge the base in, then `review-loop` on the delta since the agreed head, through its callers, as `build-it`'s step 8 ([its Done when](~/.agents/skills/build-it/SKILL.md)).
 3. **Prove it again** on the new head: the checks above, the change seen in the running app when a student can see it, and screenshots and GIFs retaken where the screen changed, until `screenshots-stale` says current.
 4. **Rewrite the PR body** for where the PR ended up, not where it started ([pr-body.md](pr-body.md)): what changed, the behaviour table, the checklist with this head's SHA, the screenshots and GIFs.

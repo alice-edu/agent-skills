@@ -38,7 +38,7 @@ Anything else was never approved: a P1 from `review-loop` (step 3) or a bot (ste
 
 Hold the head to [ready.md](~/.agents/pr-flow/ready.md), reusing what's still valid for it. When code changed since the approval, `review-loop` in **author** mode on the diff since the approved commit. Its fixes are held to "What still counts as approved".
 
-Then a **verdict from an agent that didn't write it**, when a student can see the change: a fresh subagent, told to read `~/.agents/pr-flow/worker.md` first and given only the PR's intent, its behaviour table, the running app's link and ready.md's "Proof", which uses the change as a student would and answers PASS or FAIL with what it saw (screenshots). FAIL is fixed like a P1. The verdict holds while the change's patch id does (review-loop, "The agreed head"); a fix or merge in step 4 that changes it means a new verdict.
+Then a **verdict from an agent that didn't write it**, when a student can see the change: a fresh subagent, told to read `~/.agents/pr-flow/worker.md` first and given only the PR's intent, its behaviour table, the running app's link and ready.md's "Proof", which uses the change as a student would and answers PASS or FAIL with what it saw (screenshots). For a small change (ready.md, "A small change"), one pass over the changed screen. FAIL is fixed like a P1. The verdict holds while the change's patch id does (review-loop, "The agreed head"); a fix or merge in step 4 that changes it means a new verdict.
 
 ## 4. Babysit to the gate
 
@@ -56,7 +56,7 @@ Merge with a merge commit (`gh pr merge <n> --merge`), the repo's habit, through
 
 ## 5. Close the loop when it's live
 
-Wait for the production deploy of the merge commit, and the phone's update when the PR changed what the phone bundles (branches.md):
+Wait only when something waits on it being live: a Slack report thread or PostHog issue to close, a deploy hand test, or the phone's update when the PR changed what the phone bundles (branches.md). Otherwise the deploy runs on its own: report it merged, deploying, and settle. When something waits, wait for the production deploy of the merge commit:
 
 ```bash
 id=$(gh api "repos/<o>/<r>/deployments?sha=<merge sha>&environment=Production" --jq '.[0].id')
@@ -75,7 +75,7 @@ Once merged, react ✅ on the PR's **Up for review** post (slack.md, "Reactions"
 
 Two actions, in this order, because the report is your last message and the turn ends with it:
 
-1. **Put the thread away.** Merged and live, with the Slack thread told when there was one: `t3_thread_organize` with `action: "settle"`. Sent back for review (step 2): `action: "snooze"` and `snoozedUntil` 10:30 on the next working day, with the local offset. Anything else (stopped before merging, merged but not live): the thread stays in sight, no call.
+1. **Put the thread away.** Merged, and live when step 5 waited for it (the Slack thread told when there was one): `t3_thread_organize` with `action: "settle"`. Sent back for review (step 2): `action: "snooze"` and `snoozedUntil` 10:30 on the next working day, with the local offset. Anything else (stopped before merging, or step 5 waited and it isn't live yet): the thread stays in sight, no call.
 2. **Write the report**, shaped by [report.md](~/.agents/pr-flow/report.md). Merged or not, whether it's live (measured, from the deploy's check), and **Decided**: every call made on the user's behalf. What was posted where is the Links line. When the run stops before merging, `unwatch_pull_request` first, and start the report with why. Then the Links line ([links.md](~/.agents/pr-flow/links.md)), and last, where the thread went: `Settled.`, `Snoozed until Wed 10:30.` or `In sight: <why>.`
 
 Done when `t3_thread_organize` has answered (or the thread is in sight for a reason) and the report's last line says which ([waiting.md](~/.agents/pr-flow/waiting.md)).

@@ -94,7 +94,7 @@ Done when the card is asked, and each question about what a student sees has its
 
 ## 6. Do it
 
-Write the change the repo's way, and the right way ([lenses.md](~/.agents/pr-flow/lenses.md), "The right way"): what it adds is clean, and the debt it leans on is fixed in this PR rather than worked around. A fix: the change that removes the whole cause, its red test now green. A check where the bad state shows up is a fix only when that state is legitimate; when it shouldn't exist, the check hides the bug (pstack's fix-root-causes), and the change is a mitigation. Two fixes that leave it red share a **premise** about the cause: write it down and test it directly (a log, a probe, a script) before a third; a wrong premise sends it back to step 4's Cause. A build: what the design says, with the tests `AGENTS.md` asks for. A requirement that arrives after the design (the user's, a reviewer's, a case found while building) gets a design pass of its own before code: had it been known from the start, what shape would this have? Sketch two, pick the one where each piece of state has one owner, and rebuild to it when it isn't the current shape, rather than adding a branch for the new case. A file this change grows past easy reading gets the split considered.
+Write the change the repo's way, and the right way ([lenses.md](~/.agents/pr-flow/lenses.md), "The right way"): what it adds is clean, and the debt it leans on is fixed in this PR rather than worked around (a small change: a Linear issue, [ready.md](~/.agents/pr-flow/ready.md), "A small change"). A fix: the change that removes the whole cause, its red test now green. A check where the bad state shows up is a fix only when that state is legitimate; when it shouldn't exist, the check hides the bug (pstack's fix-root-causes), and the change is a mitigation. Two fixes that leave it red share a **premise** about the cause: write it down and test it directly (a log, a probe, a script) before a third; a wrong premise sends it back to step 4's Cause. A build: what the design says, with the tests `AGENTS.md` asks for. A requirement that arrives after the design (the user's, a reviewer's, a case found while building) gets a design pass of its own before code: had it been known from the start, what shape would this have? Sketch two, pick the one where each piece of state has one owner, and rebuild to it when it isn't the current shape, rather than adding a branch for the new case. A file this change grows past easy reading gets the split considered.
 
 ## 7. Prove it
 
@@ -104,8 +104,10 @@ Hold it to [ready.md](~/.agents/pr-flow/ready.md): the checks CI runs, the base 
 
 The bar: a reviewer who knows the repo's docs would approve it as it stands.
 
+A small change ([ready.md](~/.agents/pr-flow/ready.md), "A small change") skips this step: its proving run from step 7 is the review.
+
 1. `review-loop` in **author** mode on the head, once: its budget bounds it. Its intent includes what the likely reviewer asks for: whoever reviewed these files last (`gh pr list --state merged --search <path>`), from their review comments on the repo's recent PRs.
-2. Prove its fixes again on the new head (step 7).
+2. Prove its fixes again on the new head (step 7): what the fixes' files reach, not the whole change again.
 3. A lens that came back `not verified`: give it what it lacked (the doc, the look at the app) and recheck that lens alone.
 
 Done when, on one final head: the loop agreed; each P2 bug is fixed or in Not fixed with the other reviewer's AGREE, and polish fixed or skipped in one line; every lens is clear or N/A, none `not verified`; both reviewers' DOCS cover the repo's docs for this change ([lenses.md](~/.agents/pr-flow/lenses.md), "The repo's docs"); and ready.md's checks pass on that head. A P1 still open when the budget is spent is Stuck: it goes on the card and blocks the merge, and the PR still opens ready for review, the open P1 first in its body.

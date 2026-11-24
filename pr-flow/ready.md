@@ -13,7 +13,7 @@ A **small change** is under ~30 changed lines (tests, stories and `packages/i18n
 - **No review round.** In place of `review-loop`, name the one fact the change is safe because of and prove it by a run (pstack's blast-radius): the test red without the change and green with it, or the screen used at its main state and its worst case. The PR body's review line: `Small change: no review round; <the fact>, proven by <the run>`.
 - **Pictures**: one cropped After, and a Before only for a bug; light and dark only when colours changed; a GIF only when it moves (screenshots.md).
 - **No diagram**, unless a card's question needs one.
-- **Old debt** the change leans on goes to a Linear issue linked in the body, unless fixing it is itself small. A gap in the change's own feature is still fixed in this PR.
+- **Old debt** the change leans on is fixed, never filed: when the change and the fix together stay small, in this PR as a commit of its own; bigger, in a new thread started now (`t3_thread_launch`, a worktree off the base) that fixes it in its own PR, while this one goes on, linked both ways in the PR bodies. A gap in the change's own feature is always fixed in this PR.
 - The verdict from an agent that didn't write it, before the merge (`full-send` step 3), stays: one pass over the changed screen.
 
 A diff that grows past small (a review's fix, the user's next ask) gets the full path from there: `review-loop` on the whole change.

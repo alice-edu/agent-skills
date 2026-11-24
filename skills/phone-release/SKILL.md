@@ -57,6 +57,7 @@ The #phone-releases thread follows the cut, and calls the user when they're need
 
 - **Rejected**: fix it on the same PR from the store's reason, withdraw the submission, and cut again with `-f replace=true`.
 - **Approved on both**: the user presses Release in App Store Connect and Publish in Play, close together and to everyone (their accounts: one line in the report, with the links).
+- **Conflicts with main** (the thread says so): `catch-up` in the cut PR's own thread, which keeps the cut's native code ("A phone cut's PR"). The user says *catch up* there.
 - **Live**: the thread runs `-f out=true` and merges. Where it couldn't, run both by hand (README, "Out").
 
 Done when the cut's PR is merged and branches.md's "Merged and live" holds.

@@ -35,6 +35,8 @@ Then sort the merge:
 
 When the two sides want things that can't both be true (the base removed what the branch builds on, or changed a behaviour the branch relies on), that's a decision: put it on the card with how each way would go, and resolve the rest.
 
+**A phone cut's PR** (the `phone-cut` tag points into it, or the #phone-releases bot asked for the merge): the store build was made from the cut, so the cut's **native code** (branches.md's list: native packages and their patches, config plugins, permissions, `app.config.ts`'s native fields) stays exactly as the cut has it, whatever main did there; everything else merges as usual. After the merge, `git diff <cut sha> HEAD -- apps/mobile/package.json apps/mobile/app.config.ts patches/` shows no native change, and `phone-native` still passes. Where main changed native code too, that's main's drift (branches.md, "phone-native red"): keep the cut's and say so in the report. The PR merges by itself once the release is out; this run doesn't merge it.
+
 Done when no conflict markers are left, and every resolution can be explained by naming what each side meant.
 
 ## 3. Prove it

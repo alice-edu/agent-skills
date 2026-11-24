@@ -18,6 +18,7 @@ Every scene you draw is read cold, by the user and by whoever they send the link
 A colour, a dashed line or an arrowhead the reader has to guess at is noise. So:
 
 - Colour only what means something; everything else stays neutral (`kind` default, Mermaid's `muted` or `colors: "none"`).
+- A flow or state diagram colours its boxes by group, so its parts read at a glance: by who's there (signed out grey, signed in blue), where it ends well (green), where it fails (red). Mermaid's classes do it (`class A,B success`). A diagram left all grey is harder to read, not plainer: `colors: "none"` is for one with no groups.
 - Say the meaning where the eye already is: in the arrow's or box's own label, a mark and a few words ("✓ right app", "✗ wrong app", "only on retry"). The colour then repeats what the label says, so the diagram reads in grey too.
 - A legend only when one meaning repeats on many elements and labelling each would crowd it: a sample of the thing itself (a short green arrow, a red box) beside one to three words, inside the same screenshot. Never a box of sentences describing colours.
 - A diagram whose labels say it all has no legend.

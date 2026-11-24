@@ -13,7 +13,7 @@ Between them the thread stays snoozed, so the user sees it again only when there
 
 ## The sweep
 
-There's one scheduled task, `Review sweep`, at 09:30 Monday to Friday, `freshSession`, bound to the digest's thread. Its prompt is `Review sweep: follow ~/.agents/pr-flow/nudge.md, "The sweep" (run gh from /Users/emil/Documents/Github/alicia).` It's set up once, never per PR, and nothing has to delete it when a PR merges: it reads the PRs as they are each morning.
+There's one scheduled task, `Review sweep`, at 09:30 Monday to Friday, `freshSession`, in a thread of its own (its first run makes it). Its prompt is `Review sweep: follow ~/.agents/pr-flow/nudge.md, "The sweep" (run gh from /Users/emil/Documents/Github/alicia).` It's set up once, never per PR, and nothing has to delete it when a PR merges: it reads the PRs as they are each morning.
 
 1. **The PRs.** List them with `gh pr list --author @me --state open --json number,url,isDraft,body,updatedAt,reviews,reviewDecision,mergeable,baseRefName`. Keep the non-drafts updated in the last 14 days whose body has a `T3 thread:` line. The last such line names the thread that owns the PR now. Also list the user's PRs merged since the last working day: react ✅ on each one's **Up for review** post where it's missing (slack.md, "Reactions").
 2. **Decide each PR from GitHub first**, by "The check"'s rules: a review since the round started, a conflict, or a required check red (`gh pr checks <n> --required`). Read Slack only for a PR that has none of these and whose round started more than one working day ago (rules 4 and 6 need the thread and its reactions).

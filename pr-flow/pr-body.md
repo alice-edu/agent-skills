@@ -13,6 +13,15 @@ The shape of a PR description for the user's PRs, from their recent ones (alicia
 
 <For what moves, a table of GIFs the same way: Before | After, or After alone for a new flow.>
 
+### Test by hand
+
+- [ ] <What to do>. <What should happen>. (<body|account|deploy|taste>: <why>. Tried: <command or step> → <result>.)
+- [x] Tested by hand by <user>: <what>, at <short sha>
+- [ ] Skipped by <user>: <what>
+
+<details>
+<summary>For reviewers and agents: what changed, research, review, checks</summary>
+
 | Behaviour | Before | After |
 | --- | --- | --- |
 | <case> | <what happened> | <what happens now> |
@@ -38,6 +47,10 @@ Start at `<file>` (<why>), then `<file>`. <The one design decision and what was 
 
 Reviewed by Claude and Codex (`review-loop`, <N> rounds); <what its findings changed>.
 
+### Decided
+
+- <A call made on the user's behalf>: <the pick>, because <why>.
+
 ### Not fixed
 
 - **<The case>**: reached by <how>; its harm: <what goes wrong, for whom>; fixing it would take <what>. <Reviewer and model>: "<its AGREE, quoted>".
@@ -48,11 +61,7 @@ Reviewed by Claude and Codex (`review-loop`, <N> rounds); <what its findings cha
 - [x] <template item> (<evidence>)
 - N/A: <template item>: <why>
 
-### Test by hand
-
-- [ ] <What to do>. <What should happen>. (<body|account|deploy|taste>: <why>. Tried: <command or step> → <result>.)
-- [x] Tested by hand by <user>: <what>, at <short sha>
-- [ ] Skipped by <user>: <what>
+</details>
 
 Designed in Doop: [<what>](<the agreed round's page>)
 T3 thread: <this thread's title>, `t3code://threads/<environmentId>/<threadId>`
@@ -60,8 +69,10 @@ T3 thread: <this thread's title>, `t3code://threads/<environmentId>/<threadId>`
 Fixes ALI-123
 ```
 
+- **Two readers.** Teammates look at the top: the problem, the pictures and Test by hand, so nothing else goes above the fold. Everything an agent or a careful reviewer needs (the behaviour table, diagrams, research, the review, Decided, the checklist) goes in the collapsed `<details>`, in full: collapsing hides it from people, not from agents, who read the raw text. Keep a blank line after `</summary>` and before `</details>`, or GitHub renders the markdown inside as plain text.
 - The behaviour table goes in whenever behaviour changes; the screenshot tables whenever something on screen changes, and the GIFs whenever something moves (screenshots.md, "Recording"). Leave out a section with nothing in it. The Diagram section holds each diagram drawn for this work (diagrams.md): its public link, and its screenshot when it reads at PR width. A change that matches diagrams.md's "When" and has none yet gets one drawn before the body is written.
 - The Research section has a line for each technology used in a new way each solved problem, and each step off the documented path with its precedent and when it can go ([lenses.md](lenses.md), "The technology's way" to "Precedent"), so the reviewer can check the reasoning without asking.
+- **Decided** lists each call the agents made on the user's behalf (decision-card.md), so a reviewer can question one without asking the thread.
 - **Not fixed** holds only the P2 bugs `review-loop` left with the other reviewer's AGREE (its step 5), so the PR's reviewer sees what was weighed and can still ask for it. Most PRs have none, and then the heading goes too.
 - The checklist follows [ready.md](ready.md).
 - **Where it was made**, two lines above `Fixes`:

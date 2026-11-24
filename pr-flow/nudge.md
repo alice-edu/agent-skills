@@ -19,7 +19,8 @@ There's one scheduled task, `Review sweep`, at 09:30 Monday to Friday, `freshSes
 2. **Decide each PR from GitHub first**, by "The check"'s rules: a review since the round started, a conflict, or a required check red (`gh pr checks <n> --required`). Read Slack only for a PR that has none of these and whose round started more than one working day ago (rules 4 and 6 need the thread and its reactions).
 3. **Wake only threads with work**: Reviewed, Fix first, Waiting past its time, Already bumped. For each, `t3_thread_send` (mode `queue`) to the owning thread: `Nudge check for <PR url>: follow ~/.agents/pr-flow/nudge.md, "The check".` Send one message per thread, naming each of its PRs that needs it.
 4. **Leave the rest asleep.** Too soon, Waiting and Forgotten get nothing posted. Snooze each of their threads until 10:30 on the next working day (`t3_thread_organize` with its `threadId`).
-5. **One line** in the sweep's thread: the date, the count for each rule, and the threads woken, by `link`.
+5. **Old tasks.** A thread still on the earlier skill may have scheduled a `Nudge PR #<n>` task: delete each one (`list_scheduled_tasks`, `delete_scheduled_task`), since this sweep covers its PR.
+6. **One line** in the sweep's thread: the date, the count for each rule, and the threads woken, by `link`.
 
 Done when every listed PR has a rule, each thread with work has one message, and the line is posted.
 

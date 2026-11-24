@@ -1,6 +1,6 @@
 # Review digest
 
-One morning post in `#pr-review-channel` listing every PR the team sent for review in the last week that nobody has picked up yet, so the team helps each other get them in, with one message instead of a bump per PR. A scheduled task (`Review digest`) runs it every working day at 08:00; the user can also say "send the digest". The per-PR nudge (nudge.md) still checks each of the user's PRs and fixes conflicts and red checks; it never bumps on its own.
+One morning post in `#pr-review-channel` listing every PR the team sent for review in the last week that nobody has picked up yet, so the team helps each other get them in, with one message instead of a bump per PR. A scheduled task (`Review digest`) runs it every working day at 08:00; the user can also say "send the digest". The nudge (nudge.md: each PR's watch and the morning sweep) still checks each of the user's PRs and fixes conflicts and red required checks; it never bumps on its own.
 
 ## Which PRs
 
@@ -11,7 +11,7 @@ Read the channel's history back one week (`slack_read_channel` with `oldest`, ev
 - **due**: the round message was posted before today, on a working day (nudge.md, "A working day"); one posted on a weekend or holiday counts from the next working day, so it's due the day after that;
 - **no reason to wait**: nudge.md's rule 4 doesn't hold (someone said when they'll look, 👀 on the post, a reviewer away). A reply under an earlier digest promising to look at "some of them" names no PR: it holds nothing.
 
-For the user's own PRs, holds the user set are kept (its `Nudge PR #<n>` task's prompt, from `list_scheduled_tasks`, or what the user said in this thread): a topic not to mention leaves the title out, a PR not to bump stays off the list.
+For the user's own PRs, holds the user set are kept (what the user said in the PR's own T3 thread, named on the PR body's `T3 thread:` line, or in this thread): a topic not to mention leaves the title out, a PR not to bump stays off the list.
 
 ## The message
 

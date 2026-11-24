@@ -9,7 +9,7 @@ They're written for our repo (Alicia), our Slack and our Linear, and they're pub
 | Say | Skill | What happens |
 |---|---|---|
 | "build it", "fix it", "take this" | [`build-it`](skills/build-it/SKILL.md) | Takes a bug or feature from wherever it starts (your words, a Linear issue, a Slack report) to a PR that's ready for review: finds the cause, designs, builds, tests, reviews, opens the PR. |
-| "send for review", "send it" | [`send-for-review`](skills/send-for-review/SKILL.md) | Posts the PR in the review channel, requests the reviewer, and sets up a daily nudge that reads the thread before bumping anyone, and fixes a red check or a conflict itself first. |
+| "send for review", "send it" | [`send-for-review`](skills/send-for-review/SKILL.md) | Posts the PR in the review channel, requests the reviewer, and watches it: a review, a red check or a conflict brings the thread back, and a morning sweep over all the user's PRs is the backstop. It fixes a red required check or a conflict itself first, and leaves bumping to the digest. |
 | "review's back", "what did they say" | [`fix-comments`](skills/fix-comments/SKILL.md) | An overview of the review that came back: what we'll fix and what needs you, with confidence, in two tables. Nothing changed yet. |
 | "fix comments" | [`fix-comments`](skills/fix-comments/SKILL.md) | The same overview, then fixes what's right (without asking when it's all technical and certain), asks you the product calls, re-reviews the whole PR, replies on every comment, and sends it back. |
 | "full send" | [`full-send`](skills/full-send/SKILL.md) | Takes an approved PR the rest of the way: last comments, conflicts, CI, merge, and checks it's live. |
@@ -103,7 +103,7 @@ Update with `git pull`: the links point at the checkout, so there's nothing to r
 - Codex, for the second reviewer.
 - `ffmpeg`, and Playwright in the repo (its E2E tests'), for the GIFs of what moves (`pr-flow/record-flow`).
 - For `sketch-it`: Storybook in the repo, the Mobbin MCP for references, and the [Doop](https://doop.design) MCP. Parts are copied from Storybook as the sketch needs them (`pr-flow/story-shot --inline`).
-- Optional: the Excalidraw MCP for diagrams, and T3 Code for snoozing threads and the scheduled nudge. Without T3 Code those steps are skipped.
+- Optional: the Excalidraw MCP for diagrams, and T3 Code for snoozing threads, PR watches and the morning sweep. Without T3 Code those steps are skipped.
 
 ## Making them yours
 

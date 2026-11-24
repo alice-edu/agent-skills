@@ -35,15 +35,11 @@ Done when every checklist item is true for the head being announced.
 
 **Another round**: the **Ready for another round** reply in the thread, @mentioning the reviewer, built from the fixes and replies on the PR since their last review. Re-request them on GitHub.
 
-Either way, add the T3 link in the thread ([links.md](~/.agents/pr-flow/links.md), "The T3 link in Slack"): on the first round, a reply under the post. Then set each Linear issue to **In Review** and add the T3 link to it ([links.md](~/.agents/pr-flow/links.md), "The T3 link on Linear"), and set up the nudge ([nudge.md](~/.agents/pr-flow/nudge.md), "Setting it up").
+Either way, add the T3 link in the thread ([links.md](~/.agents/pr-flow/links.md), "The T3 link in Slack"): on the first round, a reply under the post. Then set each Linear issue to **In Review** and add the T3 link to it ([links.md](~/.agents/pr-flow/links.md), "The T3 link on Linear"), and leave the PR watched (below).
 
-**Checks still running** (in T3 Code): `watch_pull_request`, so a red check gets fixed the same day rather than at the next morning's nudge. Each wake, then snooze again until 10:30 on the next working day:
+**Watch it** (in T3 Code): `watch_pull_request` on every layer, kept on until a review lands, so a review, a red check or a conflict brings the thread back within the hour ([nudge.md](~/.agents/pr-flow/nudge.md), "Watching"). Each wake runs nudge.md's "The check", now; checks finishing green need nothing. The morning sweep (nudge.md, "The sweep") is the backstop: there's no task to schedule per PR.
 
-- a check failed: as nudge.md's rule 3;
-- the checks finished green: `unwatch_pull_request`;
-- a review or comment: `unwatch_pull_request`, then nudge.md's "The check", now.
-
-Done when the message is in Slack once (once for a whole stack), exactly one `Nudge PR #<n>` task is scheduled with its own id in its prompt (in T3 Code; for a stack, `<n>` is the bottom PR), the thread has a `T3 thread:` reply linking this thread and each issue a T3 link (in T3 Code), the reviewer is requested on GitHub where there is one, and every layer's Linear issue reads In Review.
+Done when the message is in Slack once (once for a whole stack), every layer is watched (in T3 Code), the thread has a `T3 thread:` reply linking this thread and each issue a T3 link (in T3 Code), the reviewer is requested on GitHub where there is one, and every layer's Linear issue reads In Review.
 
 ## 4. Snooze, then report
 

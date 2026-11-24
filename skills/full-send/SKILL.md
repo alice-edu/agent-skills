@@ -73,7 +73,7 @@ gh api repos/<o>/<r>/deployments/$id/statuses --jq '.[0].state'   # success | fa
 
 ## 6. Settle, then report
 
-Once merged, react ✅ on the PR's **Up for review** post (slack.md, "Reactions"), and delete its `Nudge PR #<n>` task, if any (`list_scheduled_tasks`, `delete_scheduled_task`; nudge.md).
+Once merged, react ✅ on the PR's **Up for review** post (slack.md, "Reactions"). Under auto-merge, when the turn ends before the merge, the morning sweep reacts instead (nudge.md, "The sweep").
 
 Two actions, in this order, because the report is your last message and the turn ends with it:
 

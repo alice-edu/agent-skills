@@ -1,6 +1,6 @@
 # Report
 
-The user skims a thread's report between many others: its first line, what needs them, and its move. A report is what changes for the user; how the work got there is the record, and lives elsewhere. Every report a skill ends with, in this order:
+The user skims a thread's report between many others: its first line, what needs them, and its move. A report is what changes for the user; how the work got there is the record, and lives elsewhere. Every report a skill ends with, written plainly and put through the `unslop` skill, in this order:
 
 1. **The verdict**, in one line: where it ended (ready, merged, blocked, parked) or what's recommended. Work the user asked to have done (a fix, a feature, a check) opens with one word held to what they asked for, not to what was built: **VERIFIED** (a run showed it does what they asked), **NOT VERIFIED** (it doesn't yet, or nothing ran), or **INCONCLUSIVE** (it ran and couldn't tell). Inconclusive is not a pass, and a negative goes first, never under the good news. From poteto's pstack (MIT).
 2. **What changes for the user**, a line each: what's different in the app, the PR, or what they now have to do. The skill's report step names what goes here.

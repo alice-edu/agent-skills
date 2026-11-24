@@ -1,6 +1,6 @@
 # Slack
 
-Every message is posted as the user, so write each in their voice: short and plain, the way they write in the channel (their own voice skill when they have one), then a pass for AI tells (an `unslop`-style skill, when they have one). Mention people as `<@USERID>` (find them with `slack_search_users`); the user's own ID is in [me.md](me.md). After posting, read the thread back and confirm the message is there once. Then add the T3 link ([links.md](~/.agents/pr-flow/links.md), "The T3 link in Slack").
+Every message is posted as the user, so write each in their voice: short and plain, the way they write in the channel (their own voice skill when they have one), then the `unslop` skill over it before it's posted. Mention people as `<@USERID>` (find them with `slack_search_users`); the user's own ID is in [me.md](me.md). After posting, read the thread back and confirm the message is there once. Then add the T3 link ([links.md](~/.agents/pr-flow/links.md), "The T3 link in Slack").
 
 ## Channels
 

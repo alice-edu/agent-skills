@@ -1,6 +1,6 @@
 # PR body
 
-The shape of a PR description for the user's PRs, from their recent ones (alicia #737, #725, #713). Write it plainly, with a pass for AI tells (an `unslop`-style skill, when there is one). It describes the current diff and only checks run on the current head.
+The shape of a PR description for the user's PRs, from their recent ones (alicia #737, #725, #713). Write it plainly, then run the `unslop` skill over the whole body before it's posted, and again after each rewrite. It describes the current diff and only checks run on the current head.
 
 ```markdown
 <What a student saw before and what they see now, or the problem and its cause, in 2-4 sentences. No list of files.>

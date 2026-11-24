@@ -1,6 +1,6 @@
 # GitHub
 
-How the user's reviews and replies read on GitHub, and how to post them so they land.
+How the user's reviews and replies read on GitHub, and how to post them so they land. Every review body, comment and reply goes through the `unslop` skill before it's posted.
 
 ## A review of someone else's PR
 

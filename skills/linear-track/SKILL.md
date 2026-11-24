@@ -7,6 +7,8 @@ description: Track a thread's work on the user's Linear board. Use when a thread
 
 Every PR the user ships has one Linear issue, and the issue's status says where the work is. Questions, research and reviews of someone else's PR get no issue.
 
+An issue's title, description and comments go through the `unslop` skill before they're saved.
+
 ## The board
 
 | Repo | Team | Project |

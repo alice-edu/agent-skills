@@ -7,7 +7,7 @@ description: 'Design a screen, component, flow, panel or landing section with th
 
 A **sketch** is the real thing drawn early, on a Doop canvas: frames composed from **copies** of the app's own components, each taken on demand from the story that draws it in its Storybook (`~/.agents/pr-flow/story-shot --inline`: the story's drawing with each element's computed styles written on it). Only the layout between parts is written by hand, so what's agreed is what gets built, and each part names the story and file it's copied from.
 
-Each **round** is a **row** on the canvas: **Before** (the screen now), then at most three options, each an **own idea** unless a reference clearly shows it, and checked for usability before the user sees it, then the references they borrow from. Over each design sits its **note**, a frame of its own; the recommended option's note is outlined in orange. The user comments on the canvas and types **next** in chat; the next round is a new row below. It ends when the user says **agreed**.
+Each **round** is a **row** on the canvas: **Before** (the screen now), then the **contenders**, at most three, each an **own idea** unless a reference clearly shows it, and checked for usability before the user sees it, then the references they borrow from. Over each design sits its **note**, a frame of its own; the recommended option's note is outlined in orange. The user comments on the canvas and types **next** in chat; the next round is a new row below. It ends when the user says **agreed**.
 
 What's sketched sets the row's shape (step 4): a **screen**, a **component** (its variants and states), or a **flow** (a **lane** of screens in step order).
 
@@ -73,9 +73,11 @@ Done when the canvas has the fonts and images, and a page with the banner and Be
 
 ## 4. Sketch
 
-Each option is a frame beside Before, named `A: <idea>`, `B: …`, at most three, at the same width, 80 px apart, its height fitted to what it holds, with its note above it. A row holds, left to right: Before, the options, then the reference frames.
+**Contenders only.** Before drawing, list the approaches that could really win for this problem, and draw only those: one when only one fits, never a filler to reach three. An option is a different approach, never a small variant of another option, a state of the design ("searching", "nothing made yet"; states go inside the option they belong to), or one its own note would argue down. Past three only when the user asks ("more versions").
 
-- **Notes** are their own frames, never written into a design: the option's name and idea, then a few short lines: what changes, its usability verdict (step 5), its cost to build, and what it borrows from which reference, with its link, or "own idea". Every note in a row is one height. The recommended option's note has a 3 px orange border (`#e5683a`), a pale orange fill (`#fff6f1`) and a `★ Recommended` badge; the others a dashed grey border on off-white.
+Each option is a frame beside Before, named `A: <idea>`, `B: …`, at the same width, 80 px apart, its height fitted to what it holds, with its note above it. A row holds, left to right: Before, the options, then the reference frames.
+
+- **Notes** are their own frames, never written into a design: the option's name and idea, then a few short lines: what changes, **For** (why it could be the one picked) and **Against** (what it costs the student), the recommended option included, its usability verdict (step 5), its cost to build, and what it borrows from which reference, with its link, or "own idea". Every note in a row is one height. The recommended option's note has a 3 px orange border (`#e5683a`), a pale orange fill (`#fff6f1`) and a `★ Recommended` badge; the others a dashed grey border on off-white.
 - **One template a round**: write the note and the frame's wrapper once and fill them in for each option, so a row is drawn in a few calls and its frames line up.
 - **Before carries over**: from round 2, Before is the earlier round's frame unchanged, so its note says `Same as Round <n> ↑` and the frame isn't drawn again. A flow's Before lane is the exception: it's drawn again in every round, so each round reads on its own.
 
@@ -107,7 +109,7 @@ Done when every option has a verdict: clear, or its findings.
 The canvas is where the user reads the round, so chat stays short. `set_status` to `Ready: comment, then type next`, and reply in a few lines:
 
 - the page's link (`/c/<canvas>`, and the page's name);
-- each option in a line, the recommended first: its name and what it changes; where the brief and the screen differ, a line on that;
+- each option in a line, the recommended first: its name, what it changes, and its strongest for and against; where the brief and the screen differ, a line on that;
 - the ask: comment on the canvas, then type **next**; or **agreed: <option>**.
 
 Without Doop's tools, say so and stop: the sketch needs the canvas.

@@ -73,7 +73,7 @@ gh api repos/<o>/<r>/deployments/$id/statuses --jq '.[0].state'   # success | fa
 
 ## 6. Settle, then report
 
-Once merged, react ✅ on the PR's **Up for review** post (slack.md, "Reactions"). Under auto-merge, when the turn ends before the merge, the morning sweep reacts instead (nudge.md, "The sweep").
+Once merged, react ✅ on the PR's **Up for review** post (slack.md, "Reactions"). Under auto-merge, when the turn ends before the merge, the PR's thread reacts when its next check finds it merged (nudge.md, rule 1).
 
 Two actions, in this order, because the report is your last message and the turn ends with it:
 

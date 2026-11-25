@@ -4,7 +4,7 @@ Where a thread goes when its skill ends, so the user's T3 list shows only thread
 
 | The skill ended with | The thread |
 | --- | --- |
-| `send-for-review` posted (also how `fix-comments` ends): waiting for the reviewer | watched, and snoozed until 10:30 on the next working day, just after the morning sweep ([nudge.md](nudge.md)), which snoozes it again until the watch or the sweep finds a review or a decision for the user |
+| `send-for-review` posted (also how `fix-comments` ends): waiting for the reviewer | watched, and snoozed until 10:30 on the next working day; its watch wakes it for a review, a comment or a red required check ([nudge.md](nudge.md)), and it's snoozed again until there's a review or a decision for the user |
 | `review-pr` requested changes: waiting for the author | snoozed 3 hours |
 | `review-pr` approved | settled |
 | `full-send` merged and live, with the report's Slack thread told when there was one | settled |
@@ -15,7 +15,7 @@ Where a thread goes when its skill ends, so the user's T3 list shows only thread
 
 In T3 Code, as the skill's last action before its report: the report is the turn's last message, so an action after it never runs. Each skill's last step names its own outcome; this table is where they come from.
 
-For a time of day (10:30 on the next working day, nudge.md), work out the date, skipping weekends and Danish public holidays, and give it with the local offset. For hours from now:
+For a time of day (10:30 on the next working day, send-for-review), work out the date, skipping weekends and Danish public holidays, and give it with the local offset. For hours from now:
 
 ```bash
 date -u -v+3H +%Y-%m-%dT%H:%M:%SZ   # macOS; GNU date: date -u -d '+3 hours' +%Y-%m-%dT%H:%M:%SZ

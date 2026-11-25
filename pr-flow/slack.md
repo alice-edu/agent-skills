@@ -23,7 +23,7 @@ A reaction tracks where a PR is, in the channel itself, so anyone scanning it se
 | 👀 `eyes` | the teammate's **Up for review** post | a first review starts | `review-pr`, step 1 |
 | 👀 `eyes` | the teammate's **Ready for another round** message in the thread | a re-review starts | `review-pr`, step 1 |
 | 🙌 `raised_hands` | the reviewer's approval message in the thread (none: the **Up for review** post) | `full-send` starts on it | `full-send`, step 1 |
-| ✅ `white_check_mark` | the user's own **Up for review** post | the PR is merged, by anyone | `full-send` after the merge; the morning sweep (nudge.md) when it finds it merged |
+| ✅ `white_check_mark` | the user's own **Up for review** post | the PR is merged, by anyone | `full-send` after the merge; under auto-merge, the PR's thread when its next check finds it merged (nudge.md, rule 1) |
 
 A message that's gone or can't be found: skip its reaction and say so in the report.
 

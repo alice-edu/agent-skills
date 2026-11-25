@@ -37,7 +37,7 @@ Done when every checklist item is true for the head being announced.
 
 Either way, add the T3 link in the thread ([links.md](~/.agents/pr-flow/links.md), "The T3 link in Slack"): on the first round, a reply under the post. Then set each Linear issue to **In Review** and add the T3 link to it ([links.md](~/.agents/pr-flow/links.md), "The T3 link on Linear"), and leave the PR watched (below).
 
-**Watch it** (in T3 Code): `watch_pull_request` on every layer, kept on until a review lands, so a review, a red check or a conflict brings the thread back within the hour ([nudge.md](~/.agents/pr-flow/nudge.md), "Watching"). Each wake runs nudge.md's "The check", now; checks finishing green need nothing. The morning sweep (nudge.md, "The sweep") is the backstop: there's no task to schedule per PR.
+**Watch it** (in T3 Code): `watch_pull_request` on every layer, kept on until a review lands, so a review, a comment or a red required check brings this thread back ([nudge.md](~/.agents/pr-flow/nudge.md), "Watching"). Each wake runs nudge.md's "The check", now; checks finishing green, or a conflict, need nothing. There's no task to schedule per PR, and nothing sweeps all the PRs at once.
 
 Done when the message is in Slack once (once for a whole stack), every layer is watched (in T3 Code), the thread has a `T3 thread:` reply linking this thread and each issue a T3 link (in T3 Code), the reviewer is requested on GitHub where there is one, and every layer's Linear issue reads In Review.
 

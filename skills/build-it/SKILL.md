@@ -42,7 +42,8 @@ Done when each check is answered.
 
 1. **Reproduce** it: a test, a script, or the running app, until it goes red the way the report says. An error alert: slack-report.md, "An error alert". When it won't go red, read the evidence and the code for a cause, and write down what was tried: a cause shown in the code is still a **Bug**; none is **Unconfirmed**.
 2. **Cause**: the line or decision that makes it happen, and why it slipped through. Narrow it by elimination: list the hypotheses, then take the check that rules out the most of them first (a log read as it runs, a probe, the `why` skill for when it began), until one is left and a run shows it. A cause no run has shown is a **suspect**, written as one, never as the cause. Every line the fix ships traces to that evidence: a change that "might help" is a hypothesis and doesn't ship, and one made for a hypothesis the evidence ruled out is reverted. Search for the same cause elsewhere (other callers, the sibling component, the other language files).
-3. **Scope**: when the cause makes the fix much bigger than the report suggested (a data migration, a change across packages, a behaviour change for other screens), that goes on the card with the options.
+3. **Parts**: when the fix adds a part (a component, an editor node, a hook, a parser, a helper), run Build's search for it first: an existing one across the whole repo, not only beside the screen, and the library's own answer ([lenses.md](~/.agents/pr-flow/lenses.md), "A solved problem"). Each search is a line of the PR body's Research section, the part reused or why not.
+4. **Scope**: when the cause makes the fix much bigger than the report suggested (a data migration, a change across packages, a behaviour change for other screens), that goes on the card with the options.
 
 **Build: design it.**
 

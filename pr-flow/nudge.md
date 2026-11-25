@@ -9,7 +9,7 @@ Between them the thread stays snoozed, so the user sees it again only when there
 
 ## Watching
 
-`send-for-review` ends with the PR watched (`watch_pull_request`, every layer of a stack), and the watch stays on until a review lands ([waiting.md](waiting.md), "Waiting on CI": T3 wakes the thread on a review, a comment, a red check or a conflict). On each wake, run "The check" below for that PR, now. Checks finishing green need nothing, so keep watching and end the turn without a message. Unwatch when the check hands off (Over, Reviewed) or a card goes to the user. A watch that can't read the PR (GitHub's GraphQL limit) is left alone: the sweep covers it.
+`send-for-review` ends with the PR watched (`watch_pull_request`, every layer of a stack), and the watch stays on until a review lands ([waiting.md](waiting.md), "Waiting on CI": T3 wakes the thread on a review, a comment, a red check or a conflict). On a wake for a review, a comment or a red required check, run "The check" below for that PR, now. Checks finishing green, or a conflict, need nothing: keep watching and end the turn without a message (a conflict is merged when the PR is next worked on, rule 3). Unwatch when the check hands off (Over, Reviewed) or a card goes to the user. A watch that can't read the PR (GitHub's GraphQL limit) is left alone: the sweep covers it.
 
 ## The sweep
 
@@ -17,12 +17,13 @@ There's one scheduled task, `Review sweep`, at 09:30 Monday to Friday, `freshSes
 
 1. **The PRs.** List them with `gh pr list --author @me --state open --json number,url,isDraft,body,updatedAt,reviews,reviewDecision,mergeable,baseRefName`. Keep the non-drafts updated in the last 14 days whose body has a `T3 thread:` line. The last such line names the thread that owns the PR now. Also list the user's PRs merged since the last working day: react ✅ on each one's **Up for review** post where it's missing (slack.md, "Reactions").
 2. **Decide each PR from GitHub first**, by "The check"'s rules: a review since the round started, a conflict, or a required check red (`gh pr checks <n> --required`). Read Slack only for a PR that has none of these and whose round started more than one working day ago (rules 4 and 6 need the thread and its reactions).
-3. **Wake only threads with work**: Reviewed, Fix first, Waiting past its time, Already bumped. For each, `t3_thread_send` (mode `queue`) to the owning thread: `Nudge check for <PR url>: follow ~/.agents/pr-flow/nudge.md, "The check".` Send one message per thread, naming each of its PRs that needs it.
-4. **Leave the rest asleep.** Too soon, Waiting and Forgotten get nothing posted. Snooze each of their threads until 10:30 on the next working day (`t3_thread_organize` with its `threadId`).
+3. **Wake at most three threads a run.** Every woken thread runs an agent that may install, build and test on this Mac, so a sweep that wakes many at once can take the machine down (25 Nov: 28 woken, the Mac crashed). Only **Reviewed** wakes a thread, changes requested first, then approvals, then comments, oldest review first. For each of the first three, `t3_thread_send` (mode `queue`) to the owning thread: `Nudge check for <PR url>: follow ~/.agents/pr-flow/nudge.md, "The check".` One message per thread, naming each of its PRs that needs it. The rest wait for tomorrow's sweep and are named on the sweep's line.
+   - **Never woken**: a conflict or a red required check alone (rule 3 runs when the PR is next worked on); a PR the user said to leave; a native PR waiting for its store build (`phone-native` red, branches.md); Waiting and Already bumped, which go on the sweep's line for the user instead of a card in each thread.
+4. **Leave the rest asleep.** Everything not woken gets nothing posted. Snooze each of their threads until 10:30 on the next working day (`t3_thread_organize` with its `threadId`).
 5. **Old tasks.** A thread still on the earlier skill may have scheduled a `Nudge PR #<n>` task: delete each one (`list_scheduled_tasks`, `delete_scheduled_task`), since this sweep covers its PR.
-6. **One line** in the sweep's thread: the date, the count for each rule, and the threads woken, by `link`.
+6. **A short report** in the sweep's thread: the date, the threads woken (by `link`), the reviewed PRs left for tomorrow, and the PRs waiting past their time or already bumped, each with its one-line ask (bump, ask someone else, or leave it). Counts for the rest in one line.
 
-Done when every listed PR has a rule, each thread with work has one message, and the line is posted.
+Done when every listed PR has a rule, at most three threads were woken, and the report is posted.
 
 ## The check
 
@@ -45,7 +46,7 @@ The first of these that's true decides:
    - **Anything else**: build the overview of what came back (`fix-comments` steps 1 and 2).
      - **Nothing on the card** (every row technical, High and ✅ Fix): run `fix-comments` in full, as if the user had said it. An approval whose shape holds then merges through its step 6. Its report lands in this thread.
      - **Something on the card**: unsnooze and post the overview with the card's questions, ending "say *fix comments* to go". Nothing is fixed, replied or published yet; a row that needs a diagram says so, and it's drawn when `fix-comments` runs.
-3. **Fix first**: the base conflicts, or a **required** check is red. Nobody has started reviewing, so make it ready yourself:
+3. **Fix first**: a **required** check is red, or the base conflicts. This rule runs only when the thread was woken for something else or is already working on the PR: a conflict alone never wakes a thread (main moves several times a day, and catching every PR up each time is what crashed the Mac). Then make it ready yourself:
    - **A conflict**: merge the base in as `catch-up` does (its steps 2 and 3), and push.
    - **`phone-native` red**: a native PR waiting for its store build, or main's drift, not a check to rerun ([branches.md](branches.md), "phone-native red").
    - **A required check this PR didn't cause** (main fails it too, its test is in files the PR doesn't touch, or it passed on an earlier head of this PR): rerun it once (`gh run rerun <id> --failed`), and go on without waiting for it.

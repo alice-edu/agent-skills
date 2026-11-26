@@ -65,11 +65,18 @@ Everything else is proven in this run. What looks untestable usually isn't:
 
 `review-loop` checks the list before the PR opens (lenses.md, "Spec"): a line this run could have proven is housekeeping, fixed by proving it.
 
-**Every route first.** Before a line becomes a hand test, try each route the agent has: the PR's preview deploy, a Simlock simulator and emulator, a read-only or signed-out call to production (a page, an API, a price), the running stack. A hand test is only what none of them reach (a real phone's mic, a real payment, the user's own account), and its `Tried:` names each route and what it gave. When the user is away, nothing is asked: the line waits in Test by hand and the run goes on.
+**Every route first.** Before a line becomes a hand test, try each route the agent has: the PR's preview deploy ([preview.md](preview.md): getting past its protection, signing up, seeding), a Simlock simulator and emulator, a read-only or signed-out call to production (a page, an API, a price), the running stack. A hand test is only what none of them reach (a real phone's mic, a real payment, the user's own account), and its `Tried:` has one entry per route, each with what it gave: `Tried: preview → …; simulator → …; prod → …; local → …`. A route left out, or marked not tried, isn't a reason yet: try it.
+
+**Setup is never a reason.** These are the agent's to set up, on the PR's own preview or the local stack, and then the line is proven:
+
+- a switch, flag or env var that's off: set it on the PR's own preview deployment, check, and unset it (never production's);
+- no data, or data in the wrong state: seed it ([preview.md](preview.md), "Test data");
+- needs an account, a new one or a signed-in one: sign up or use the QA login (preview.md);
+- needs a phone: a Simlock simulator or emulator is a phone. Only what a simulator lacks (the mic, the camera, haptics, push, a real purchase) stays. When the user is away, nothing is asked: the line waits in Test by hand and the run goes on.
 
 ### A hand test blocks on the user
 
-A line that keeps its reason is a **hand test**, and it waits for the user: the PR isn't sent for review until they've done it or said to skip it (a deploy line: once it's live, in `full-send`). Ask for it in one message, like a decision ([decision-card.md](decision-card.md)), with everything ready so it takes them a minute:
+Before asking, read the line's `Tried:` against the routes above and the setup list: a route missing, or a reason the list names, means the line isn't a hand test yet, so go and prove it. A line that keeps its reason is a **hand test**, and it waits for the user: the PR isn't sent for review until they've done it or said to skip it (a deploy line: once it's live, in `full-send`). Ask for it in one message, like a decision ([decision-card.md](decision-card.md)), with everything ready so it takes them a minute:
 
 - **why you**: its reason, and what was tried (`Tried: … → …`), in one line;
 - **set up**: whatever it needs is already running and loaded, on the newest head: the dev stack or the preview up, the build on their phone and signed in, the account seeded with the data, the screen opened at the right state. Links ready to click;

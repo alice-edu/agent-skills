@@ -34,7 +34,7 @@ A new feature a student uses ships with its usage tracking in the same PR (the r
 
 Scope creep alone is P2 polish, or the user's call when it changes what a student sees. When nothing about it is written down, say "no written intent" and review the code against what the PR says it does.
 
-**Test by hand**, in author mode: each draft line against [ready.md](ready.md), "Test by hand". A line without one of its four reasons, or one this run could have proven (its table, or any other way you can name), is housekeeping (review-loop, "Severity"), fixed by proving it. So is a line that asks for more than is left after the provable parts.
+**Test by hand**, in author mode: each draft line against [ready.md](ready.md), "Test by hand". A line without one of its four reasons, or one this run could have proven (its table, or any other way you can name), is housekeeping (review-loop, "Severity"), fixed by proving it. So is a line that asks for more than is left after the provable parts, one whose `Tried:` leaves out a route, and one whose reason is setup (ready.md, "Setup is never a reason").
 
 ## Correctness
 

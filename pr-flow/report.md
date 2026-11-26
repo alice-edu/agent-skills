@@ -19,6 +19,8 @@ The user skims a thread's report between many others: its first line, what needs
 
 Short declarative sentences. Each claim carries its label, in a report and in any answer ("why did X happen", "is this worth it"), above all where it argues: **measured** (a run, a test or a check showed it), **inferred** (read from code, logs or docs), or **guess**. Never hand the user a check you could run.
 
+**No promises at the end.** A turn never ends on work it says it's about to do ("I'll run it now", "starting the check"): the turn ends when the agent stops, so that work never happens until the user asks. Do it in this turn, or say why it stops here and whose move it is.
+
 ## What goes elsewhere
 
 The record of the work: review rounds and what each found, each lens's result, the checks and tests run, the models used, what was tried and dropped, the size. It goes in the PR body ([pr-body.md](pr-body.md)) or the decision log, and the report links it. A claim the user needs proof for keeps its label and one line of evidence, not the story behind it.

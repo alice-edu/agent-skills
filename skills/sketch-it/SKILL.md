@@ -106,15 +106,17 @@ Done when every option has a verdict: clear, or its findings.
 
 ## 6. Show
 
-The canvas is where the user reads the round, so chat stays short. `set_status` to `Ready: comment, then type next`, and reply in a few lines:
+The canvas is where the user reads the round, so chat stays short. `set_status` to `Ready: comment, then type next`, and reply in a few lines, where every link is a **frame link** (below):
 
-- the page's link (`/c/<canvas>`, and the page's name);
-- each option in a line, the recommended first: its name, what it changes, and its strongest for and against; where the brief and the screen differ, a line on that;
+- first, **Look here**: the round's recommended option, so one click lands on the new row;
+- each option in a line, the recommended first: its name as its frame link, what it changes, and its strongest for and against; where the brief and the screen differ, a line on that. Before, a reference or an answered comment named in a line links to its frame too;
 - the ask: comment on the canvas, then type **next**; or **agreed: <option>**.
 
 Without Doop's tools, say so and stop: the sketch needs the canvas.
 
-Done when every frame of the row has been looked at with `get_frame_screenshot` and the reply is sent.
+A **frame link** is `https://<doop host>/c/<canvas>?frame=<id>`, the host taken from the frame's `image_url`; it opens Doop zoomed to that frame, selected. One part of a frame adds `&element=<data-doop-id>`. A canvas link alone opens every round at a zoom nothing reads at, and a `/c/…` path isn't clickable: neither goes in a reply.
+
+Done when every frame of the row has been looked at with `get_frame_screenshot`, and the reply is sent with each option named by its frame link.
 
 ## 7. Iterate
 
@@ -127,7 +129,7 @@ Done when the user says agreed (or picks `Agreed: …`), on one option.
 ## 8. Hand over
 
 1. Rename the agreed frame `Agreed: <idea>` (and its dark one), and mark it ready for dev with `set_frame_approval`: the user's agreed is the ask. The rounds stay as they are.
-2. Report, shaped by [report.md](~/.agents/pr-flow/report.md): the agreed picture beside Before, the frame's link (`/c/<canvas>?frame=<id>`), and the lists: the **parts** it uses with their stories and code paths, **new parts**, **new text**, and **Decided**: each call the design left that you settled (where a moved control goes, what shows when a list is empty), one line each with its reason. A call that's truly the user's (what a student sees, the scope) is asked as one decision with the recommended answer marked ([decision-card.md](~/.agents/pr-flow/decision-card.md)); work the build will do (a story's assertions to update) goes to the build, not the report.
+2. Report, shaped by [report.md](~/.agents/pr-flow/report.md): the agreed picture beside Before, the agreed frame's frame link (step 6), and the lists: the **parts** it uses with their stories and code paths, **new parts**, **new text**, and **Decided**: each call the design left that you settled (where a moved control goes, what shows when a list is empty), one line each with its reason. A call that's truly the user's (what a student sees, the scope) is asked as one decision with the recommended answer marked ([decision-card.md](~/.agents/pr-flow/decision-card.md)); work the build will do (a story's assertions to update) goes to the build, not the report.
 
 From build-it, its step 6 builds the agreed frame in React: each part from its code path, the layout from the frame's. The PR's pictures are the built app's, before and after, never the frame's; the PR links the agreed frame in one line, for anyone curious how it was designed ([pr-body.md](~/.agents/pr-flow/pr-body.md), "Where it was made"). On its own, the report ends by asking whether to build it.
 

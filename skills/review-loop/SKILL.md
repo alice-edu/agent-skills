@@ -63,7 +63,7 @@ Done when base, head, intent and the checks are written down.
 
 (A council's round 1 starts the three other seats here, in parallel, each with its own `clientRequestId`. Outside T3, a seat on your own provider is `claude -p --model <id> --permission-mode plan` or `codex exec -m <id> -s read-only`.)
 
-- **In T3 Code**: `orchestrator_capabilities` once, then `delegate_task` with `role: "review"`, `mode: "async"` and a new `clientRequestId` each round, on the other provider's newest model at high effort (Codex: the newest GPT, the `sol` line when listed; Claude: the newest Opus). Name the model and effort in the report.
+- **In T3 Code**: `orchestrator_capabilities` once, then `delegate_task` with `role: "review"`, `mode: "async"` and a new `clientRequestId` each round, its title starting `Check` (waiting.md, "Thread names"), on the other provider's newest model at high effort (Codex: the newest GPT, the `sol` line when listed; Claude: the newest Opus). Name the model and effort in the report.
 - **Outside T3**: from Claude, `codex exec -s read-only "<brief>"` in the repo; from Codex, `claude -p --permission-mode plan "<brief>"` in the repo (plan mode reads but never edits).
 - No route to the other provider: say so and stop. A second review on the same model is no substitute.
 - **Two seats, one focus each**, in round 1 of a diff over ~100 changed lines (a council keeps its own four seats, each on every lens): start the other reviewer twice in parallel with the same brief, its `Focus:` line **hunt** on one (Correctness and its case tables) and **rules** on the other (Spec, Standards with RULES, Backend, UI and UX). Your own review covers every lens. Later rounds and the fix check are one seat on every lens.

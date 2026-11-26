@@ -5,11 +5,21 @@ Where a thread goes when its skill ends, so the user's T3 list shows only thread
 | The skill ended with | The thread |
 | --- | --- |
 | `send-for-review` posted (also how `fix-comments` ends): waiting for the reviewer | watched, and snoozed until 10:30 on the next working day; its watch wakes it for a review, a comment or a red required check ([nudge.md](nudge.md)), and it's snoozed again until there's a review or a decision for the user |
-| `review-pr` requested changes: waiting for the author | snoozed 3 hours |
+| `review-pr` requested changes: waiting for the author | watched, and snoozed until 10:30 on the next working day; a wake with news for the user unsnoozes it (review-pr, "On a wake") |
 | `review-pr` approved | settled |
 | `full-send` merged and live, with the report's Slack thread told when there was one | settled |
 | `build-it` parked it (unconfirmed, or a big feature left in Linear), or found it already done | settled |
 | anything else: a decision card unanswered, a blocker, a red check, merged but not live, a PR not yet sent | in sight |
+
+## Thread names
+
+The user skims the T3 list by title, so a thread whose work is a PR is named for it, with `t3_thread_update` (`action: "rename"`), the PR's subject in a few words:
+
+- `Review #<n>: <what> (<author>)`: a teammate's PR the user reviews, named by `review-pr` in its step 1. Only these start with `Review #`.
+- `PR #<n>: <what>`: the user's own PR, named by `build-it` once it's opened, or by whichever skill first takes one over.
+- A delegated reviewer's title starts with `Check` (`Check #1890 r1: hunt`), never `Review`.
+
+The title names the work, never its state: snoozed, unread and in sight already say whose move it is.
 
 ## How
 
@@ -34,7 +44,7 @@ The report's last line says where the thread went: `Snoozed until 14:30.` (local
 
 Every skill that waits on a PR's checks or reviews waits this way: one watcher a PR, never a `sleep` loop or repeated `gh pr checks`. Before ending the turn, write what the wake should pick up ("on a wake: fix a red check the merge caused"), since the next turn resumes from there.
 
-- **In T3 Code**: handle what's already there, then `watch_pull_request` and end the turn. T3 wakes the thread when a check fails, the required checks pass, someone comments or reviews, or the branch conflicts. A wake is news; check the gate yourself. Only the thread that owns the PR watches it: a delegated child never does. Before handing back (ready, blocked, or asking), `unwatch_pull_request`, except where a skill watches on past its report: `send-for-review`'s "Watch it" until a review lands (nudge.md, "Watching"), and `catch-up`'s step 4 until CI finishes, where the green wake unwatches. "Could not read it" usually means GitHub's GraphQL limit is spent: `gh api rate_limit --jq .resources.graphql`, and wait for its `reset` once before watching again.
+- **In T3 Code**: handle what's already there, then `watch_pull_request` and end the turn. T3 wakes the thread when a check fails, the required checks pass, someone comments or reviews, or the branch conflicts. A wake is news; check the gate yourself. Only the thread that owns the PR watches it: a delegated child never does. Before handing back (ready, blocked, or asking), `unwatch_pull_request`, except where a skill watches on past its report: `send-for-review`'s "Watch it" until a review lands (nudge.md, "Watching"), `review-pr`'s watch while changes are requested (its "On a wake"), and `catch-up`'s step 4 until CI finishes, where the green wake unwatches. "Could not read it" usually means GitHub's GraphQL limit is spent: `gh api rate_limit --jq .resources.graphql`, and wait for its `reset` once before watching again.
 - **Elsewhere**: `~/.agents/skills/babysit-pr/scripts/pr-wait <pr> --until ready`, run with Claude Code's Monitor tool, or as one long command. One line a real event; exit 0 when the condition is met or the PR merged, 1 when it needs you, 2 on bad input. Start it again after each push.
 
 An event that needs nothing: end the turn without a message.

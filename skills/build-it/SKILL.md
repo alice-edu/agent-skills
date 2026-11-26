@@ -120,7 +120,7 @@ Done when, on one final head: the loop agreed; each P2 bug is fixed or in Not fi
 
 ## 9. Open the PR
 
-Screenshots, and GIFs of what moves, per [screenshots.md](~/.agents/pr-flow/screenshots.md), made without asking; the body per [pr-body.md](~/.agents/pr-flow/pr-body.md), its checklist from step 7. A title in the style of the repo's recent PRs: what's different now, not "Fix bug". Push, open it ready for review against its base (`--base`, branches.md) (or update the existing one), and finish `linear-track`'s step 3.
+Screenshots, and GIFs of what moves, per [screenshots.md](~/.agents/pr-flow/screenshots.md), made without asking; the body per [pr-body.md](~/.agents/pr-flow/pr-body.md), its checklist from step 7. A title in the style of the repo's recent PRs: what's different now, not "Fix bug". Push, open it ready for review against its base (`--base`, branches.md) (or update the existing one), rename the thread `PR #<n>: <what>` ([waiting.md](~/.agents/pr-flow/waiting.md), "Thread names"), and finish `linear-track`'s step 3.
 
 Done when the PR shows the current head, its body has the T3 thread line (and Designed in Doop, after a sketch), every image loads, `screenshots-stale` says current, and every checklist item is `[x]`, `N/A` or a hand test asked of the user (ready.md, "A hand test blocks on the user").
 

@@ -17,11 +17,11 @@ Shared files: [overview.md](~/.agents/pr-flow/overview.md) (how it's shown to th
 - The user's earlier reviews (`gh api repos/<o>/<r>/pulls/<n>/reviews`, by `gh api user --jq .login`). None: **round 1**. Otherwise a **re-review**, against the `commit_id` of their last one.
 - A PR stacked on another (its base isn't `main`): review this layer's diff against its base, and note the order they merge in.
 
-In T3 Code, link the PR to this thread (`link_pull_request` with its full URL), though you only review it: the user finds the review from the PR. A failed link is said in the report.
+In T3 Code, link the PR to this thread (`link_pull_request` with its full URL), though you only review it: the user finds the review from the PR. A failed link is said in the report. Rename the thread `Review #<n>: <what> (<author>)` ([waiting.md](~/.agents/pr-flow/waiting.md), "Thread names").
 
 Once the round is known, react 👀 on the message it answers (slack.md, "Reactions"): the **Up for review** post on round 1, the author's latest **Ready for another round** message on a re-review.
 
-Done when PR, head, round, thread (or none) and intent are known, the PR is linked to this thread (in T3 Code), and the 👀 is on.
+Done when PR, head, round, thread (or none) and intent are known, the PR is linked to this thread and the thread named (in T3 Code), and the 👀 is on.
 
 ## 2. Review and explain, side by side
 
@@ -73,7 +73,17 @@ Done when GitHub shows the review's state at the head, the Slack reply is in the
 
 Two actions, in this order, because the report is your last message and the turn ends with it:
 
-1. **Put the thread away.** Changes requested: `t3_thread_organize` with `action: "snooze"` and `snoozedUntil` 3 hours from now (`date -u -v+3H +%Y-%m-%dT%H:%M:%SZ`). Approved: `action: "settle"`. Nothing posted yet (a card unanswered): the thread stays in sight, no call.
+1. **Put the thread away.** Changes requested: `watch_pull_request` on the PR, then `t3_thread_organize` with `action: "snooze"` and `snoozedUntil` 10:30 on the next working day ([waiting.md](~/.agents/pr-flow/waiting.md)). Approved: `action: "settle"`, unwatched. Nothing posted yet (a card unanswered): the thread stays in sight, no call.
 2. **Write the report**, shaped by [report.md](~/.agents/pr-flow/report.md). The explanation and diagram (round 1), the overview with each row as posted, anything decided on the user's behalf. Each lens's result is in the posted review, linked, not in the report. When it wasn't a council and the PR changes the data model, a workflow, auth or a migration, suggest one: "say *council* for four models on it". When it adds or reworks a flow a student goes through and had no student test, suggest "say *student test*". When its UI and UX lens questions a layout or flow choice on a screen the PR adds or reworks, suggest "say *sketch it* to see the PR's screen beside alternatives" (sketch-it, "From a review"). When changes were requested, the **You:** line is "When they've pushed, say *another look*." Then the Links line ([links.md](~/.agents/pr-flow/links.md)), with the posted review and the Slack reply each deep-linked, and last, where the thread went: `Snoozed until 14:30.`, `Settled.` or `In sight: <why>.`
 
 Done when `t3_thread_organize` has answered (or the thread is in sight for a reason) and the report's last line says which ([waiting.md](~/.agents/pr-flow/waiting.md)).
+
+## On a wake
+
+While changes are requested, the PR's watch wakes this thread on the author's push (its checks finishing), a comment or review, a conflict, or the merge. Look only for news since the user's last review: commits after its `commit_id`, the author's replies on its threads, a re-request, a **Ready for another round** in Slack.
+
+- **News for the user**: `t3_thread_organize` with `action: "unsnooze"`, then `action: "mark_unread"`, and one line: what changed (`Ivan pushed 2 commits and answered 3 of 4 comments.`), then **You:** "say *another look* for round <n+1>". The round itself waits for the user: no review runs on a wake. Keep the watch on.
+- **Merged or closed**: unwatch, `action: "settle"`, and one line saying so.
+- **Nothing for the user** (checks alone, a bot, someone else's comment): end the turn without a message; the thread stays snoozed. When its snooze runs out with no news, snooze it again to 10:30 on the next working day.
+
+A new round starts with step 1 as usual, the watch left on.
